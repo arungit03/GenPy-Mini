@@ -1,0 +1,39 @@
+# GenPy-Mini target model configuration (Phase 1).
+#
+# This file is data only. It is loaded and validated by
+# src/genpy/config.py::load_model_config(). No architecture code reads this
+# file yet -- Phase 1 only guarantees that the values below are internally
+# consistent and importable by later phases.
+
+schema_version: 1
+seed: 42
+
+model_name: "GenPy-Mini"
+architecture: "decoder_only_transformer"
+task: "causal_language_modeling"
+language_scope:
+  - "Python"
+  - "English programming instructions"
+
+vocab_size: 16000
+context_length: 512
+d_model: 512
+num_layers: 8
+num_attention_heads: 8
+feed_forward_dimension: 2048
+dropout: 0.1
+tie_input_output_embeddings: true
+
+# Inclusive range, expressed as "min-max", validated by the loader.
+target_parameter_range: "33000000-35000000"
+
+special_tokens:
+  pad_token: "<pad>"
+  bos_token: "<bos>"
+  eos_token: "<eos>"
+  unk_token: "<unk>"
+  instruction_token: "<instruction>"
+  input_token: "<input>"
+  response_token: "<response>"
+  code_token: "<code>"
+  explanation_token: "<explanation>"

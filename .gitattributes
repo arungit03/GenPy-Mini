@@ -1,0 +1,20 @@
+# Normalize line endings to LF for text files, regardless of platform,
+# so Windows (local dev) and Linux (CI/Kaggle) see identical file contents.
+* text=auto eol=lf
+
+# Windows-native scripts keep CRLF.
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary formats: never diff, never normalize line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.pt binary
+*.pth binary
+*.ckpt binary
+*.safetensors binary
+*.bin binary
+*.parquet binary

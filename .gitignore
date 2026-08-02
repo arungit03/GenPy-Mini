@@ -1,0 +1,90 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Testing / coverage / type-checking ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS-generated files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Environment variables and secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# --- Kaggle credentials ---
+kaggle.json
+.kaggle/
+
+# --- Datasets (never commit raw or processed datasets) ---
+data/raw/**
+data/interim/**
+data/cleaned/**
+data/tokenized/**
+data/instructions/**
+data/evaluation/**
+data/reports/**
+!data/**/.gitkeep
+*.csv
+*.tsv
+*.parquet
+*.jsonl
+
+# --- Model checkpoints and weights ---
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+*.onnx
+*.h5
+checkpoints/
+*.gguf
+
+# --- Tokenizer artifacts ---
+*.model
+*.vocab
+tokenizer.json
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Jupyter notebook checkpoints ---
+.ipynb_checkpoints/
+
+# --- Build output ---
+*.egg
+*.whl
