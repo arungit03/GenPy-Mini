@@ -1,0 +1,23 @@
+run:
+  name: evaluate-placeholder
+  seed: 1337
+  phase: future
+model_config: configs/model/genpy_5m.yaml
+evaluation:
+  frozen_set_dir: data/evaluation
+  decoding:
+    temperature: 0.2
+    top_p: 0.95
+    max_new_tokens: 512
+  metrics:
+    - validation_loss
+    - syntax_validity_rate
+    - compilation_success_rate
+    - unit_test_pass_rate
+    - pass_at_1
+    - code_only_output_format_accuracy
+    - prompt_relevance
+    - duplicate_or_memorized_output_rate
+    - average_generation_time
+    - peak_inference_memory
+    - unsafe_code_generation_rate

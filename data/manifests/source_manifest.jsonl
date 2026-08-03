@@ -1,0 +1,2 @@
+{"source_id":"pallets_click_8_1_8","name":"Click 8.1.8 source repository","official_url":"https://github.com/pallets/click","revision":"934813e4d421071a1b3db3973c02fe2721359a6e","archive_sha256":"266110f5eb2ac4b460c833636e2859d95de080f84786844969c930981db04cd2","status":"approved_smoke"}
+{"source_id":"bigcode_the_stack_v2_1_0","name":"The Stack v2.1.0","official_url":"https://huggingface.co/datasets/bigcode/the-stack-v2","revision":"v2.1.0","status":"review_required"}

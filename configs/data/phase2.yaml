@@ -1,0 +1,86 @@
+pipeline_version: 0.2.0
+seed: 1337
+cpu_only: true
+sources_config: configs/data/sources.yaml
+licences_config: configs/data/licenses.yaml
+opt_out_config: configs/data/opt_out.yaml
+
+paths:
+  raw: data/raw
+  cleaned: data/cleaned
+  splits: data/splits
+  manifests: data/manifests
+  quarantine: data/quarantine
+  reports: data/reports
+  work: data/.work
+
+ingestion:
+  approved_statuses:
+    - approved
+    - approved_smoke
+  source_ids:
+    - pallets_click_8_1_8
+  resume: true
+  global_record_limit: 500
+  source_record_limit: 500
+  maximum_download_bytes: 26214400
+  minimum_free_disk_bytes: 104857600
+  workers: 1
+
+normalization:
+  minimum_bytes: 64
+  maximum_bytes: 1048576
+  final_newline: true
+
+path_filters:
+  excluded_parts:
+    - .git
+    - .venv
+    - venv
+    - __pycache__
+    - node_modules
+    - dist
+    - build
+    - site-packages
+    - vendor
+    - generated
+    - coverage
+  include_tests: true
+
+quality:
+  minimum_score: 0.45
+  maximum_line_length: 300
+  maximum_long_line_ratio: 0.10
+  maximum_repeated_line_ratio: 0.45
+  minimum_lexical_tokens: 8
+  generated_markers:
+    - generated file
+    - automatically generated
+    - do not edit
+
+deduplication:
+  exact: true
+  near: true
+  near_similarity_threshold: 0.85
+  shingle_size: 5
+  minhash_permutations: 64
+  lsh_bands: 16
+
+splits:
+  pretraining:
+    train: 0.98
+    validation: 0.01
+    test: 0.01
+  instruction:
+    train: 0.80
+    validation: 0.10
+    test: 0.10
+
+sharding:
+  format: jsonl.zst
+  maximum_uncompressed_bytes: 268435456
+  compression_level: 6
+
+reporting:
+  rough_subword_bytes_per_token: 3.5
+  corpus_version: genpy-phase2-smoke-v1

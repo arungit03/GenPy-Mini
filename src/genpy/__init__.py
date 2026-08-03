@@ -1,8 +1,6 @@
-"""GenPy-Mini: a Python-only decoder-only Transformer language model.
+"""GenPy package skeleton for Phase 1 planning and setup."""
 
-This package currently provides Phase 1 foundation code only: typed
-configuration loading and validation. No tokenizer, model, or training code
-exists yet.
-"""
+from __future__ import annotations
 
 __version__ = "0.1.0"
+PROJECT_NAME = "GenPy"

@@ -1,197 +1,193 @@
-"""Typed, immutable dataclasses for the Phase 2 dataset source registry.
-
-This module defines the data model only: field types and single-object
-("does this one record make sense on its own?") validation, raised via
-``__post_init__``. File-level concerns -- YAML parsing, unknown-field
-rejection, duplicate-ID detection, and registry-defaults fallback -- live in
-``src/genpy/data/source_registry.py``, which constructs these objects.
-
-The license-policy dataclass lives in ``licenses.py``, manifest dataclasses
-in ``manifests.py``, and the report dataclass in ``reporting.py`` -- each
-alongside the loader/writer code that owns it.
-"""
+"""Typed record schemas and stable identifiers for GenPy datasets."""
 
 from __future__ import annotations
 
-import dataclasses
-import re
-from datetime import date
-from typing import Final
+import ast
+import hashlib
+import json
+from dataclasses import asdict, dataclass, field
+from typing import Any, Literal
 
-from genpy.data.exceptions import SourceRegistryError
-
-SUPPORTED_SOURCE_TYPES: Final[tuple[str, ...]] = (
-    "local_directory",
-    "git_repository",
-    "http_archive",
-)
-
-_VALID_APPROVAL_STATUSES: Final[tuple[str, ...]] = (
-    "approved",
-    "review_required",
-    "rejected",
-)
-
-_SOURCE_ID_RE: Final[re.Pattern[str]] = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+SplitName = Literal["train", "validation", "test"]
+Role = Literal["system", "user", "assistant"]
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class SourceLicense:
-    """Human-reviewed licensing metadata for one registered source."""
-
-    declared_spdx: str
-    license_file: str | None
-    attribution_required: bool
-    redistribution_allowed: bool
-    commercial_use_allowed: bool
-    modifications_allowed: bool
-    notes: str = ""
-
-    def __post_init__(self) -> None:
-        if not self.declared_spdx.strip():
-            raise SourceRegistryError("license.declared_spdx must not be empty.")
-        if self.license_file is not None and not self.license_file.strip():
-            raise SourceRegistryError("license.license_file must not be blank when provided.")
+def content_sha256(text: str) -> str:
+    """Return the SHA-256 digest of normalized UTF-8 text."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class GovernanceReview:
-    """Human governance sign-off for one registered source."""
-
-    reviewed_by: str
-    reviewed_on: str
-    approval_status: str
-    approval_notes: str = ""
-
-    def __post_init__(self) -> None:
-        if not self.reviewed_by.strip():
-            raise SourceRegistryError("governance.reviewed_by must not be empty.")
-
-        try:
-            date.fromisoformat(self.reviewed_on)
-        except ValueError as exc:
-            raise SourceRegistryError(
-                f"governance.reviewed_on must be an ISO 8601 date (YYYY-MM-DD), "
-                f"got {self.reviewed_on!r}."
-            ) from exc
-
-        if self.approval_status not in _VALID_APPROVAL_STATUSES:
-            raise SourceRegistryError(
-                f"governance.approval_status must be one of {_VALID_APPROVAL_STATUSES}, "
-                f"got {self.approval_status!r}."
-            )
+def stable_record_id(source_id: str, identity: str, digest: str) -> str:
+    """Create a deterministic identifier without exposing record content."""
+    payload = f"{source_id}\0{identity}\0{digest}".encode()
+    return f"genpy-{hashlib.sha256(payload).hexdigest()[:24]}"
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class AcquisitionSettings:
-    """Per-source acquisition limits and options."""
+@dataclass(slots=True)
+class QualityInfo:
+    """Static validation and quality metadata for a pretraining record."""
 
-    expected_sha256: str | None
-    maximum_download_bytes: int
-    maximum_extracted_bytes: int
-    include_submodules: bool = False
-    shallow_clone: bool = True
+    ast_valid: bool
+    secret_scan_passed: bool
+    pii_scan_passed: bool
+    quality_score: float
 
-    def __post_init__(self) -> None:
-        if self.maximum_download_bytes <= 0:
-            raise SourceRegistryError(
-                f"acquisition.maximum_download_bytes must be positive, "
-                f"got {self.maximum_download_bytes}."
-            )
-        if self.maximum_extracted_bytes <= 0:
-            raise SourceRegistryError(
-                f"acquisition.maximum_extracted_bytes must be positive, "
-                f"got {self.maximum_extracted_bytes}."
-            )
-        if self.expected_sha256 is not None:
-            normalized = self.expected_sha256.strip().lower()
-            if len(normalized) != 64 or not re.fullmatch(r"[0-9a-f]{64}", normalized):
-                raise SourceRegistryError(
-                    "acquisition.expected_sha256 must be a 64-character lowercase hex string, "
-                    f"got {self.expected_sha256!r}."
-                )
+    def validate(self) -> None:
+        """Validate quality metadata bounds."""
+        if not 0.0 <= self.quality_score <= 1.0:
+            raise ValueError("quality_score must be between 0.0 and 1.0")
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class DatasetSource:
-    """One registered, reviewable dataset source."""
+@dataclass(slots=True)
+class PretrainingRecord:
+    """One provenance-bearing Python pretraining record."""
 
-    id: str
-    name: str
-    enabled: bool
-    source_type: str
-    location: str
-    description: str
+    record_id: str
+    text: str
+    language: str
+    source_id: str
+    source_url: str
+    repository: str | None
     revision: str
-    license: SourceLicense
-    governance: GovernanceReview
-    acquisition: AcquisitionSettings
-    tags: tuple[str, ...] = ()
-    homepage: str | None = None
-    source_repository: str | None = None
-    dataset_card: str | None = None
-    citation: str | None = None
-    contact: str | None = None
-    publication: str | None = None
-    known_restrictions: str | None = None
-    attribution_text: str | None = None
+    file_path: str
+    licence_spdx: str
+    content_sha256: str
+    generation_method: str
+    quality: QualityInfo
+    split_group: str
+    split: SplitName = "train"
 
-    def __post_init__(self) -> None:
-        if not _SOURCE_ID_RE.fullmatch(self.id):
-            raise SourceRegistryError(
-                f"Source id {self.id!r} must use only lowercase letters, digits, and hyphens, "
-                "and must not start or end with a hyphen."
-            )
-        if not self.name.strip():
-            raise SourceRegistryError(f"Source {self.id!r}: name must not be empty.")
-        if self.source_type not in SUPPORTED_SOURCE_TYPES:
-            raise SourceRegistryError(
-                f"Source {self.id!r}: source_type must be one of {SUPPORTED_SOURCE_TYPES}, "
-                f"got {self.source_type!r}."
-            )
-        if not self.location.strip():
-            raise SourceRegistryError(f"Source {self.id!r}: location must not be empty.")
-        if not self.revision.strip():
-            raise SourceRegistryError(f"Source {self.id!r}: revision must not be empty.")
+    def validate(self) -> None:
+        """Validate mandatory fields and content integrity."""
+        required = {
+            "record_id": self.record_id,
+            "text": self.text,
+            "language": self.language,
+            "source_id": self.source_id,
+            "source_url": self.source_url,
+            "revision": self.revision,
+            "file_path": self.file_path,
+            "licence_spdx": self.licence_spdx,
+            "generation_method": self.generation_method,
+            "split_group": self.split_group,
+        }
+        missing = [name for name, value in required.items() if not value]
+        if missing:
+            raise ValueError(f"missing mandatory pretraining fields: {', '.join(missing)}")
+        if self.language.lower() != "python":
+            raise ValueError("pretraining language must be python")
+        if self.content_sha256 != content_sha256(self.text):
+            raise ValueError("content_sha256 does not match text")
+        if self.split not in {"train", "validation", "test"}:
+            raise ValueError(f"unknown split: {self.split}")
+        self.quality.validate()
 
-        normalized_tags = tuple(tag.strip().lower() for tag in self.tags)
-        if any(not tag for tag in normalized_tags):
-            raise SourceRegistryError(f"Source {self.id!r}: tags must not be blank.")
-        if len(set(normalized_tags)) != len(normalized_tags):
-            raise SourceRegistryError(f"Source {self.id!r}: tags must be unique, got {self.tags!r}.")
-        if normalized_tags != self.tags:
-            object.__setattr__(self, "tags", normalized_tags)
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the record to JSON-serializable data."""
+        return asdict(self)
 
-
-@dataclasses.dataclass(frozen=True, slots=True)
-class RegistryDefaults:
-    """Registry-wide defaults applied when a source omits a setting."""
-
-    enabled: bool
-    timeout_seconds: int
-    retry_count: int
-    maximum_download_bytes: int
-    maximum_extracted_bytes: int
-    require_pinned_revision: bool
-    require_license_metadata: bool
-    require_checksum_for_http_archives: bool
+    @classmethod
+    def from_dict(cls, value: dict[str, Any]) -> PretrainingRecord:
+        """Construct and validate a record from decoded JSON."""
+        data = dict(value)
+        quality = data.get("quality")
+        if not isinstance(quality, dict):
+            raise ValueError("quality must be an object")
+        data["quality"] = QualityInfo(**quality)
+        record = cls(**data)
+        record.validate()
+        return record
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class DatasetSourceRegistry:
-    """The fully parsed contents of ``config/dataset_sources.yaml``."""
+@dataclass(slots=True)
+class Message:
+    """One instruction conversation message."""
 
-    schema_version: int
-    defaults: RegistryDefaults
-    sources: tuple[DatasetSource, ...] = ()
+    role: Role
+    content: str
 
-    def get(self, source_id: str) -> DatasetSource | None:
-        """Return the source with the given id, or ``None`` if not registered."""
-        for source in self.sources:
-            if source.id == source_id:
-                return source
-        return None
+    def validate(self) -> None:
+        """Reject unknown roles and empty messages."""
+        if self.role not in {"system", "user", "assistant"}:
+            raise ValueError(f"unknown message role: {self.role}")
+        if not self.content.strip():
+            raise ValueError("message content must not be empty")
 
-    def ids(self) -> tuple[str, ...]:
-        """Return every registered source id, in registry order."""
-        return tuple(source.id for source in self.sources)
+
+@dataclass(slots=True)
+class InstructionRecord:
+    """One V1 natural-language-to-Python instruction record."""
+
+    record_id: str
+    messages: list[Message]
+    category: str
+    difficulty: str
+    tests: list[dict[str, Any]] = field(default_factory=list)
+    source_id: str = ""
+    licence_spdx: str = ""
+    content_sha256: str = ""
+    generation_method: str = "human"
+    problem_family: str = ""
+    split: SplitName = "train"
+
+    def validate(self) -> None:
+        """Validate the V1 instruction shape and assistant Python syntax."""
+        required = {
+            "record_id": self.record_id,
+            "category": self.category,
+            "difficulty": self.difficulty,
+            "source_id": self.source_id,
+            "licence_spdx": self.licence_spdx,
+            "generation_method": self.generation_method,
+            "problem_family": self.problem_family,
+        }
+        missing = [name for name, value in required.items() if not value]
+        if missing:
+            raise ValueError(f"missing mandatory instruction fields: {', '.join(missing)}")
+        for message in self.messages:
+            message.validate()
+        assistants = [message for message in self.messages if message.role == "assistant"]
+        if len(assistants) != 1:
+            raise ValueError("V1 instruction records require exactly one assistant answer")
+        if not any(message.role == "user" for message in self.messages):
+            raise ValueError("instruction record requires a user message")
+        try:
+            ast.parse(assistants[0].content, feature_version=(3, 11))
+        except SyntaxError as error:
+            raise ValueError("assistant answer is not valid Python 3.11 syntax") from error
+        canonical = _canonical_messages(self.messages)
+        if self.content_sha256 != content_sha256(canonical):
+            raise ValueError("content_sha256 does not match canonical messages")
+        if self.split not in {"train", "validation", "test"}:
+            raise ValueError(f"unknown split: {self.split}")
+        json.dumps(self.tests, ensure_ascii=False)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the record to JSON-serializable data."""
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, value: dict[str, Any]) -> InstructionRecord:
+        """Construct and validate a record from decoded JSON."""
+        data = dict(value)
+        raw_messages = data.get("messages")
+        if not isinstance(raw_messages, list):
+            raise ValueError("messages must be a list")
+        data["messages"] = [Message(**message) for message in raw_messages]
+        record = cls(**data)
+        record.validate()
+        return record
+
+
+def _canonical_messages(messages: list[Message]) -> str:
+    return json.dumps(
+        [asdict(message) for message in messages],
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+
+
+def instruction_content_digest(messages: list[Message]) -> str:
+    """Hash instruction messages using the schema's canonical representation."""
+    return content_sha256(_canonical_messages(messages))

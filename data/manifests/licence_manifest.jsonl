@@ -1,0 +1,2 @@
+{"source_id":"pallets_click_8_1_8","licence_spdx":"BSD-3-Clause","evidence_url":"https://github.com/pallets/click/blob/8.1.8/LICENSE.txt","decision":"allowed_for_smoke"}
+{"source_id":"bigcode_the_stack_v2_1_0","licence_spdx":"other","evidence_url":"https://huggingface.co/datasets/bigcode/the-stack-v2","decision":"review_required_per_record"}

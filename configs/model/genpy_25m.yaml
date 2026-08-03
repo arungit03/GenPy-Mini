@@ -1,0 +1,43 @@
+model:
+  name: GenPy-25M
+  purpose: dataset_and_scaling_validation
+  architecture: decoder_only_transformer
+  vocab_size: 16384
+  context_length: 1024
+  num_layers: 8
+  hidden_size: 384
+  num_attention_heads: 6
+  head_dimension: 64
+  intermediate_size: 1024
+  activation: swiglu
+  normalization: rmsnorm
+  positional_encoding: rope
+  attention: causal_self_attention
+  tie_word_embeddings: true
+  attention_dropout: 0.0
+  residual_dropout: 0.1
+  initialization: random
+  parameter_count_note: approximate target only; verify programmatically later
+tokenizer:
+  type: byte_level_bpe
+  vocab_size: 16384
+  trained: false
+  special_tokens:
+    pad: "<|pad|>"
+    bos: "<|bos|>"
+    eos: "<|eos|>"
+    user: "<|user|>"
+    assistant: "<|assistant|>"
+    code: "<|code|>"
+    end: "<|end|>"
+  special_token_ids:
+    pad: 0
+    bos: 1
+    eos: 2
+    user: 3
+    assistant: 4
+    code: 5
+    end: 6
+training:
+  seed: 1337
+  phase: placeholder

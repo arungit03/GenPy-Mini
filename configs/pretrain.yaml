@@ -1,0 +1,14 @@
+run:
+  name: pretrain-placeholder
+  seed: 1337
+  phase: future
+model_config: configs/model/genpy_5m.yaml
+data:
+  tokenized_dir: data/tokenized
+  evaluation_dir: data/evaluation
+training:
+  platform: kaggle_gpu
+  batch_size: null
+  learning_rate: null
+  max_steps: null
+  notes: placeholder only; no training is performed in Phase 1

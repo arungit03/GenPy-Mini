@@ -1,0 +1,54 @@
+schema_version: 1
+sources:
+  - id: pallets_click_8_1_8
+    name: Click 8.1.8 source repository
+    official_url: https://github.com/pallets/click
+    dataset_card_url: null
+    version: 934813e4d421071a1b3db3973c02fe2721359a6e
+    release_tag: 8.1.8
+    access_method: github_archive
+    archive_url: https://codeload.github.com/pallets/click/zip/934813e4d421071a1b3db3973c02fe2721359a6e
+    checksum_sha256: 266110f5eb2ac4b460c833636e2859d95de080f84786844969c930981db04cd2
+    expected_download_size: approximately 1-3 MB
+    expected_extracted_size: approximately 5-10 MB
+    expected_usable_records: approximately 100-500 Python files before filtering
+    estimated_disk_requirement: less than 50 MB for the bounded smoke run
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: BSD-3-Clause
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved_smoke
+    repository: pallets/click
+    include_globs:
+      - "*.py"
+    review_notes: Official repository release pinned to an immutable commit; retain repository and file provenance.
+
+  - id: bigcode_the_stack_v2_1_0
+    name: The Stack v2.1.0
+    official_url: https://huggingface.co/datasets/bigcode/the-stack-v2
+    dataset_card_url: https://huggingface.co/datasets/bigcode/the-stack-v2
+    version: v2.1.0
+    access_method: gated_huggingface_and_software_heritage
+    archive_url: null
+    checksum_sha256: unknown
+    expected_download_size: 32.1 TB near-deduplicated multilingual corpus; Python subset unknown
+    expected_extracted_size: 67.5 TB full multilingual corpus; Python subset unknown
+    expected_usable_records: unknown until Python and licence filters are audited
+    estimated_disk_requirement: unknown for approved Python-only subset; multi-terabyte upstream
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: other
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: true
+    attribution_required: true
+    status: review_required
+    repository: null
+    include_globs:
+      - "*.py"
+    review_notes: Gated access and mixed or missing upstream licences require explicit approval and strict per-record filtering; do not download automatically.
