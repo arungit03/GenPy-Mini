@@ -11,6 +11,10 @@ and its consequences, so future contributors understand *why*, not just
   is Python-only, ~33–35M parameters, decoder-only, trained from scratch,
   developed locally but trained on Kaggle, and scoped as an educational /
   portfolio project.
+- [ADR-002: Dataset acquisition and licensing](ADR-002-dataset-acquisition-and-licensing.md) —
+  why acquisition is separate from cleaning, why unknown licenses are
+  blocked or require review, why sources require immutable revisions, and
+  why acquisition is resource-bounded and dependency-light.
 
 ## Adding a new ADR
 

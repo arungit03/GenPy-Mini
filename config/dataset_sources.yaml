@@ -1,0 +1,63 @@
+# GenPy-Mini dataset source registry (Phase 2).
+#
+# Loaded and validated by src/genpy/data/source_registry.py::load_source_registry().
+#
+# This registry starts EMPTY on purpose: no external dataset is registered
+# automatically. Adding a source here does not acquire it and does not mean
+# it is legally approved -- it only registers it for review. Acquisition is
+# a separate, explicit step (scripts/acquire_sources.py) that additionally
+# requires:
+#   - governance.approval_status: approved
+#   - a license that the active config/license_policy.yaml evaluates as
+#     "allowed"
+#   - enabled: true
+#
+# See docs/dataset-source-template.md for complete, copy-pasteable examples
+# for each supported source_type (local_directory, git_repository,
+# http_archive), and docs/dataset-acquisition.md for the full workflow.
+#
+# Minimal shape of one entry (all fields required unless noted "optional"):
+#
+# sources:
+#   - id: example-source                 # lowercase letters, digits, hyphens; unique
+#     name: Example Source
+#     enabled: false                     # must be explicitly flipped to true to be eligible
+#     source_type: local_directory       # local_directory | git_repository | http_archive
+#     location: C:/path/to/source        # local path, git URL, or https:// archive URL
+#     description: Purpose and scope of this source.
+#     revision: v1.0.0                   # immutable commit hash, release tag, or version label
+#     license:
+#       declared_spdx: MIT
+#       license_file: LICENSE            # required while defaults.require_license_metadata is true
+#       attribution_required: true
+#       redistribution_allowed: true
+#       commercial_use_allowed: true
+#       modifications_allowed: true
+#       notes: Human-reviewed notes about this license determination.
+#     governance:
+#       reviewed_by: Reviewer Name
+#       reviewed_on: 2026-08-03
+#       approval_status: review_required # approved | review_required | rejected
+#       approval_notes: Explanation of the review decision.
+#     acquisition:                       # optional block; unset fields fall back to `defaults` below
+#       expected_sha256: null            # required for http_archive when require_checksum_for_http_archives is true
+#       maximum_download_bytes: 5368709120
+#       maximum_extracted_bytes: 10737418240
+#       include_submodules: false
+#       shallow_clone: true
+#     tags:                              # optional, must be unique after normalisation
+#       - python
+
+schema_version: 1
+
+defaults:
+  enabled: false
+  timeout_seconds: 60
+  retry_count: 3
+  maximum_download_bytes: 5368709120
+  maximum_extracted_bytes: 10737418240
+  require_pinned_revision: true
+  require_license_metadata: true
+  require_checksum_for_http_archives: true
+
+sources: []

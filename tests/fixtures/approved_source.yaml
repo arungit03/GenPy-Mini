@@ -1,0 +1,39 @@
+# A single DatasetSource entry (not a full registry) representing a source
+# that should evaluate as "approved": governance approval_status is
+# "approved" and the declared SPDX license ("MIT") is on the default
+# "allowed" list in config/license_policy.yaml.
+#
+# Tests parse this as one source mapping. The `location` is relative to the
+# repository root by convention; acquisition-focused tests construct their
+# own DatasetSource pointing at an absolute tmp_path instead of relying on
+# this literal string.
+
+id: approved-sample
+name: Approved Sample Source
+enabled: true
+source_type: local_directory
+location: tests/fixtures/sample_source
+description: A tiny local fixture directory used to test a successful, approved acquisition.
+revision: fixture-v1
+license:
+  declared_spdx: MIT
+  license_file: LICENSE
+  attribution_required: true
+  redistribution_allowed: true
+  commercial_use_allowed: true
+  modifications_allowed: true
+  notes: Fixture license determination for automated tests only.
+governance:
+  reviewed_by: Test Suite
+  reviewed_on: 2026-08-01
+  approval_status: approved
+  approval_notes: Approved for automated testing only; not a real review.
+acquisition:
+  expected_sha256: null
+  maximum_download_bytes: 1048576
+  maximum_extracted_bytes: 1048576
+  include_submodules: false
+  shallow_clone: true
+tags:
+  - python
+  - fixture

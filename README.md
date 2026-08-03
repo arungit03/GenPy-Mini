@@ -2,15 +2,79 @@
 
 A Python-only, decoder-only Transformer language model, trained from scratch.
 
-## Current status: Phase 1 — Foundation
+## Current status: Phase 2 — Dataset Acquisition and Governance
 
-This repository currently contains **only** the Phase 1 foundation: project
-structure, documented target architecture, a validated configuration
-system, development standards, and quality/validation infrastructure.
+Phase 1 (project structure, configuration system, quality infrastructure)
+is complete. Phase 2 adds a governed, reproducible system for
+**registering, reviewing, and acquiring raw Python source material** —
+see [docs/dataset-acquisition.md](docs/dataset-acquisition.md).
 
-**No dataset has been collected, no tokenizer exists, no model has been
-implemented, and no training has occurred. There is no trained or usable
-model in this repository.**
+**The dataset source registry (`config/dataset_sources.yaml`) ships empty.
+No external dataset is acquired, enabled, or committed as part of this
+repository. No tokenizer exists, no model has been implemented, and no
+training has occurred. There is no trained or usable model in this
+repository.**
+
+### Dataset acquisition overview
+
+`src/genpy/data/` implements three source types —
+`local_directory`, `git_repository`, `http_archive` — each acquired
+reproducibly (streamed, byte-limited, checksum-verified where applicable)
+into `data/raw/sources/<id>/<revision>/`, with a full JSON provenance
+manifest written to `data/manifests/`. This produces **raw, traceable
+source material only**:
+
+> Acquired data remains raw and has not yet passed cleaning, secret
+> scanning, deduplication, quality filtering or train/test leakage
+> controls.
+
+### Governance-first approach
+
+A source can only be acquired when **all** of the following are true:
+
+1. It is registered in `config/dataset_sources.yaml` with `enabled: true`.
+2. A human governance review recorded `approval_status: approved`.
+3. Its declared SPDX license evaluates to `allowed` under
+   `config/license_policy.yaml`.
+
+**Registering a source does not mean it is legally approved.** A source
+absent from the registry — or present but not approved — is refused by
+default. `review_required` sources can only be acquired with an explicit,
+recorded `--allow-review-required` + `--override-reason` override;
+`rejected` sources can never be acquired. See
+[docs/data-governance.md](docs/data-governance.md) and
+[ADR-002](docs/decisions/ADR-002-dataset-acquisition-and-licensing.md).
+
+### Dataset commands
+
+```powershell
+# Validate the registry + license policy without acquiring anything
+python scripts/validate_sources.py --all
+
+# See what would be acquired, without writing any files
+python scripts/acquire_sources.py --all-approved --dry-run
+
+# Acquire everything currently approved
+python scripts/acquire_sources.py --all-approved
+
+# Acquire one specific source
+python scripts/acquire_sources.py --source <source-id>
+
+# Regenerate the audit report from whatever has been acquired
+python scripts/generate_acquisition_report.py `
+  --manifest-dir data/manifests `
+  --output-json data/reports/acquisition-report.json `
+  --output-markdown data/reports/acquisition-report.md
+```
+
+### Storage considerations (300 GB free disk)
+
+Every source has configurable `maximum_download_bytes` and
+`maximum_extracted_bytes` limits, enforced while streaming — not after the
+fact. On a machine with ~300 GB free, keep per-source limits modest (low
+hundreds of MB) unless you've confirmed there's room for something larger;
+`scripts/acquire_sources.py` prints the limits that will apply before
+acquiring each source.
 
 ## Objective
 
@@ -71,13 +135,17 @@ notebooks in a later phase.
 ```text
 GenPy-Mini/
 ├── .github/workflows/quality.yml   # CI: ruff, mypy, pytest
-├── config/                         # model_config.yaml + settings.py + loader
-├── data/                           # empty, gitignored dataset directories
+├── config/                         # model_config.yaml, dataset_sources.yaml,
+│                                    # license_policy.yaml, settings.py + loaders
+├── data/                           # empty, gitignored dataset/manifest/report directories
 ├── docs/                           # architecture, roadmap, governance, ADRs
 ├── notebooks/                      # reserved for future Kaggle/local notebooks
-├── scripts/validate_environment.py # local environment/repo health check
-├── src/genpy/                      # installable package (config loader, constants)
-├── tests/                          # config + repo-structure tests
+├── scripts/                        # validate_environment, validate_sources,
+│                                    # acquire_sources, generate_acquisition_report
+├── src/genpy/                      # installable package
+│   ├── config.py, constants.py     # model configuration (Phase 1)
+│   └── data/                       # dataset acquisition + governance (Phase 2)
+├── tests/                          # config, repo-structure, and data/ tests
 ├── pyproject.toml
 └── requirements-dev.txt
 ```
@@ -117,18 +185,22 @@ python scripts/validate_environment.py   # or: make validate
 
 ## Development roadmap
 
-Phase 1 (this repository, today) through Phase 17 (deployment and model
-card) are defined in [docs/roadmap.md](docs/roadmap.md), each with its own
-deliverable and acceptance gate. Phase 1 covers structure and configuration
-only — dataset, tokenizer, model, training, inference, API, frontend, and
-deployment are all future phases.
+Phase 1 through Phase 17 (deployment and model card) are defined in
+[docs/roadmap.md](docs/roadmap.md), each with its own deliverable and
+acceptance gate. Phases 1 and 2 (foundation; dataset acquisition and
+governance) are complete — tokenizer, model, training, inference, API,
+frontend, and deployment are all future phases.
 
 ## Dataset licensing warning
 
-No dataset has been collected yet. When one is, every source's license will
-be checked and recorded before inclusion — public visibility of code is
+**Registering a source in `config/dataset_sources.yaml` does not make it
+legally approved.** Every source requires an explicit human governance
+review *and* a license that evaluates to `allowed` under
+`config/license_policy.yaml` before it can be acquired — enforced by
+`src/genpy/data/`, not just documented. Public visibility of code is
 **not** the same as a license to train on it. See
-[docs/data-governance.md](docs/data-governance.md).
+[docs/data-governance.md](docs/data-governance.md) and
+[docs/dataset-acquisition.md](docs/dataset-acquisition.md).
 
 ## Security warning: generated code execution
 
@@ -141,8 +213,16 @@ by any tooling that consumes it. See Phase 15 of
 
 ## Known current limitations
 
-- No dataset, tokenizer, model, training, inference, API, or frontend code
-  exists.
+- The dataset source registry ships empty; no external dataset is
+  acquired, enabled, or committed. No tokenizer, model, training,
+  inference, API, or frontend code exists.
+- Phase 2 acquires raw source material only — no secret/PII scanning,
+  deduplication, quality filtering, or train/test-safe splitting exists
+  yet (Phase 3).
+- `git_repository` acquisition does not enforce `maximum_download_bytes`
+  during the clone/fetch itself (only the resulting working-tree size via
+  `maximum_extracted_bytes`); see
+  [docs/dataset-acquisition.md](docs/dataset-acquisition.md).
 - The architecture in `config/model_config.yaml` is a target specification
   only; nothing has verified the actual parameter count of a real model
   built from it, because no model exists yet.

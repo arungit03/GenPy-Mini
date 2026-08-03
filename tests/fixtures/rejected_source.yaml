@@ -1,0 +1,36 @@
+# A single DatasetSource entry (not a full registry) representing a source
+# that should evaluate as "rejected": governance approval_status is
+# "rejected" AND the declared SPDX license ("GPL-3.0-only") is on the
+# default "blocked" list in config/license_policy.yaml. Either condition
+# alone is enough to reject a source; this fixture deliberately sets both
+# so tests can assert on either reason independently.
+
+id: rejected-sample
+name: Rejected Sample Source
+enabled: false
+source_type: git_repository
+location: https://example.invalid/rejected/sample-repo.git
+description: A fixture source whose license and governance review both reject it.
+revision: 0000000000000000000000000000000000000000
+license:
+  declared_spdx: GPL-3.0-only
+  license_file: LICENSE
+  attribution_required: true
+  redistribution_allowed: false
+  commercial_use_allowed: false
+  modifications_allowed: true
+  notes: Copyleft license blocked by policy; fixture only.
+governance:
+  reviewed_by: Test Suite
+  reviewed_on: 2026-08-01
+  approval_status: rejected
+  approval_notes: Rejected for automated testing only; not a real review.
+acquisition:
+  expected_sha256: null
+  maximum_download_bytes: 1048576
+  maximum_extracted_bytes: 1048576
+  include_submodules: false
+  shallow_clone: true
+tags:
+  - python
+  - fixture

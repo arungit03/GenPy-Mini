@@ -48,7 +48,19 @@ credentials.json
 kaggle.json
 .kaggle/
 
-# --- Datasets (never commit raw or processed datasets) ---
+# --- Datasets, manifests, and reports ---
+# Never commit raw/processed datasets, provenance manifests, or generated
+# audit reports -- only the directory structure (.gitkeep) is tracked.
+#
+# NOTE: "!data/**/*/" must come before "!data/**/.gitkeep" and after the
+# ignore rules below. Without it, a nested .gitkeep (e.g.
+# data/raw/sources/.gitkeep) would stay ignored: once a parent directory
+# entry like data/raw/sources/ is excluded by "data/raw/**", git will not
+# descend into it to apply a later negation, no matter how that negation
+# is written. Un-ignoring every directory entry first keeps traversal
+# open, so the .gitkeep negation below can actually take effect at any
+# depth. See: https://git-scm.com/docs/gitignore ("It is not possible to
+# re-include a file if a parent directory of that file is excluded").
 data/raw/**
 data/interim/**
 data/cleaned/**
@@ -56,11 +68,18 @@ data/tokenized/**
 data/instructions/**
 data/evaluation/**
 data/reports/**
+data/manifests/**
+!data/**/*/
 !data/**/.gitkeep
 *.csv
 *.tsv
 *.parquet
 *.jsonl
+*.partial
+*.download
+# Acquisition working directories (see src/genpy/data/acquisition.py):
+# data/raw/sources/<id>/.<id>.tmp-<uuid>/
+.*.tmp-*/
 
 # --- Model checkpoints and weights ---
 *.pt

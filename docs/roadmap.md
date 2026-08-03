@@ -4,7 +4,7 @@ Each phase lists its deliverable and the gate that must pass before the next
 phase begins. Phases are sequential; later phases may reveal that an earlier
 gate needs revisiting, which is expected.
 
-## Phase 1 — Foundation (this phase)
+## Phase 1 — Foundation (complete)
 
 - **Deliverable**: repository structure, documented target architecture,
   validated configuration system, development standards, CI quality
@@ -12,17 +12,27 @@ gate needs revisiting, which is expected.
 - **Acceptance gate**: `pytest`, `ruff`, and `mypy` pass; the model
   configuration loads and validates; no dataset, tokenizer, model, or
   training code exists; no heavy ML dependency is present.
+- **Status**: complete.
 
-## Phase 2 — Dataset acquisition and governance
+## Phase 2 — Dataset acquisition and governance (complete)
 
-- **Deliverable**: a documented process for sourcing licensed Python code
-  and instruction data, with license/attribution metadata captured per
-  source.
-- **Acceptance gate**: every collected source has recorded license terms;
-  data-governance rules in [docs/data-governance.md](data-governance.md) are
-  enforced by tooling, not just documentation.
+- **Deliverable**: a documented, tooling-enforced process for registering,
+  reviewing, and reproducibly acquiring licensed Python source material
+  (`local_directory`, `git_repository`, `http_archive`), with full
+  provenance manifests and audit reports. See
+  [dataset-acquisition.md](dataset-acquisition.md).
+- **Acceptance gate**: every acquired source has a recorded license and
+  governance decision; unknown or unapproved sources are refused by
+  default; data-governance rules in
+  [docs/data-governance.md](data-governance.md) are enforced by tooling
+  (`src/genpy/data/`), not just documentation; all Phase 2 tests, Ruff,
+  and mypy pass; acquired data is explicitly labeled raw and
+  not-yet-training-ready.
+- **Status**: complete. Cleaning, secret/PII scanning, deduplication,
+  quality filtering, and repository-level splitting are explicitly **not**
+  implemented here — see Phase 3.
 
-## Phase 3 — Dataset cleaning and deduplication
+## Phase 3 — Dataset cleaning and deduplication (next)
 
 - **Deliverable**: cleaning pipeline that strips secrets, personal data,
   generated/vendored code, and duplicate content; splits data by repository.
