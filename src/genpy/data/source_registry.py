@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+_COMMIT_SHA = re.compile(r"[0-9a-f]{40}")
+_SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,6 +71,18 @@ class SourceEntry:
             raise ValueError(f"source {self.id} is not declared as Python")
         if self.access_method == "github_archive" and not self.archive_url:
             raise ValueError(f"source {self.id} requires archive_url")
+        if self.access_method == "github_archive" and self.status in {
+            "approved",
+            "approved_smoke",
+        }:
+            if self.archive_url is None:
+                raise ValueError(f"approved source {self.id} requires archive_url")
+            if _COMMIT_SHA.fullmatch(self.version) is None:
+                raise ValueError(f"approved source {self.id} requires an immutable commit")
+            if not self.checksum_sha256 or _SHA256.fullmatch(self.checksum_sha256) is None:
+                raise ValueError(f"approved source {self.id} requires an archive SHA-256")
+            if self.version not in self.archive_url:
+                raise ValueError(f"approved source {self.id} archive URL must contain its commit")
         if self.access_method == "local_directory" and not self.local_path:
             raise ValueError(f"source {self.id} requires local_path")
 
@@ -116,6 +132,13 @@ class SourceRegistry:
                 reasons.append("missing_per_record_licence")
             if not source.provenance_available:
                 reasons.append("missing_provenance")
+            if source.access_method == "github_archive":
+                if _COMMIT_SHA.fullmatch(source.version) is None:
+                    reasons.append("revision_not_immutable_commit")
+                if not source.checksum_sha256 or _SHA256.fullmatch(source.checksum_sha256) is None:
+                    reasons.append("missing_or_invalid_archive_checksum")
+                if source.archive_url and source.version not in source.archive_url:
+                    reasons.append("archive_url_revision_mismatch")
             if source.status not in {"approved", "approved_smoke"}:
                 reasons.append(f"status_{source.status}")
             decisions.append(

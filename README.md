@@ -14,13 +14,21 @@ explanation.
 
 ## Project Status
 
-Current phase: **Phase 2 - Dataset preparation**.
+Current phase: **Phase 4 - Model and packing infrastructure complete; production data blocked**.
 
-Phase 1 is complete. The Phase 2 pipeline now provides source and licence auditing,
+Phase 1 is complete. The Phase 2 pipeline provides source and licence auditing,
 bounded resumable ingestion, deterministic cleaning, static secret/PII/safety filtering,
 Python validation, disk-backed deduplication, group-aware splits, Zstandard JSONL shards,
-and provenance/statistics reports. A bounded real-source smoke run is verified; the
-50-100M-token GenPy-5M corpus has not been approved or built.
+and provenance/statistics reports. Phase 3 now provides deterministic tokenizer-corpus
+selection, custom byte-level BPE training from an empty state, strict serialization, artifact
+validation, evaluation, vocabulary auditing, fingerprinting, and exact token counting. A
+1,024-entry smoke tokenizer passes end to end; the 16,384-entry production tokenizer remains
+blocked because the current 493,175-byte corpus is smoke-only.
+
+Phase 4 now provides the configuration-driven decoder-only Transformer, exact parameter audits,
+causal attention tests, compatibility-checked model state, deterministic token packing,
+checksummed binary shards, memory-mapped loading, deterministic sampling, and bounded CPU smoke
+verification. Only original safe fixtures were packed; full pretraining has not started.
 
 ## Important Constraints
 
@@ -137,6 +145,17 @@ Run lint:
 ruff check .
 ```
 
+Run the Phase 3 smoke tokenizer pipeline:
+
+```powershell
+python scripts/tokenizer/check_readiness.py --config configs/tokenizer/genpy_bpe_16k.yaml
+python scripts/tokenizer/prepare_corpus.py --config configs/tokenizer/smoke_tokenizer.yaml --mode smoke
+python scripts/tokenizer/train_tokenizer.py --config configs/tokenizer/smoke_tokenizer.yaml --mode smoke
+python scripts/tokenizer/validate_tokenizer.py --artifact artifacts/tokenizer/smoke
+python scripts/tokenizer/evaluate_tokenizer.py --config configs/tokenizer/evaluation.yaml
+python scripts/tokenizer/count_corpus_tokens.py --config configs/tokenizer/smoke_tokenizer.yaml --artifact artifacts/tokenizer/smoke --resume
+```
+
 ## Dataset Policy
 
 Only records with adequate provenance and a licence on the provisional allowlist may
@@ -158,8 +177,20 @@ python scripts/data/create_splits.py --config configs/data/phase2.yaml
 python scripts/data/generate_dataset_report.py --config configs/data/phase2.yaml
 ```
 
-The exact next phase is Phase 3: train and validate the custom 16,384-token byte-level BPE
-tokenizer only after a corpus is approved and frozen. No pretrained tokenizer may be used.
+The exact next engineering phase is Phase 5: implement the resource-budgeted training engine and
+pretrain GenPy-5M on approved production packs before any 25M or 100M scaling. Phase 5 remains
+blocked until a representative corpus is approved and the 16,384-token tokenizer is frozen.
+
+Phase 4 smoke validation:
+
+```powershell
+python scripts/model/check_readiness.py --config configs/model/genpy_5m.yaml
+python scripts/model/count_parameters.py --config configs/model/genpy_5m.yaml
+python scripts/data/prepare_packed_data.py --config configs/data/smoke_packing.yaml --mode smoke
+python scripts/data/validate_packed_data.py --config configs/data/smoke_packing.yaml
+python scripts/model/smoke_forward.py --config configs/model/smoke_model.yaml
+python scripts/model/micro_overfit.py --model-config configs/model/smoke_model.yaml --data-config configs/data/smoke_packing.yaml --max-steps 20
+```
 
 ## Roadmap
 

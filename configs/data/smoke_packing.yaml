@@ -1,0 +1,33 @@
+schema_version: 1
+packing:
+  mode: smoke
+  source_mode: safe_fixture
+  context_length: 64
+  stored_token_width: 65
+  token_dtype: uint16_le
+  loss_mask_dtype: uint8
+  seed: 42
+  retain_final_partial: true
+  mask_cross_record_transitions: true
+  maximum_shard_bytes: 1048576
+  maximum_output_bytes: 16777216
+  temporary_space_multiplier: 2.0
+  output_root: data/packed/smoke
+  report_json: data/packed/smoke/reports/packing.json
+  report_markdown: data/packed/smoke/reports/packing.md
+tokenizer:
+  name: genpy-byte-bpe-smoke-1k
+  version: 1
+  vocab_size: 1024
+  artifact_path: artifacts/tokenizer/smoke
+  fingerprint: 29a6b2770f043dc2ef0732a81c0b524b6e3ee678c54d0d10b95cbf294678b31f
+source:
+  dataset_version: genpy-phase4-safe-fixture-v1
+  phase2_root: data/splits
+  fixture_path: tests/fixtures/packed_data/smoke_records.json
+loss_policies:
+  pretraining: full_lm
+  instruction: assistant_only
+runtime:
+  workers: 1
+  cpu_only: true

@@ -20,16 +20,27 @@ selection and download require explicit approval.
 
 ## Phase 3 - Custom Tokenizer
 
-Next phase after corpus approval. Freeze a versioned corpus, then train a byte-level BPE
-tokenizer only on GenPy data with a 16,384-token vocabulary and recalculate exact token counts.
+Status: infrastructure complete; smoke tokenizer complete; production tokenizer blocked.
+
+The CPU pipeline now prepares a deterministic train-only corpus, trains GenPy's byte-level BPE
+from an empty state, validates and fingerprints artifacts, audits vocabulary, evaluates fixed
+and split populations, and streams exact token counts. The 1,024-entry smoke artifact passes.
+The current 493,175-byte one-source corpus is below candidate and production thresholds and has
+no instruction or held-out records, so the 16,384-token tokenizer was not trained or frozen.
 
 ## Phase 4 - Model Implementation
 
-Implement the decoder-only Transformer architecture and focused tests.
+Status: infrastructure and smoke integration complete; production packing blocked.
+
+The configuration-driven Transformer, exact parameter audit, compatibility contract,
+deterministic packer, checksummed binary format, memory-mapped loader, sampler, CPU
+forward/backward, and bounded safe-fixture overfit are verified. Production data was not packed
+because the production tokenizer is not frozen.
 
 ## Phase 5 - Training from Random Weights
 
-Train GenPy-5M, GenPy-25M, and GenPy-100M from random initialization on Kaggle GPU.
+Status: next but not ready. Implement a resource-budgeted training engine, then pretrain GenPy-5M
+on approved packed data before considering GenPy-25M or GenPy-100M.
 
 ## Phase 6 - Evaluation and Improvement
 

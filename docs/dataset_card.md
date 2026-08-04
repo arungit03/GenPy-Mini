@@ -34,6 +34,26 @@ The eventual corpus is for GenPy tokenizer training, pretraining, and instructio
 It is not intended for identity inference, personal-data processing, malware development,
 legal compliance claims, or direct execution of untrusted code.
 
+## Smoke Tokenizer Counts
+
+The Phase 3 smoke tokenizer fingerprint is
+`29a6b2770f043dc2ef0732a81c0b524b6e3ee678c54d0d10b95cbf294678b31f`.
+It is a 1,024-entry infrastructure artifact, not the production GenPy tokenizer. Under this
+artifact, pretraining train has 63 records, 491,222 UTF-8 source bytes, 167,002 content tokens,
+252 structural tokens, and 167,254 total serialized tokens. Median serialized length is 654,
+p90 is 6,537, p95 is 9,884, and p99 is 34,530. Twenty-six records exceed 1,024 tokens and
+58.73% fit. Pretraining validation/test and all instruction splits contain zero records.
+
+These exact smoke-tokenizer counts supplement rather than replace Phase 2's historical rough
+estimates. Final GenPy token counts require the frozen 16,384-entry production tokenizer.
+
+## Phase 4 Packed-Data Status
+
+No Phase 2 corpus data has been packed. Phase 4 packed only seven original safe test-fixture
+records into seven 64-input-token smoke samples across six isolated family/split shards. The
+1,358-byte binary payload and its checksums validate format and loader correctness, not corpus
+readiness. Production packing remains blocked by the missing frozen tokenizer.
+
 ## Biases, Risks, And Limitations
 
 Repository code overrepresents public open-source conventions and English documentation.

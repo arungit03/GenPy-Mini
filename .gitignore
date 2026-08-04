@@ -35,6 +35,8 @@ data/cache/**
 data/.work/**
 data/manifests/*
 data/tokenized/**
+data/tokenizer/**
+data/packed/**
 data/instruction/**
 data/evaluation/**
 !data/raw/.gitkeep
@@ -49,6 +51,10 @@ data/evaluation/**
 !data/manifests/source_manifest.jsonl
 !data/manifests/licence_manifest.jsonl
 !data/tokenized/.gitkeep
+!data/tokenizer/**/
+!data/tokenizer/**/.gitkeep
+!data/packed/**/
+!data/packed/**/.gitkeep
 !data/instruction/.gitkeep
 !data/evaluation/.gitkeep
 
@@ -72,6 +78,9 @@ mlruns/
 *.sqlite3-shm
 *.sqlite3-wal
 !artifacts/.gitkeep
+!artifacts/tokenizer/
+!artifacts/tokenizer/**/
+!artifacts/tokenizer/**/.gitkeep
 !checkpoints/.gitkeep
 !logs/.gitkeep
 

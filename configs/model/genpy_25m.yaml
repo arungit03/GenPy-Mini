@@ -7,21 +7,32 @@ model:
   num_layers: 8
   hidden_size: 384
   num_attention_heads: 6
+  num_key_value_heads: 6
   head_dimension: 64
   intermediate_size: 1024
   activation: swiglu
   normalization: rmsnorm
+  norm_epsilon: 1.0e-5
   positional_encoding: rope
+  rope_base: 10000.0
   attention: causal_self_attention
   tie_word_embeddings: true
   attention_dropout: 0.0
   residual_dropout: 0.1
+  embedding_dropout: 0.0
+  use_bias: false
+  initializer_std: 0.02
+  gradient_checkpointing: false
   initialization: random
   parameter_count_note: approximate target only; verify programmatically later
 tokenizer:
+  name: genpy-byte-bpe-16k
+  version: 1
   type: byte_level_bpe
   vocab_size: 16384
   trained: false
+  artifact_path: artifacts/tokenizer/genpy-byte-bpe-16k-v1
+  fingerprint: populated_after_training
   special_tokens:
     pad: "<|pad|>"
     bos: "<|bos|>"
@@ -40,4 +51,4 @@ tokenizer:
     end: 6
 training:
   seed: 1337
-  phase: placeholder
+  phase: phase4_infrastructure

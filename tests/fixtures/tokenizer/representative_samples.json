@@ -1,0 +1,5 @@
+[
+  "def add(left, right):\n    return left + right\n",
+  "class Counter:\n    def __init__(self):\n        self.value = 0\n",
+  "text = 'தமிழ் 😀 café'\n"
+]

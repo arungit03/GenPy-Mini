@@ -26,6 +26,9 @@ def test_yaml_configuration_files_can_be_loaded() -> None:
         PROJECT_ROOT / "configs" / "model" / "genpy_5m.yaml",
         PROJECT_ROOT / "configs" / "model" / "genpy_25m.yaml",
         PROJECT_ROOT / "configs" / "model" / "genpy_100m.yaml",
+        PROJECT_ROOT / "configs" / "model" / "smoke_model.yaml",
+        PROJECT_ROOT / "configs" / "data" / "packing.yaml",
+        PROJECT_ROOT / "configs" / "data" / "smoke_packing.yaml",
         PROJECT_ROOT / "configs" / "pretrain.yaml",
         PROJECT_ROOT / "configs" / "instruction_train.yaml",
         PROJECT_ROOT / "configs" / "evaluate.yaml",
@@ -106,6 +109,7 @@ def test_all_model_configs_share_tokenizer_contract() -> None:
         "end": 6,
     }
 
+    contracts = []
     for path in sorted((PROJECT_ROOT / "configs" / "model").glob("genpy_*.yaml")):
         config = load_yaml(path)
         model = config["model"]
@@ -119,3 +123,9 @@ def test_all_model_configs_share_tokenizer_contract() -> None:
         assert tokenizer["vocab_size"] == 16384
         assert tokenizer["trained"] is False
         assert tokenizer["special_token_ids"] == expected_ids
+        assert tokenizer["name"] == "genpy-byte-bpe-16k"
+        assert tokenizer["version"] == 1
+        assert tokenizer["artifact_path"] == "artifacts/tokenizer/genpy-byte-bpe-16k-v1"
+        assert tokenizer["fingerprint"] == "populated_after_training"
+        contracts.append(tokenizer)
+    assert all(contract == contracts[0] for contract in contracts)
