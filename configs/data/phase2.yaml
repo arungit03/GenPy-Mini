@@ -20,11 +20,30 @@ ingestion:
     - approved_smoke
   source_ids:
     - pallets_click_8_1_8
+    - pandas_dev_pandas
+    - scipy_scipy
+    - scikit_learn_scikit_learn
+    - pytest_dev_pytest
+    - pydantic_pydantic
+    - fastapi_fastapi
+    - sqlalchemy_sqlalchemy
+    - scrapy_scrapy
+    - aio_libs_aiohttp
+    - networkx_networkx
+    - nltk_nltk
+    - home_assistant_core
+    - apache_airflow
+    - huggingface_transformers
+    - ray_project_ray
+    - apache_superset
+    - saltstack_salt
+    - pytorch_pytorch
+    - tensorflow_tensorflow
   resume: true
-  global_record_limit: 500
-  source_record_limit: 500
-  maximum_download_bytes: 26214400
-  minimum_free_disk_bytes: 104857600
+  global_record_limit: 70000
+  source_record_limit: 20000
+  maximum_download_bytes: 262144000
+  minimum_free_disk_bytes: 1073741824
   workers: 1
 
 normalization:
@@ -43,6 +62,11 @@ path_filters:
     - build
     - site-packages
     - vendor
+    - vendored
+    - externals
+    - _vendor
+    - third_party
+    - thirdparty
     - generated
     - coverage
   include_tests: true
@@ -83,4 +107,4 @@ sharding:
 
 reporting:
   rough_subword_bytes_per_token: 3.5
-  corpus_version: genpy-phase2-smoke-v1
+  corpus_version: genpy-phase2-expansion-v2

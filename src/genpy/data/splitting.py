@@ -53,6 +53,7 @@ def leakage_report(
         "CREATE TABLE IF NOT EXISTS seen (content_hash TEXT, split TEXT, record_id TEXT, text TEXT)"
     )
     connection.execute("CREATE INDEX IF NOT EXISTS seen_hash ON seen(content_hash)")
+    connection.execute("CREATE INDEX IF NOT EXISTS seen_record_id ON seen(record_id)")
     connection.execute(
         "CREATE TABLE IF NOT EXISTS near_buckets "
         "(bucket TEXT NOT NULL, record_id TEXT NOT NULL, PRIMARY KEY (bucket, record_id))"
@@ -64,7 +65,7 @@ def leakage_report(
     exact_cross_split = 0
     near_cross_split = 0
     group_violations = 0
-    for record in records:
+    for index, record in enumerate(records):
         row = connection.execute(
             "SELECT split FROM seen WHERE content_hash = ? AND split != ? LIMIT 1",
             (record.content_sha256, record.split),
@@ -103,6 +104,8 @@ def leakage_report(
             "INSERT INTO near_buckets VALUES (?, ?)",
             ((bucket, record.record_id) for bucket in bucket_keys),
         )
+        if (index + 1) % 500 == 0:
+            connection.commit()
     connection.commit()
     connection.close()
     return {

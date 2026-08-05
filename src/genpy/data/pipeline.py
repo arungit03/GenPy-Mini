@@ -379,7 +379,13 @@ class DatasetPipeline:
                     excluded = {
                         str(item).lower() for item in self.config["path_filters"]["excluded_parts"]
                     }
-                    for path in iter_source_files(root, source.include_globs, excluded, limit):
+                    for path in iter_source_files(
+                        root,
+                        source.include_globs,
+                        excluded,
+                        limit,
+                        exclude_globs=source.exclude_globs,
+                    ):
                         record = self._process_file(
                             source, root, path, policy, counters, rejections
                         )

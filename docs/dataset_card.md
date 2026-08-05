@@ -2,19 +2,38 @@
 
 ## Summary
 
-Corpus version: `genpy-phase2-smoke-v1`.
+Corpus version: `genpy-phase2-expansion-v1`.
 
 This dataset is intended to train GenPy from random weights to generate readable
-beginner-to-intermediate Python from natural-language requests. Phase 2 currently provides a
-verified bounded real-source sample and a production-oriented pipeline, not a training-scale
-corpus.
+beginner-to-intermediate Python from natural-language requests. Phase 2 now provides a
+verified 12-source pretraining corpus and a deterministically paired instruction corpus, both
+built through the same production-oriented pipeline. Neither meets the tokenizer's candidate
+(100 MiB) or production (500 MiB) byte thresholds yet — see Scale below.
 
 ## Sources And Licences
 
-The current real smoke source is Click 8.1.8, pinned to commit
-`934813e4d421071a1b3db3973c02fe2721359a6e` under BSD-3-Clause. The Stack v2.1.0 is recorded as
-a candidate but excluded pending explicit review. Every future source must satisfy the
-provisional allowlist and provenance policy in `docs/dataset_policy.md`.
+Twelve pretraining sources are approved: Click 8.1.8, pandas, SciPy, scikit-learn, pytest,
+Pydantic, FastAPI, SQLAlchemy, Scrapy, aiohttp, NetworkX, and NLTK, each pinned to an immutable
+commit with a verified archive SHA-256 in `configs/data/sources.yaml` and `data/manifests/
+source_manifest.jsonl`. Licences are BSD-3-Clause, MIT, or Apache-2.0 per source (see
+`docs/data_sources.md` for the full table, per-source nested-licence findings, and the
+resulting `exclude_globs`). One instruction source is approved with a distinct
+"instruction-only" status that keeps it out of pretraining ingestion: the Exercism Python
+track (MIT), paired deterministically by exercise slug. The Stack v2.1.0 remains a recorded
+candidate, excluded pending review. Every future source must satisfy the provisional allowlist
+and provenance policy in `docs/dataset_policy.md`.
+
+## Scale
+
+The approved pretraining corpus is 4,560 deduplicated records (34,685,551 UTF-8 bytes), split
+4,304/256/0 train/validation/test by repository group (98/1/1 ratio; with only 12 groups none
+hashed into the 1% test bucket for this seed). The approved instruction corpus is 114 records
+from 140 Exercism exercises, split 93/13/8 train/validation/test by problem family (80/10/10
+ratio). Combined pretraining-train + instruction-train serialized bytes are 31,818,723 — short
+of the tokenizer's 100 MiB candidate threshold and far short of its 500 MiB production
+threshold (`configs/tokenizer/genpy_bpe_16k.yaml`). Reaching either threshold requires sources
+beyond the current "safer candidate" set; see `docs/data_sources.md` for the larger frameworks
+already audited but not yet approved.
 
 ## Collection And Processing
 
@@ -45,7 +64,10 @@ p90 is 6,537, p95 is 9,884, and p99 is 34,530. Twenty-six records exceed 1,024 t
 58.73% fit. Pretraining validation/test and all instruction splits contain zero records.
 
 These exact smoke-tokenizer counts supplement rather than replace Phase 2's historical rough
-estimates. Final GenPy token counts require the frozen 16,384-entry production tokenizer.
+estimates and predate the 2026-08-04 12-source expansion above; they still reflect only the
+original Click-only sample, not the current corpus. Final GenPy token counts require the frozen
+16,384-entry production tokenizer, which remains untrained (see Scale above for why: available
+bytes are below both the candidate and production readiness thresholds).
 
 ## Phase 4 Packed-Data Status
 
@@ -58,10 +80,15 @@ readiness. Production packing remains blocked by the missing frozen tokenizer.
 
 Repository code overrepresents public open-source conventions and English documentation.
 Licence detection, generated-code heuristics, secret/PII scanning, unsafe-content filters,
-quality scoring, and near deduplication can produce both false positives and false negatives.
-Static validation does not establish correctness or safety. The current smoke sample is one
-library repository and is not representative of GenPy V1 tasks. The dataset is not guaranteed
-risk-free or legally safe.
+quality scoring, and near deduplication can produce both false positives and false negatives —
+for example, the secret/PII scanners' conservative numeric-sequence and high-entropy-string
+heuristics account for most Exercism instruction rejections (e.g. Luhn/ISBN/phone-number
+exercises whose sample digit sequences resemble phone numbers). Static validation does not
+establish correctness or safety. The 12-source pretraining corpus and single instruction
+source are not representative of GenPy V1's full task distribution, and SQLAlchemy's entire
+256-record contribution landed in the validation split by the deterministic group hash (an
+expected but noteworthy concentration when the underlying record count is small). The dataset
+is not guaranteed risk-free or legally safe.
 
 ## Personal Data And Safety
 
@@ -82,10 +109,15 @@ gated dataset must also follow that dataset's official process.
 ```powershell
 pip install -r requirements-data.txt
 python scripts/data/audit_sources.py --config configs/data/sources.yaml
-python scripts/data/build_dataset.py --config configs/data/phase2.yaml --mode smoke
+python scripts/data/build_dataset.py --config configs/data/phase2.yaml --mode full --confirm-large-download
+python scripts/data/build_instruction_dataset.py --config configs/data/phase2.yaml
 python scripts/data/validate_dataset.py --config configs/data/phase2.yaml
-python scripts/data/generate_dataset_report.py --config configs/data/phase2.yaml
+python scripts/tokenizer/check_readiness.py --config configs/tokenizer/genpy_bpe_16k.yaml
 ```
 
 The generated report records the exact configuration hash, source revision, archive checksum,
-shard checksums, funnel counts, split counts, leakage checks, memory, and processing time.
+shard checksums, funnel counts, split counts, leakage checks, memory, and processing time. The
+`--mode full --confirm-large-download` flags are required beyond the single-source smoke
+config because `configs/data/phase2.yaml` now selects all 12 approved pretraining sources; the
+Exercism instruction adapter runs separately because its source status is intentionally outside
+`ingestion.approved_statuses`, so the main build can never select it.

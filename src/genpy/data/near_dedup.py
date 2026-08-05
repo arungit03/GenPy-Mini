@@ -96,9 +96,13 @@ class NearDeduplicator:
         self._bands = bands
         self.duplicates = 0
         self.cluster_sizes: dict[str, int] = {}
+        self._pending_commits = 0
 
     def add(self, record: PretrainingRecord) -> bool:
         """Keep a record only when no LSH candidate exceeds the threshold."""
+        self._pending_commits += 1
+        if self._pending_commits % 500 == 0:
+            self._connection.commit()
         shingles = token_shingles(record.text, self._shingle_size)
         keys = minhash_bucket_keys(
             shingles, permutations=self._permutations, bands=self._bands

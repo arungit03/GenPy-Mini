@@ -1,2 +1,14 @@
 {"source_id":"pallets_click_8_1_8","licence_spdx":"BSD-3-Clause","evidence_url":"https://github.com/pallets/click/blob/8.1.8/LICENSE.txt","decision":"allowed_for_smoke"}
+{"source_id":"pandas_dev_pandas","licence_spdx":"BSD-3-Clause","evidence_url":"https://github.com/pandas-dev/pandas/blob/30538196adabff39cfb2d809eb6119a96455b450/LICENSE","decision":"allowed"}
+{"source_id":"scipy_scipy","licence_spdx":"BSD-3-Clause","evidence_url":"https://github.com/scipy/scipy/blob/3112deba0d3f2ec816fa43d1faffc9754e722cd3/LICENSE.txt","decision":"allowed_with_nested_licence_exclusions"}
+{"source_id":"scikit_learn_scikit_learn","licence_spdx":"BSD-3-Clause","evidence_url":"https://github.com/scikit-learn/scikit-learn/blob/1a970e8b191106eac9e580192779dccc1b0177f6/COPYING","decision":"allowed_with_nested_licence_exclusions"}
+{"source_id":"pytest_dev_pytest","licence_spdx":"MIT","evidence_url":"https://github.com/pytest-dev/pytest/blob/d81152a8376372c142ea1fcd464b060e52974cd5/LICENSE","decision":"allowed"}
+{"source_id":"pydantic_pydantic","licence_spdx":"MIT","evidence_url":"https://github.com/pydantic/pydantic/blob/b75fadbaa55d4d700a388f1b67683ef0be0ed540/LICENSE","decision":"allowed_with_nested_licence_exclusions"}
+{"source_id":"fastapi_fastapi","licence_spdx":"MIT","evidence_url":"https://github.com/fastapi/fastapi/blob/b101622ec92844fe90a96f49c85accd8fada24df/LICENSE","decision":"allowed"}
+{"source_id":"sqlalchemy_sqlalchemy","licence_spdx":"MIT","evidence_url":"https://github.com/sqlalchemy/sqlalchemy/blob/2b780d9b9e78fe256a6968ea26980d051be2582b/LICENSE","decision":"allowed"}
+{"source_id":"scrapy_scrapy","licence_spdx":"BSD-3-Clause","evidence_url":"https://github.com/scrapy/scrapy/blob/298c9e610ec29dea378a706e925ad0d897007410/LICENSE","decision":"allowed"}
+{"source_id":"aio_libs_aiohttp","licence_spdx":"Apache-2.0","evidence_url":"https://github.com/aio-libs/aiohttp/blob/d5d068cb541ab7df5ecca14515475f9d4a379c5e/LICENSE.txt","decision":"allowed"}
+{"source_id":"networkx_networkx","licence_spdx":"BSD-3-Clause","evidence_url":"https://github.com/networkx/networkx/blob/8751d1cfaacd8ca60f0a648abe4ecc13e5dc6b0c/LICENSE.txt","decision":"allowed_manual_verification_github_api_reported_noassertion"}
+{"source_id":"nltk_nltk","licence_spdx":"Apache-2.0","evidence_url":"https://github.com/nltk/nltk/blob/35813c85af3f13d4f7196085854eafb3d0c5db02/LICENSE.txt","decision":"allowed_with_one_file_excluded_for_noncommercial_reference"}
+{"source_id":"exercism_python","licence_spdx":"MIT","evidence_url":"https://github.com/exercism/python/blob/250bf19050543da09e122211fc7430fe6f44c564/LICENSE","decision":"allowed_instruction_only"}
 {"source_id":"bigcode_the_stack_v2_1_0","licence_spdx":"other","evidence_url":"https://huggingface.co/datasets/bigcode/the-stack-v2","decision":"review_required_per_record"}

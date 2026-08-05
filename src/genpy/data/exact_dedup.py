@@ -35,9 +35,13 @@ class ExactDeduplicator:
         )
         self._manifest = duplicate_manifest
         self.duplicates = 0
+        self._pending_commits = 0
 
     def add(self, record: PretrainingRecord) -> bool:
         """Add a record and return true if it is currently the exact-hash winner."""
+        self._pending_commits += 1
+        if self._pending_commits % 500 == 0:
+            self._connection.commit()
         row = self._connection.execute(
             "SELECT record_id, rank FROM winners WHERE content_hash = ?",
             (record.content_sha256,),

@@ -42,6 +42,7 @@ class SourceEntry:
     repository: str | None = None
     release_tag: str | None = None
     include_globs: tuple[str, ...] = field(default_factory=lambda: ("*.py",))
+    exclude_globs: tuple[str, ...] = field(default_factory=tuple)
     local_path: str | None = None
 
     @classmethod
@@ -50,6 +51,7 @@ class SourceEntry:
         data = dict(value)
         data["languages"] = tuple(data.get("languages", ()))
         data["include_globs"] = tuple(data.get("include_globs", ("*.py",)))
+        data["exclude_globs"] = tuple(data.get("exclude_globs", ()))
         source = cls(**data)
         source.validate()
         return source

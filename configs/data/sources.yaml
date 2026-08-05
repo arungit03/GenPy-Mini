@@ -27,6 +27,673 @@ sources:
       - "*.py"
     review_notes: Official repository release pinned to an immutable commit; retain repository and file provenance.
 
+  - id: pandas_dev_pandas
+    name: pandas source repository
+    official_url: https://github.com/pandas-dev/pandas
+    dataset_card_url: null
+    version: 30538196adabff39cfb2d809eb6119a96455b450
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/pandas-dev/pandas/zip/30538196adabff39cfb2d809eb6119a96455b450
+    checksum_sha256: 67a8dd3202e9c9df50c47ba9fb82a9a26c9c1d7df8d2d18a4fa7fad073584ce8
+    expected_download_size: 6030910 bytes verified
+    expected_extracted_size: 25383974 bytes verified
+    expected_usable_records: approximately 1420 Python files before filtering
+    estimated_disk_requirement: less than 100 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: BSD-3-Clause
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: pandas-dev/pandas
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE verified BSD-3-Clause via GitHub license API at the
+      pinned commit. Nested-licence scan found no vendored Python subtree with a differing
+      licence (the pandas/_libs vendored/ directories contain only C/C++ headers, not .py
+      files). Regex hits for "MPL" were manually confirmed as false positives referring to the
+      matplotlib import alias (e.g. "MPL backends"), not the Mozilla Public License; no
+      exclusions required.
+
+  - id: scipy_scipy
+    name: SciPy source repository
+    official_url: https://github.com/scipy/scipy
+    dataset_card_url: null
+    version: 3112deba0d3f2ec816fa43d1faffc9754e722cd3
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/scipy/scipy/zip/3112deba0d3f2ec816fa43d1faffc9754e722cd3
+    checksum_sha256: bac40c594a48492c21c55dd08f7cf4dd06b50a48988d51925af943fcfe28ae2d
+    expected_download_size: 26611844 bytes verified
+    expected_extracted_size: 84549217 bytes verified
+    expected_usable_records: approximately 1016 Python files after source-specific exclusions
+    estimated_disk_requirement: less than 150 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: BSD-3-Clause
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: scipy/scipy
+    include_globs:
+      - "*.py"
+    exclude_globs:
+      - "scipy/ndimage/*"
+      - "scipy/fft/_duccfft/*"
+      - "scipy/io/_fast_matrix_market/*"
+      - "scipy/_lib/_uarray/*"
+      - "scipy/_external/*"
+      - "subprojects/pyprima/pyprima/*"
+      - "tools/building/tempita/*"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE.txt verified BSD-3-Clause via GitHub license API at
+      the pinned commit. Nested-licence scan found 14 vendored Python-bearing subtrees carrying
+      their own LICENSE/COPYING files with different copyright holders (Verveer, Max-Planck-
+      Society, Lugowski, Quansight-Labs, Zhang, Ian Bicking, and an internal "_external"
+      vendoring directory); all are independently permissive but are excluded via
+      exclude_globs because this pipeline attributes one licence per source and cannot record
+      differing per-subtree provenance. Several other nested licences (tnc, _direct, SuperLU,
+      arpack/arnaud, PROPACK, biasedurn, qhull_r, subprojects/duccfft) contain zero .py files
+      and are therefore never selected by include_globs; left unexcluded as inert.
+
+  - id: scikit_learn_scikit_learn
+    name: scikit-learn source repository
+    official_url: https://github.com/scikit-learn/scikit-learn
+    dataset_card_url: null
+    version: 1a970e8b191106eac9e580192779dccc1b0177f6
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/scikit-learn/scikit-learn/zip/1a970e8b191106eac9e580192779dccc1b0177f6
+    checksum_sha256: 71bfd2915110d447a15dcbef8f6ef94bcc71f3b46294b2f26e91dd9500447467
+    expected_download_size: 8795779 bytes verified
+    expected_extracted_size: 23649642 bytes verified
+    expected_usable_records: approximately 888 Python files after source-specific exclusions
+    estimated_disk_requirement: less than 100 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: BSD-3-Clause
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: scikit-learn/scikit-learn
+    include_globs:
+      - "*.py"
+    exclude_globs:
+      - "sklearn/externals/*"
+    review_notes: >-
+      2026-08-04 expansion. Root COPYING verified BSD-3-Clause via GitHub license API at the
+      pinned commit. sklearn/externals/ vendors five third-party packages (array_api_compat,
+      array_api_extra, _numpydoc, _packaging, _scipy; 57 .py files total) under their own
+      licences (mostly MIT); excluded via exclude_globs as vendored third-party code. Regex
+      hits for "MPL" in examples/ and sklearn/utils/_optional_dependencies.py were manually
+      confirmed as matplotlib-alias false positives, not the Mozilla Public License.
+
+  - id: pytest_dev_pytest
+    name: pytest source repository
+    official_url: https://github.com/pytest-dev/pytest
+    dataset_card_url: null
+    version: d81152a8376372c142ea1fcd464b060e52974cd5
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/pytest-dev/pytest/zip/d81152a8376372c142ea1fcd464b060e52974cd5
+    checksum_sha256: 2a76240e4e3acfcaaf1719dd883a37d4cc8dffcb05671f3e2269ff6c8d92fb3d
+    expected_download_size: 2039847 bytes verified
+    expected_extracted_size: 7166804 bytes verified
+    expected_usable_records: approximately 270 Python files before filtering
+    estimated_disk_requirement: less than 50 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: MIT
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: pytest-dev/pytest
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE verified MIT via GitHub license API at the pinned
+      commit. Nested-licence scan found only doc/en/license.rst, which is documentation about
+      the same MIT licence (not a separate grant or a .py file); no exclusions required.
+
+  - id: pydantic_pydantic
+    name: Pydantic source repository
+    official_url: https://github.com/pydantic/pydantic
+    dataset_card_url: null
+    version: b75fadbaa55d4d700a388f1b67683ef0be0ed540
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/pydantic/pydantic/zip/b75fadbaa55d4d700a388f1b67683ef0be0ed540
+    checksum_sha256: f4d7a0b87267245a566a01ccc84bd32edf42a6d016816399c06be02f40736704
+    expected_download_size: 3773377 bytes verified
+    expected_extracted_size: 11106636 bytes verified
+    expected_usable_records: approximately 282 Python files after source-specific exclusions
+    estimated_disk_requirement: less than 50 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: MIT
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: pydantic/pydantic
+    include_globs:
+      - "*.py"
+    exclude_globs:
+      - "pydantic-core/*"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE verified MIT (Pydantic Services Inc.) via GitHub
+      license API at the pinned commit. pydantic-core/ carries its own MIT LICENSE under a
+      different copyright holder (Samuel Colvin) and is a separate Rust-backed package with its
+      own Python bindings (123 .py files); excluded via exclude_globs for provenance accuracy
+      even though the licence family is compatible.
+
+  - id: fastapi_fastapi
+    name: FastAPI source repository
+    official_url: https://github.com/fastapi/fastapi
+    dataset_card_url: null
+    version: b101622ec92844fe90a96f49c85accd8fada24df
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/fastapi/fastapi/zip/b101622ec92844fe90a96f49c85accd8fada24df
+    checksum_sha256: 195cb859ac00efc3b1cb0b524045f88c7072ad9cabede8ddc0126afd228b7262
+    expected_download_size: 19922470 bytes verified
+    expected_extracted_size: 34760239 bytes verified
+    expected_usable_records: approximately 1136 Python files before filtering
+    estimated_disk_requirement: less than 100 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: MIT
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: fastapi/fastapi
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE verified MIT via GitHub license API at the pinned
+      commit. Nested-licence scan found no other licence files and no conflicting-licence
+      header hits; no exclusions required.
+
+  - id: sqlalchemy_sqlalchemy
+    name: SQLAlchemy source repository
+    official_url: https://github.com/sqlalchemy/sqlalchemy
+    dataset_card_url: null
+    version: 2b780d9b9e78fe256a6968ea26980d051be2582b
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/sqlalchemy/sqlalchemy/zip/2b780d9b9e78fe256a6968ea26980d051be2582b
+    checksum_sha256: 3bf0d656540344e3d8c80d172191c6f065b592cfb1d43f71186c2fbbac63f6ca
+    expected_download_size: 5960400 bytes verified
+    expected_extracted_size: 26352149 bytes verified
+    expected_usable_records: approximately 668 Python files before filtering
+    estimated_disk_requirement: less than 100 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: MIT
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: sqlalchemy/sqlalchemy
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE verified MIT via GitHub license API at the pinned
+      commit. Nested-licence scan found no other licence files and no conflicting-licence
+      header hits; no exclusions required.
+
+  - id: scrapy_scrapy
+    name: Scrapy source repository
+    official_url: https://github.com/scrapy/scrapy
+    dataset_card_url: null
+    version: 298c9e610ec29dea378a706e925ad0d897007410
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/scrapy/scrapy/zip/298c9e610ec29dea378a706e925ad0d897007410
+    checksum_sha256: 25ec98092a032e1707664a9eaaeae1e2493e664fa54597a886172afeda7a32b8
+    expected_download_size: 1760487 bytes verified
+    expected_extracted_size: 4916862 bytes verified
+    expected_usable_records: approximately 475 Python files before filtering
+    estimated_disk_requirement: less than 50 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: BSD-3-Clause
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: scrapy/scrapy
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE verified BSD-3-Clause via GitHub license API at the
+      pinned commit. Nested-licence scan found no other licence files and no conflicting-licence
+      header hits; no exclusions required.
+
+  - id: aio_libs_aiohttp
+    name: aiohttp source repository
+    official_url: https://github.com/aio-libs/aiohttp
+    dataset_card_url: null
+    version: d5d068cb541ab7df5ecca14515475f9d4a379c5e
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/aio-libs/aiohttp/zip/d5d068cb541ab7df5ecca14515475f9d4a379c5e
+    checksum_sha256: a77e6ecec5446e0c31068b08eb6063c0d8229403c807ac8da5dc1040eaa67c22
+    expected_download_size: 1434763 bytes verified
+    expected_extracted_size: 4969074 bytes verified
+    expected_usable_records: approximately 165 Python files before filtering
+    estimated_disk_requirement: less than 50 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: aio-libs/aiohttp
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE.txt verified Apache-2.0 via GitHub license API at the
+      pinned commit. Nested-licence scan found no other licence files and no conflicting-licence
+      header hits; no exclusions required.
+
+  - id: networkx_networkx
+    name: NetworkX source repository
+    official_url: https://github.com/networkx/networkx
+    dataset_card_url: null
+    version: 8751d1cfaacd8ca60f0a648abe4ecc13e5dc6b0c
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/networkx/networkx/zip/8751d1cfaacd8ca60f0a648abe4ecc13e5dc6b0c
+    checksum_sha256: 422e5e167f14acc5c32a5b35d9be8b88f0e855dc6ca34724424b53080a76efa9
+    expected_download_size: 3213903 bytes verified
+    expected_extracted_size: 10219314 bytes verified
+    expected_usable_records: approximately 692 Python files before filtering
+    estimated_disk_requirement: less than 50 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: BSD-3-Clause
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: networkx/networkx
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 expansion. GitHub's automated license API reports NOASSERTION for LICENSE.txt
+      at this commit because the text is wrapped in a reST literal block; manual inspection of
+      the raw file confirms standard 3-clause BSD language ("NetworkX is distributed with the
+      3-clause BSD license"). Treated as manually-verified BSD-3-Clause. Nested-licence scan
+      found no other licence files; five "MPL" regex hits were manually confirmed as
+      matplotlib-alias false positives, not the Mozilla Public License.
+
+  - id: nltk_nltk
+    name: NLTK source repository
+    official_url: https://github.com/nltk/nltk
+    dataset_card_url: null
+    version: 35813c85af3f13d4f7196085854eafb3d0c5db02
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/nltk/nltk/zip/35813c85af3f13d4f7196085854eafb3d0c5db02
+    checksum_sha256: fb77e48f8b813e10c638e2c3b062279a29e11cfe50338edb02c2c806ef2b14eb
+    expected_download_size: 3404717 bytes verified
+    expected_extracted_size: 8988145 bytes verified
+    expected_usable_records: approximately 436 Python files after source-specific exclusions
+    estimated_disk_requirement: less than 50 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: nltk/nltk
+    include_globs:
+      - "*.py"
+    exclude_globs:
+      - "nltk/corpus/reader/sinica_treebank.py"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE.txt verified Apache-2.0 via GitHub license API at the
+      pinned commit; the code itself carries no separate nested licence file. One file,
+      nltk/corpus/reader/sinica_treebank.py, has an Apache-2.0 copyright header but its
+      docstring references a Creative Commons Attribution-NonCommercial-ShareAlike-licensed
+      corpus that the reader parses; excluded via exclude_globs out of caution because the
+      policy's deny_families includes non-commercial. The remaining corpus reader modules in
+      this tree were checked with the same non-commercial/copyleft regex and produced no
+      further hits, but a closer manual pass over nltk/corpus/reader/ is recommended before any
+      larger nltk expansion.
+
+  - id: home_assistant_core
+    name: Home Assistant Core source repository
+    official_url: https://github.com/home-assistant/core
+    dataset_card_url: null
+    version: 9f74948e26a653888489eacae14e3fa338fa318e
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/home-assistant/core/zip/9f74948e26a653888489eacae14e3fa338fa318e
+    checksum_sha256: 8545e76c3f8e9f56afb8273f65fafc1273027c01a2c628feaf159eed06f484e9
+    expected_download_size: 43953430 bytes verified
+    expected_extracted_size: 185425816 bytes verified
+    expected_usable_records: approximately 18102 Python files before filtering
+    estimated_disk_requirement: less than 250 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: home-assistant/core
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 large-framework expansion. Root LICENSE.md verified Apache-2.0 via GitHub
+      license API at the pinned commit. Nested-licence scan found no separately-licensed
+      subtree (the one hit was the root licence file itself at folder-wrap depth). One
+      regex "AGPL" hit in script/licenses.py was manually confirmed as a false positive:
+      that file is home-assistant's own dependency-licence-compliance tool and the match is
+      an SPDX identifier string ("AGPL-3.0-only") in its allowlist table, not the file's own
+      licence. No exclusions required beyond the global path filters.
+
+  - id: apache_airflow
+    name: Apache Airflow source repository
+    official_url: https://github.com/apache/airflow
+    dataset_card_url: null
+    version: b316afb44dc9686f5c39aab678a9a89cb21d53d2
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/apache/airflow/zip/b316afb44dc9686f5c39aab678a9a89cb21d53d2
+    checksum_sha256: c732dac298814427e13ad49b6897d2452d2fe3d47ea5adadad387bd2709a13b2
+    expected_download_size: 85198151 bytes verified
+    expected_extracted_size: 155681329 bytes verified
+    expected_usable_records: approximately 7102 Python files before filtering
+    estimated_disk_requirement: less than 250 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: apache/airflow
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 large-framework expansion. Root LICENSE verified Apache-2.0 via GitHub
+      license API at the pinned commit. Airflow is an ASF mono-repo with ~114 separately
+      distributable sub-packages (providers, chart, go-sdk, java-sdk, airflow-ctl, etc.),
+      each carrying its own LICENSE/NOTICE pair; all 229 nested-licence hits were verified
+      to mention "Apache"/"ASF" (none introduce a different licence). NOTICE attributions to
+      vendored Hue/Chakra UI/Monaco Editor components cover JS-only frontend assets with zero
+      .py files. providers/fab's NOTICE credits Flask-AppBuilder (BSD) as a source of a
+      modified portion, but the directory carries only the umbrella Apache-2.0 LICENSE (no
+      separate licence grant), consistent with standard ASF incorporation of permissively
+      licensed contributions. No exclusions required beyond the global path filters.
+
+  - id: huggingface_transformers
+    name: Hugging Face Transformers source repository
+    official_url: https://github.com/huggingface/transformers
+    dataset_card_url: null
+    version: d09f53a801f45ad73ec3510e17972024234bc0fd
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/huggingface/transformers/zip/d09f53a801f45ad73ec3510e17972024234bc0fd
+    checksum_sha256: 3158050aa166ee4542868465efab4729658458be7775d3664e1ea3b66277bb0a
+    expected_download_size: 27368044 bytes verified
+    expected_extracted_size: 92837474 bytes verified
+    expected_usable_records: approximately 4704 Python files before filtering
+    estimated_disk_requirement: less than 150 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: huggingface/transformers
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 large-framework expansion. Root LICENSE verified Apache-2.0 via GitHub
+      license API at the pinned commit. Nested-licence scan found no separately-licensed
+      subtree and no conflicting-licence header hits; no exclusions required.
+
+  - id: ray_project_ray
+    name: Ray source repository
+    official_url: https://github.com/ray-project/ray
+    dataset_card_url: null
+    version: f8aa4d14edf4d58a10e94e86bd31920d1346ca6e
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/ray-project/ray/zip/f8aa4d14edf4d58a10e94e86bd31920d1346ca6e
+    checksum_sha256: c7aa6d8355abe60783fcd6e87bedcfb89f3caf52cec5dbdb17dea27b897f8aa6
+    expected_download_size: 200836046 bytes verified
+    expected_extracted_size: 364634451 bytes verified
+    expected_usable_records: approximately 4669 Python files after source-specific exclusions
+    estimated_disk_requirement: less than 500 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: ray-project/ray
+    include_globs:
+      - "*.py"
+    exclude_globs:
+      - "python/ray/_private/thirdparty/*"
+    review_notes: >-
+      2026-08-04 large-framework expansion. Root LICENSE verified Apache-2.0 via GitHub
+      license API at the pinned commit. python/ray/_private/thirdparty/ is an explicitly
+      named vendoring directory (22 .py files: dacite and pathspec each carry their own
+      LICENSE, plus pyamdsmi/pynvml/tabulate); excluded entirely via exclude_globs. The
+      dacite LICENSE is MIT (Konrad Halas) and the pathspec LICENSE is genuinely
+      Mozilla Public License 2.0 (confirmed by reading the full licence text, not a
+      matplotlib-alias false positive like other "MPL" regex hits elsewhere) - MPL is in
+      the policy's deny_families, making this exclusion load-bearing, not just precautionary.
+      python/ray/dashboard/client/public/speedscope-1.5.3 carries an MIT licence but has zero
+      .py files, so it is never selected regardless.
+
+  - id: apache_superset
+    name: Apache Superset source repository
+    official_url: https://github.com/apache/superset
+    dataset_card_url: null
+    version: e4ef84ca724b6a4de2e916fbbca04a989cbf5d21
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/apache/superset/zip/e4ef84ca724b6a4de2e916fbbca04a989cbf5d21
+    checksum_sha256: 48f9b869e9e524fd6334f5d8103c3e7c646e22b87c363d262fb2132838aef2d2
+    expected_download_size: 180745923 bytes verified
+    expected_extracted_size: 284071124 bytes verified
+    expected_usable_records: approximately 2484 Python files before filtering
+    estimated_disk_requirement: less than 400 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: apache/superset
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 large-framework expansion. Root LICENSE.txt verified Apache-2.0 via GitHub
+      license API at the pinned commit. Superset is an ASF mono-repo with two additional
+      distributable sub-packages (superset-core, superset-extensions-cli), each carrying its
+      own LICENSE.txt; all 4 nested-licence hits were verified as the same Apache-2.0 text.
+      No conflicting-licence header hits. No exclusions required beyond the global path
+      filters (the large archive size is dominated by the non-Python React/TypeScript
+      frontend, which include_globs already never selects).
+
+  - id: saltstack_salt
+    name: Salt source repository
+    official_url: https://github.com/saltstack/salt
+    dataset_card_url: null
+    version: c3e5bb1981a025a69bf94269282838ab618079c8
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/saltstack/salt/zip/c3e5bb1981a025a69bf94269282838ab618079c8
+    checksum_sha256: c207dcd4b5826c60ca1d26364b39d496d21e1ce30ba4e9e26fe649e1bbdaa050
+    expected_download_size: 18413662 bytes verified
+    expected_extracted_size: 57394430 bytes verified
+    expected_usable_records: approximately 2935 Python files after source-specific exclusions
+    estimated_disk_requirement: less than 150 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: saltstack/salt
+    include_globs:
+      - "*.py"
+    exclude_globs:
+      - "salt/ext/*"
+    review_notes: >-
+      2026-08-04 large-framework expansion. Root LICENSE verified Apache-2.0 via GitHub
+      license API at the pinned commit. salt/ext/ is an explicitly named vendoring directory
+      (7 .py files: backports_abc, importlib_metadata, ipaddress, saslprep,
+      ssl_match_hostname, win_inet_pton, zipp - all vendored PyPI backport packages);
+      excluded entirely via exclude_globs. Two regex conflict hits were manually reviewed
+      and confirmed as false positives: salt/ext/win_inet_pton.py matches "non-commercial"
+      only inside a public-domain dedication ("for any purpose, commercial or
+      non-commercial") - already covered by the ext/ exclusion regardless; and
+      tests/unit/modules/nxos/nxos_show_cmd_output.py matches "GNU General Public License"
+      only inside captured sample console-banner text used as a test fixture for a Cisco
+      NX-OS output parser, not the file's own licence.
+
+  - id: pytorch_pytorch
+    name: PyTorch source repository
+    official_url: https://github.com/pytorch/pytorch
+    dataset_card_url: null
+    version: d47daf6e85dcd5a7ca79ac7b2ca73b1cb113cbd1
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/pytorch/pytorch/zip/d47daf6e85dcd5a7ca79ac7b2ca73b1cb113cbd1
+    checksum_sha256: 7adee8b29db15f1fc570627c8d4e4c943e0d0d6982d6b4c185bd3e4403ea09c2
+    expected_download_size: 80175240 bytes verified
+    expected_extracted_size: 222185793 bytes verified
+    expected_usable_records: approximately 4549 Python files after source-specific exclusions
+    estimated_disk_requirement: less than 300 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: BSD-3-Clause
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: pytorch/pytorch
+    include_globs:
+      - "*.py"
+    exclude_globs:
+      - "test/cpython/v3_13/*"
+      - "torch/fx/experimental/unification/*"
+      - "aten/src/ATen/native/quantized/cpu/qnnpack/*"
+      - ".ci/manywheel/*"
+      - "functorch/examples/lennard_jones/*"
+    review_notes: >-
+      2026-08-04 large-framework expansion. GitHub's automated license API reports
+      NOASSERTION for LICENSE at this commit because the file opens with a long multi-party
+      "From PyTorch: / From Caffe2:" copyright preamble that defeats the standard-template
+      detector; manual inspection confirms the terms section is textbook 3-clause BSD
+      (retain-notice, reproduce-in-binary, no-endorsement, standard disclaimer). Treated as
+      manually-verified BSD-3-Clause, consistent with PyTorch's well-documented licence.
+      Nested-licence scan found 13 separately-licensed subtrees; torch/_vendor/* (packaging,
+      quack) is already caught by the global "_vendor" path filter. Explicitly excluded via
+      exclude_globs: test/cpython/v3_13/ (76 files, a vendored copy of CPython's own test
+      suite under the PSF licence, which is outside the allowlist); torch/fx/experimental/
+      unification/ (14 files, BSD-3-Clause but a different copyright holder, Matthew
+      Rocklin); aten/.../qnnpack/ (3 files, separate BSD licence for the QNNPACK library);
+      .ci/manywheel/ (4 files, MIT licence for the manylinux project). Critically,
+      functorch/examples/lennard_jones/lennard_jones.py is excluded because its own header
+      states it is "adapted from https://github.com/muhrin/milad" and "licensed under the
+      GLPv3 license" - GPL is in the policy's deny_families, so this is a real, load-bearing
+      exclusion, not a precaution. The six other "mpl"/"gpl" regex hits in functorch/examples
+      were manually confirmed as matplotlib-alias false positives (`import matplotlib as
+      mpl`), distinct from the genuine GPL hit.
+
+  - id: tensorflow_tensorflow
+    name: TensorFlow source repository
+    official_url: https://github.com/tensorflow/tensorflow
+    dataset_card_url: null
+    version: e30ad0b36aaae6d9b7b5a98e811b2e1356f6a117
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/tensorflow/tensorflow/zip/e30ad0b36aaae6d9b7b5a98e811b2e1356f6a117
+    checksum_sha256: 23d10e8305c00302a44f99d0dbf475b54ab48d3c5cdbdd096877c61f245b3366
+    expected_download_size: 140387079 bytes verified
+    expected_extracted_size: 476180232 bytes verified
+    expected_usable_records: approximately 3165 Python files before filtering
+    estimated_disk_requirement: less than 700 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: Apache-2.0
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved
+    repository: tensorflow/tensorflow
+    include_globs:
+      - "*.py"
+    review_notes: >-
+      2026-08-04 large-framework expansion. Root LICENSE verified Apache-2.0 via GitHub
+      license API at the pinned commit. Nested-licence scan found 16 separately-licensed
+      subtrees (fft2d, xla, icu, numpy, ml_dtypes, eigen3, mkl_dnn, nccl, nvtx, oneccl,
+      tensorrt, tsl, gpus/crosstool, gpus/cuda, xla/third_party/py/numpy, xla/tsl/mkl), all
+      of them under third_party/ directories already covered by the global "third_party"
+      path-part exclusion; none contribute a .py file outside that filter. Zero
+      conflicting-licence header hits. No source-specific exclusions required.
+
   - id: bigcode_the_stack_v2_1_0
     name: The Stack v2.1.0
     official_url: https://huggingface.co/datasets/bigcode/the-stack-v2
@@ -52,3 +719,40 @@ sources:
     include_globs:
       - "*.py"
     review_notes: Gated access and mixed or missing upstream licences require explicit approval and strict per-record filtering; do not download automatically.
+
+  - id: exercism_python
+    name: Exercism Python track
+    official_url: https://github.com/exercism/python
+    dataset_card_url: null
+    version: 250bf19050543da09e122211fc7430fe6f44c564
+    release_tag: null
+    access_method: github_archive
+    archive_url: https://codeload.github.com/exercism/python/zip/250bf19050543da09e122211fc7430fe6f44c564
+    checksum_sha256: 46434af58b46f5d18e99fbee795f052e600a7603128ec7ca55d77a529ad535a9
+    expected_download_size: 2634797 bytes verified
+    expected_extracted_size: 4729372 bytes verified
+    expected_usable_records: approximately 116 deterministic instructions/example pairs after adapter filtering
+    estimated_disk_requirement: less than 50 MB for this source
+    streaming_supported: true
+    languages:
+      - Python
+    dataset_level_licence: MIT
+    per_record_licence: true
+    provenance_available: true
+    opt_out_supported: false
+    attribution_required: true
+    status: approved_instruction_only
+    repository: exercism/python
+    include_globs:
+      - "*.py"
+      - "*.md"
+    review_notes: >-
+      2026-08-04 expansion. Root LICENSE verified MIT via GitHub license API at the pinned
+      commit. Reviewed as instruction data, not pretraining data: each exercises/practice/<slug>
+      directory pairs .docs/instructions.md (prompt) with .meta/example.py (canonical solution)
+      deterministically by slug. Status is intentionally "approved_instruction_only", which is
+      outside phase2.yaml's ingestion.approved_statuses, so the pretraining DatasetPipeline can
+      never select this source; it is consumed only by the separate instruction-adapter script.
+      Benchmark/article scripts under .articles/ (3 files, matplotlib "mpl" false-positive
+      regex hits, not real licence conflicts) and implementation-detail directories (.meta,
+      .articles, .exercism) are excluded by the adapter's own pairing logic, not include_globs.

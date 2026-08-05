@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import fnmatch
 import hashlib
 import json
 import logging
@@ -171,6 +172,7 @@ def iter_source_files(
     include_globs: tuple[str, ...],
     excluded_parts: set[str],
     limit: int | None,
+    exclude_globs: tuple[str, ...] = (),
 ) -> Iterator[Path]:
     """Yield deterministic source files without loading file contents."""
     count = 0
@@ -181,6 +183,9 @@ def iter_source_files(
                 continue
             seen.add(path)
             if any(part.lower() in excluded_parts for part in path.parts):
+                continue
+            relative = path.relative_to(root).as_posix()
+            if any(fnmatch.fnmatch(relative, glob) for glob in exclude_globs):
                 continue
             yield path
             count += 1
