@@ -1,0 +1,7 @@
+{"id":"doc-1","text":"Alpha educational document. This is a deliberately readable local fixture with enough text to pass the configured quality threshold. It contains Unicode such as café, naïve, and Ελληνικά, and it preserves paragraph structure for the cleaning tests.\n\nThe second paragraph remains separate.","url":"https://example.test/1","language":"en"}
+{"id":"doc-2","text":"Alpha educational document. This is a deliberately readable local fixture with enough text to pass the configured quality threshold. It contains Unicode such as café, naïve, and Ελληνικά, and it preserves paragraph structure for the cleaning tests.\n\nThe second paragraph remains separate.","url":"https://example.test/2","language":"en"}
+{"id":"doc-short","text":"too short"}
+{"id":"doc-missing"}
+{"id":"doc-invalid","text":42}
+{"id":"doc-3","text":"Code and symbols remain useful: def greet(name):\n\treturn f\"Hello, {name}!\"\n\nMathematics: α + β = γ. This local document is long enough for the quality threshold and demonstrates that punctuation, tabs, symbols, and source-like content are not destroyed by normalization.","dump":"fixture"}
+{"id":"doc-4","text":"A fourth local educational example contains a moderate amount of prose so that the pipeline can calculate character and UTF-8 byte statistics. It mentions data preparation, reproducibility, and careful validation without using any tokenizer or model.","quality_score":0.91}

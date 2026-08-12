@@ -1,9 +1,0 @@
-schema_version: 1
-tokenizer_config: configs/tokenizer/smoke_tokenizer.yaml
-artifact_path: artifacts/tokenizer/smoke
-report_json: data/tokenizer/reports/smoke_evaluation.json
-report_markdown: data/tokenizer/reports/smoke_evaluation.md
-training_sample_records: 32
-context_length: 1024
-security:
-  maximum_token_length: 64

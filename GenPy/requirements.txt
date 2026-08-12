@@ -1,0 +1,9 @@
+torch
+numpy
+pyyaml
+tqdm
+tokenizers
+datasets
+safetensors
+tensorboard
+pytest

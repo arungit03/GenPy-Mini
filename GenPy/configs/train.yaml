@@ -1,0 +1,21 @@
+training:
+  seed: 42
+
+  micro_batch_size: 4
+  gradient_accumulation_steps: 16
+
+  learning_rate: 0.0003
+  min_learning_rate: 0.00003
+  weight_decay: 0.1
+
+  warmup_ratio: 0.02
+  grad_clip: 1.0
+
+  precision: auto
+
+  log_interval: 10
+  eval_interval: 500
+  save_interval: 1000
+
+  checkpoint_dir: checkpoints
+  log_dir: logs
