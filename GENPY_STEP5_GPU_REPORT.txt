@@ -1,0 +1,48 @@
+GenPy-200M Step 5 GPU Verification
+
+GPU: Tesla T4
+Parameters: 201,560,832
+
+FP32:
+Forward: PASS
+Backward: PASS
+NaN/Inf gradients: 0
+Peak VRAM at seq 32: 1.772 GiB
+
+BF16:
+Forward: PASS
+Backward: PASS
+NaN/Inf gradients: 0
+Peak VRAM at seq 32: 1.765 GiB
+
+Causal isolation: PASS
+RoPE: PASS
+RMSNorm: PASS
+Loss correctness: PASS
+Weight tying: PASS
+
+Tiny-batch overfit:
+Initial loss: 5.567336
+Final loss: 0.005822
+Reduction: 99.9%
+Result: PASS
+
+Context sweep:
+32   : 1.773 GiB
+64   : 1.772 GiB
+128  : 1.777 GiB
+256  : 1.777 GiB
+512  : 2.363 GiB
+1024 : 4.333 GiB
+
+Full 1024 context:
+Loss: 10.545149
+Forward: PASS
+Backward: PASS
+Missing gradients: 0
+NaN/Inf gradients: 0
+Time: 0.82 sec
+
+Regression:
+64 passed
+0 failed

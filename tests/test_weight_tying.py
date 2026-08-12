@@ -10,10 +10,13 @@ from genpy.model import GenPyForCausalLM
 def test_embedding_and_lm_head_are_the_same_parameter():
     model = GenPyForCausalLM(tiny_config())
     assert model.lm_head.weight is model.token_embedding.weight
-    before = model.lm_head.weight[0, 0].item()
+    before = model.lm_head.weight[0, 0].detach().clone()
     with torch.no_grad():
         model.token_embedding.weight[0, 0].add_(1.0)
-    assert model.lm_head.weight[0, 0].item() == pytest.approx(before + 1.0)
+    assert model.lm_head.weight[0, 0].item() == pytest.approx(before.item() + 1.0)
+    with torch.no_grad():
+        model.token_embedding.weight[0, 0].copy_(before)
+    assert model.lm_head.weight[0, 0].item() == pytest.approx(before.item())
     parameter_ids = [id(parameter) for parameter in model.parameters()]
     assert parameter_ids.count(id(model.token_embedding.weight)) == 1
 

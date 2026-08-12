@@ -9,9 +9,12 @@ data/processed/*
 data/manifests/*.json
 manifests/*.json
 data/tokenizer/*
+data/tokenized/*.bin
+data/tokenized/*_metadata.json
 
 checkpoints/*
 logs/*
+logs/*.jsonl
 
 *.pt
 *.pth

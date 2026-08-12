@@ -127,10 +127,23 @@ class TrainingConfig:
     save_interval: int
     checkpoint_dir: str
     log_dir: str
+    sequence_length: int = 1024
+    beta1: float = 0.9
+    beta2: float = 0.95
+    adam_eps: float = 1.0e-8
+    num_workers: int = 0
+    pin_memory: bool = True
+    eval_batches: int = 20
+    keep_last_checkpoints: int = 3
 
     @classmethod
     def from_mapping(cls, section: Mapping[str, Any]) -> "TrainingConfig":
-        required_names = tuple(cls.__dataclass_fields__)
+        required_names = (
+            "seed", "micro_batch_size", "gradient_accumulation_steps",
+            "learning_rate", "min_learning_rate", "weight_decay", "warmup_ratio",
+            "grad_clip", "precision", "log_interval", "eval_interval", "save_interval",
+            "checkpoint_dir", "log_dir",
+        )
         for name in required_names:
             _required(section, name, "training")
         for name in (
@@ -156,7 +169,31 @@ class TrainingConfig:
         for name in ("checkpoint_dir", "log_dir"):
             if not isinstance(section[name], str) or not section[name].strip():
                 raise ValueError(f"'training.{name}' must be a non-empty string")
-        return cls(**{name: section[name] for name in required_names})
+        values = {name: section[name] for name in required_names}
+        values.update({
+            "sequence_length": section.get("sequence_length", 1024),
+            "beta1": section.get("beta1", 0.9),
+            "beta2": section.get("beta2", 0.95),
+            "adam_eps": section.get("adam_eps", 1.0e-8),
+            "num_workers": section.get("num_workers", 0),
+            "pin_memory": section.get("pin_memory", True),
+            "eval_batches": section.get("eval_batches", 20),
+            "keep_last_checkpoints": section.get("keep_last_checkpoints", 3),
+        })
+        for name in ("sequence_length", "num_workers", "eval_batches", "keep_last_checkpoints"):
+            value = values[name]
+            minimum = 0 if name == "num_workers" else 1
+            if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
+                raise ValueError(f"'training.{name}' must be an integer >= {minimum}")
+        for name in ("beta1", "beta2"):
+            value = values[name]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 < value < 1:
+                raise ValueError(f"'training.{name}' must be between 0 and 1")
+        if isinstance(values["adam_eps"], bool) or not isinstance(values["adam_eps"], (int, float)) or values["adam_eps"] <= 0:
+            raise ValueError("'training.adam_eps' must be positive")
+        if not isinstance(values["pin_memory"], bool):
+            raise ValueError("'training.pin_memory' must be a boolean")
+        return cls(**values)
 
 
 def load_model_config(path: PathLike) -> ModelConfig:
@@ -166,7 +203,15 @@ def load_model_config(path: PathLike) -> ModelConfig:
 
 def load_training_config(path: PathLike) -> TrainingConfig:
     """Load and validate a training YAML configuration."""
-    return TrainingConfig.from_mapping(_read_section(path, "training"))
+    config = TrainingConfig.from_mapping(_read_section(path, "training"))
+    model_path = Path(path).parent / "model_200m.yaml"
+    if model_path.is_file():
+        model = load_model_config(model_path)
+        if config.sequence_length > model.max_seq_len:
+            raise ValueError(
+                f"'training.sequence_length' cannot exceed model.max_seq_len ({model.max_seq_len})"
+            )
+    return config
 
 
 @dataclass(frozen=True)
