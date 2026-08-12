@@ -1,17 +1,16 @@
-"""Print a theoretical GenPy parameter estimate; no model is instantiated."""
+"""Report theoretical and actual GenPy parameter counts."""
 
 from pathlib import Path
 
 try:
     from genpy.config import load_model_config
+    from genpy.model import GenPyForCausalLM
 except ModuleNotFoundError:  # Allows direct execution from the scripts directory.
-    from types import SimpleNamespace
+    from _bootstrap import ensure_project_root
 
-    import yaml
-
-    def load_model_config(path):
-        with open(path, encoding="utf-8") as handle:
-            return SimpleNamespace(**yaml.safe_load(handle)["model"])
+    ensure_project_root()
+    from genpy.config import load_model_config
+    from genpy.model import GenPyForCausalLM
 
 
 def theoretical_parameter_estimate() -> int:
@@ -29,12 +28,25 @@ def theoretical_parameter_estimate() -> int:
 
 
 def main() -> int:
+    config_path = Path(__file__).resolve().parents[1] / "configs" / "model_200m.yaml"
+    config = load_model_config(config_path)
     estimate = theoretical_parameter_estimate()
-    print("Theoretical parameter estimate")
-    print("Assumptions: tied input/output embeddings; four dense attention projections;"
-          " three dense SwiGLU projections; two RMSNorm scale vectors per layer;")
-    print(f"Estimated parameters: {estimate:,}")
-    print("Exact parameter counting will become available after the GenPy model is implemented.")
+    model = GenPyForCausalLM(config)
+    trainable = sum(parameter.numel() for parameter in model.parameters() if parameter.requires_grad)
+    total = sum(parameter.numel() for parameter in model.parameters())
+    difference = trainable - estimate
+    print(f"Model: {config.name}")
+    print(f"Theoretical parameter estimate: {estimate:,}")
+    print(f"Actual trainable parameters: {trainable:,}")
+    print(f"Actual total parameters: {total:,}")
+    print(f"Difference: {difference:,}")
+    print("Parameter breakdown (unique trainable parameters):")
+    for name, count in model.parameter_breakdown().items():
+        print(f"  {name}: {count:,}")
+    print("Weights-only memory estimate:")
+    print(f"  FP32: {trainable * 4 / (1024 ** 2):.2f} MiB")
+    print(f"  FP16/BF16: {trainable * 2 / (1024 ** 2):.2f} MiB")
+    print("These estimates exclude gradients, optimizer states, and activations.")
     return 0
 
 

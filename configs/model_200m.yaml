@@ -10,3 +10,8 @@ model:
   norm_eps: 1.0e-5
   rope_theta: 10000.0
   tie_embeddings: true
+  attention_dropout: 0.0
+  residual_dropout: 0.0
+  embedding_dropout: 0.0
+  bias: false
+  initializer_range: 0.02

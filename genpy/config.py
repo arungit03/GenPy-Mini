@@ -50,6 +50,11 @@ class ModelConfig:
     norm_eps: float
     rope_theta: float
     tie_embeddings: bool
+    attention_dropout: float = 0.0
+    residual_dropout: float = 0.0
+    embedding_dropout: float = 0.0
+    bias: bool = False
+    initializer_range: float = 0.02
 
     @classmethod
     def from_mapping(cls, section: Mapping[str, Any]) -> "ModelConfig":
@@ -84,7 +89,26 @@ class ModelConfig:
             raise ValueError("'model.name' must be a non-empty string")
         if not isinstance(section["tie_embeddings"], bool):
             raise ValueError("'model.tie_embeddings' must be a boolean")
-        return cls(**{name: section[name] for name in required_names})
+        optional_defaults = {
+            "attention_dropout": 0.0,
+            "residual_dropout": 0.0,
+            "embedding_dropout": 0.0,
+            "bias": False,
+            "initializer_range": 0.02,
+        }
+        values = {name: section[name] for name in required_names}
+        for name, default in optional_defaults.items():
+            values[name] = section.get(name, default)
+        for name in ("attention_dropout", "residual_dropout", "embedding_dropout"):
+            value = values[name]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value < 1:
+                raise ValueError(f"'model.{name}' must be between 0 (inclusive) and 1 (exclusive)")
+        if not isinstance(values["bias"], bool):
+            raise ValueError("'model.bias' must be a boolean")
+        initializer_range = values["initializer_range"]
+        if isinstance(initializer_range, bool) or not isinstance(initializer_range, (int, float)) or initializer_range <= 0:
+            raise ValueError("'model.initializer_range' must be a positive number")
+        return cls(**values)
 
 
 @dataclass(frozen=True)

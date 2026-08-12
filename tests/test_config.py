@@ -54,6 +54,25 @@ def test_invalid_attention_dimensions():
         ModelConfig.from_mapping(_model_mapping(head_dim=5))
 
 
+def test_model_optional_architecture_fields_and_validation():
+    config = ModelConfig.from_mapping(_model_mapping(
+        attention_dropout=0.1,
+        residual_dropout=0.2,
+        embedding_dropout=0.3,
+        bias=False,
+        initializer_range=0.02,
+    ))
+    assert config.attention_dropout == 0.1
+    assert config.residual_dropout == 0.2
+    assert config.embedding_dropout == 0.3
+    assert config.bias is False
+    assert config.initializer_range == 0.02
+    with pytest.raises(ValueError, match="exclusive"):
+        ModelConfig.from_mapping(_model_mapping(attention_dropout=1.0))
+    with pytest.raises(ValueError, match="positive"):
+        ModelConfig.from_mapping(_model_mapping(initializer_range=0.0))
+
+
 @pytest.mark.parametrize("field", ["vocab_size", "max_seq_len", "hidden_size", "num_layers", "num_heads", "head_dim", "intermediate_size", "norm_eps", "rope_theta"])
 def test_invalid_non_positive_model_values(field):
     with pytest.raises(ValueError, match="positive"):

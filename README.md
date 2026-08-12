@@ -1,12 +1,12 @@
 # GenPy-200M
 
-GenPy is an educational and research decoder-only language model project intended to be implemented and pretrained from scratch with PyTorch. This repository is currently at Step 1: project setup and environment preparation.
+GenPy is an educational and research decoder-only language model project intended to be implemented and pretrained from scratch with PyTorch. The architecture and model-level verification are now implemented; training and generation remain later milestones.
 
 ## Architecture target
 
 | Property        | Value        |
 | --------------- | ------------ |
-| Parameters      | ~200M target |
+| Parameters      | 201,560,832 verified |
 | Layers          | 24           |
 | Hidden Size     | 768          |
 | Attention Heads | 12           |
@@ -18,7 +18,7 @@ GenPy is an educational and research decoder-only language model project intende
 | Normalization   | RMSNorm      |
 | Framework       | PyTorch      |
 
-GenPy will not use pretrained model weights. The future Transformer implementation will use PyTorch primitives. Hugging Face tooling may later be used for datasets and tokenization, but Hugging Face Transformer model implementations will not be used to build GenPy.
+GenPy does not use pretrained model weights. The Transformer implementation uses PyTorch primitives. Hugging Face tooling may later be used for datasets and tokenization, but Hugging Face Transformer model implementations will not be used to build GenPy.
 
 Local CPU execution is intended for development and testing. Kaggle GPU will be used for serious pretraining.
 
@@ -28,7 +28,7 @@ Local CPU execution is intended for development and testing. Kaggle GPU will be 
 [x] Step 1 - Project setup
 [x] Step 2 - Dataset pipeline
 [~] Step 3 - Tokenizer
-[ ] Step 4 - GenPy architecture
+[x] Step 4 - GenPy architecture
 [ ] Step 5 - Model verification
 [ ] Step 6 - Training engine
 [ ] Step 7 - Small-scale training test
@@ -37,7 +37,7 @@ Local CPU execution is intended for development and testing. Kaggle GPU will be 
 [ ] Step 10 - Release
 ```
 
-Step 1 intentionally contains no model, tokenizer, dataset, or training implementation.
+Step 1 established the project and environment; later steps add the data, tokenizer, and model components described below.
 
 ## Dataset pipeline
 
@@ -46,3 +46,12 @@ Step 2 adds a streaming, resumable, text-only preparation pipeline with conserva
 ## Tokenizer
 
 Step 3 implements and smoke-tests a custom Byte-Level BPE tokenizer with NFC normalization, fixed special-token IDs, explicit BOS/EOS controls, save/load validation, and checksum manifests. Production tokenizer training is pending a real cleaned Step 2 corpus of sufficient size. See [docs/TOKENIZER.md](docs/TOKENIZER.md).
+
+## Architecture
+
+Step 4 implements the locked GenPy-200M decoder-only Transformer: 24
+pre-norm blocks, RMSNorm, 12-head causal self-attention with RoPE, SwiGLU
+intermediate size 2176, and tied input/output embeddings. The model has a
+32,000-token vocabulary and 1,024-token context. See
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for component details and scope
+boundaries.
