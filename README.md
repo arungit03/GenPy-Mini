@@ -32,7 +32,8 @@ Local CPU execution is intended for development and testing. Kaggle GPU will be 
 [x] Step 5 - Model verification
 [x] Step 6 - Training engine
 [x] Step 7 - Small-scale training test
-[ ] Step 8 - Full pretraining
+[x] Step 8A - Limited pretraining
+[ ] Step 8B - Full pretraining
 [ ] Step 9 - Evaluation and inference
 [ ] Step 10 - Release
 ```
@@ -71,6 +72,14 @@ length 256, gradient accumulation 16, and 204,800 tokens. Loss decreased from
 10.526969909667969 to 7.654247522354126, with final validation loss
 7.657994747161865. Resume from step 45 reproduced steps 46–50 exactly. See
 [docs/STEP7_GPU_TRAINING.md](docs/STEP7_GPU_TRAINING.md).
+
+## Step 8A pretraining
+
+Step 8A limited pretraining completed on a Tesla T4 using FP16, sequence length
+256, gradient accumulation 16, and 6,297 optimizer steps. The run processed
+25,796,608 tokens and reached final loss `4.821587026119232`. See
+[docs/STEP8_PRETRAINING.md](docs/STEP8_PRETRAINING.md). Step 8B full pretraining
+is not started.
 
 ## Verification
 
