@@ -1,0 +1,23 @@
+training:
+  seed: 42
+  micro_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 0.00005
+  min_learning_rate: 0.00001
+  weight_decay: 0.1
+  warmup_ratio: 0.02
+  grad_clip: 1.0
+  precision: fp16
+  log_interval: 10
+  eval_interval: 250
+  save_interval: 250
+  checkpoint_dir: checkpoints/step8b_t4
+  log_dir: logs/step8b_t4
+  sequence_length: 256
+  beta1: 0.9
+  beta2: 0.95
+  adam_eps: 1.0e-8
+  num_workers: 0
+  pin_memory: true
+  eval_batches: 20
+  keep_last_checkpoints: 3

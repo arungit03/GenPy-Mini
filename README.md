@@ -33,7 +33,8 @@ Local CPU execution is intended for development and testing. Kaggle GPU will be 
 [x] Step 6 - Training engine
 [x] Step 7 - Small-scale training test
 [x] Step 8A - Limited pretraining
-[ ] Step 8B - Full pretraining
+[x] Step 8B - Continuation infrastructure prepared
+[ ] Step 8B - Continuation training
 [ ] Step 9 - Evaluation and inference
 [ ] Step 10 - Release
 ```
@@ -79,7 +80,8 @@ Step 8A limited pretraining completed on a Tesla T4 using FP16, sequence length
 256, gradient accumulation 16, and 6,297 optimizer steps. The run processed
 25,796,608 tokens and reached final loss `4.821587026119232`. See
 [docs/STEP8_PRETRAINING.md](docs/STEP8_PRETRAINING.md). Step 8B full pretraining
-is not started.
+is not started. The continuation-only initialization design is documented in
+[docs/STEP8B_CONTINUATION.md](docs/STEP8B_CONTINUATION.md).
 
 ## Verification
 

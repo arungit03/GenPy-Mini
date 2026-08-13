@@ -39,6 +39,7 @@ class TrainingEngine:
         self.state = TrainingState()
         self.metrics = Metrics()
         self.initial_loss: float | None = None
+        self.continuation_provenance = None
         self._train_iterator = None
 
     def _next_batch(self):
@@ -148,7 +149,7 @@ class TrainingEngine:
         if self.checkpoint_manager is None:
             raise ValueError("checkpoint_manager is not configured")
         data_metadata = getattr(getattr(self.train_loader, "dataset", None), "metadata", None)
-        return self.checkpoint_manager.save(model=self.model, optimizer=self.optimizer, scheduler=self.scheduler, precision=self.precision, state=self.state, sampler=self.train_sampler, model_config=getattr(self.model, "config", None), training_config=self.config, max_steps=self.max_steps, data_metadata=data_metadata)
+        return self.checkpoint_manager.save(model=self.model, optimizer=self.optimizer, scheduler=self.scheduler, precision=self.precision, state=self.state, sampler=self.train_sampler, model_config=getattr(self.model, "config", None), training_config=self.config, max_steps=self.max_steps, data_metadata=data_metadata, provenance=self.continuation_provenance)
 
     def load_checkpoint(self, path=None):
         if self.checkpoint_manager is None:
@@ -156,3 +157,15 @@ class TrainingEngine:
         payload = self.checkpoint_manager.load(path, model=self.model, optimizer=self.optimizer, scheduler=self.scheduler, precision=self.precision, state=self.state, sampler=self.train_sampler, model_config=getattr(self.model, "config", None), training_config=self.config)
         self._train_iterator = None
         return payload
+
+    def initialize_from_checkpoint(self, path):
+        """Initialize a fresh phase from checkpoint model weights only."""
+        if self.checkpoint_manager is None:
+            raise ValueError("checkpoint_manager is not configured")
+        self.continuation_provenance = self.checkpoint_manager.initialize_from_checkpoint(
+            path,
+            model=self.model,
+            model_config=getattr(self.model, "config", None),
+        )
+        self._train_iterator = None
+        return self.continuation_provenance

@@ -1,6 +1,7 @@
 """Incremental, resumable orchestration for the Step 2 text pipeline."""
 
 import hashlib
+import itertools
 import json
 import platform
 from dataclasses import asdict, dataclass
@@ -104,12 +105,26 @@ def _manifest(
     shard_files: List[str],
     completed: bool,
     created_at: str,
+    skip_documents: int,
+    max_documents: Optional[int],
 ) -> dict:
+    source_end_index_exclusive = (
+        skip_documents + max_documents if max_documents is not None else None
+    )
     return {
         "pipeline_version": PIPELINE_VERSION,
         "created_at": created_at,
         "python_version": platform.python_version(),
         "dataset": _config_summary(config),
+        "skip_documents": skip_documents,
+        "source_start_index": skip_documents,
+        "requested_source_documents": max_documents,
+        "source_end_index_exclusive": source_end_index_exclusive,
+        "source_range": {
+            "start_index": skip_documents,
+            "requested_documents": max_documents,
+            "end_index_exclusive": source_end_index_exclusive,
+        },
         "statistics": stats.to_dict(),
         "generated_shard_filenames": sorted(shard_files),
         "completion_status": "complete" if completed else "incomplete",
@@ -124,10 +139,19 @@ def _state(
     completed: bool,
     fingerprint: str,
     manifest_filename: str,
+    skip_documents: int,
+    max_documents: Optional[int],
 ) -> dict:
+    source_end_index_exclusive = (
+        skip_documents + max_documents if max_documents is not None else None
+    )
     return {
         "pipeline_version": PIPELINE_VERSION,
         "configuration_fingerprint": fingerprint,
+        "skip_documents": skip_documents,
+        "source_start_index": skip_documents,
+        "requested_source_documents": max_documents,
+        "source_end_index_exclusive": source_end_index_exclusive,
         "source_documents_seen": stats.source_documents_seen,
         "statistics": stats.to_dict(),
         "seen_content_hashes": sorted(deduplicator.hashes),
@@ -144,10 +168,13 @@ def run_pipeline(
     max_documents: Optional[int] = None,
     output_dir: Optional[Path] = None,
     resume: bool = False,
+    skip_documents: int = 0,
 ) -> PipelineResult:
     """Process rows incrementally, optionally resuming a prior compatible run."""
     if max_documents is not None and max_documents < 0:
         raise ValueError("max_documents must be non-negative")
+    if skip_documents < 0:
+        raise ValueError("skip_documents must be non-negative")
     processed_dir = Path(output_dir or config.output.processed_dir)
     manifest_dir = (
         processed_dir.parent / "manifests" if output_dir is not None else Path(config.output.manifest_dir)
@@ -163,6 +190,11 @@ def run_pipeline(
         prior_state = _load_state(state_path)
         if prior_state.get("configuration_fingerprint") != fingerprint:
             raise ValueError("Resume configuration is incompatible with the saved pipeline state")
+        saved_skip_documents = prior_state.get("skip_documents", 0)
+        if saved_skip_documents != skip_documents:
+            raise ValueError(
+                "Resume source range is incompatible: skip_documents differs from the saved pipeline state"
+            )
         stats = DatasetStats.from_dict(prior_state.get("statistics", {}))
         deduplicator = ExactDeduplicator(set(prior_state.get("seen_content_hashes", [])))
         manifest_filename = str(prior_state.get("manifest_filename", manifest_filename))
@@ -182,13 +214,27 @@ def run_pipeline(
     writer = DocumentShardWriter(processed_dir, config.output.shard_max_documents)
     prior_seen = stats.source_documents_seen
     rows: Iterable[Mapping[str, object]] = source if source is not None else load_source_rows(config)
+    rows = itertools.islice(rows, skip_documents, None)
     completed = False
     existing_shards = [path.name for path in processed_dir.glob("*.jsonl.gz")]
     created_at = prior_state.get("created_at", datetime.now(timezone.utc).isoformat()) if prior_state else datetime.now(timezone.utc).isoformat()
 
     def save_state() -> None:
         shard_files = sorted(set(existing_shards + writer.shard_files))
-        _write_json(state_path, _state(config, stats, deduplicator, shard_files, completed, fingerprint, manifest_filename))
+        _write_json(
+            state_path,
+            _state(
+                config,
+                stats,
+                deduplicator,
+                shard_files,
+                completed,
+                fingerprint,
+                manifest_filename,
+                skip_documents,
+                max_documents,
+            ),
+        )
 
     try:
         for source_index, row in enumerate(rows):
@@ -226,6 +272,17 @@ def run_pipeline(
 
     shard_files = sorted(set(existing_shards + writer.shard_files))
     manifest_path = manifest_dir / manifest_filename
-    _write_json(manifest_path, _manifest(config, stats, shard_files, completed, created_at))
+    _write_json(
+        manifest_path,
+        _manifest(
+            config,
+            stats,
+            shard_files,
+            completed,
+            created_at,
+            skip_documents,
+            max_documents,
+        ),
+    )
     save_state()
     return PipelineResult(stats, processed_dir, manifest_path, state_path, shard_files, completed)

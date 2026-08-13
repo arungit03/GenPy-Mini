@@ -1,4 +1,5 @@
 import json
+import gzip
 from dataclasses import replace
 from pathlib import Path
 
@@ -69,3 +70,93 @@ def test_incompatible_resume_is_rejected(tmp_path):
         assert "incompatible" in str(exc)
     else:
         raise AssertionError("incompatible resume was accepted")
+
+
+def _range_source(count):
+    return [
+        {
+            "id": str(index),
+            "text": f"Source document {index} contains enough deterministic text for testing." * 2,
+        }
+        for index in range(count)
+    ]
+
+
+def _written_ids(output):
+    ids = []
+    for path in output.glob("*.jsonl.gz"):
+        with gzip.open(path, "rt", encoding="utf-8") as handle:
+            ids.extend(json.loads(line)["doc_id"] for line in handle)
+    return sorted(ids, key=int)
+
+
+def test_skip_zero_preserves_existing_range_and_records_provenance(tmp_path):
+    config = _config(tmp_path)
+    source = _range_source(4)
+    result = run_pipeline(config, source=source, max_documents=2, output_dir=tmp_path / "processed")
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert result.stats.source_documents_seen == 2
+    assert _written_ids(result.output_dir) == ["0", "1"]
+    assert manifest["skip_documents"] == 0
+    assert manifest["source_start_index"] == 0
+    assert manifest["requested_source_documents"] == 2
+    assert manifest["source_end_index_exclusive"] == 2
+
+
+def test_skip_documents_ignores_rows_before_selected_range(tmp_path):
+    config = _config(tmp_path)
+    result = run_pipeline(config, source=_range_source(5), skip_documents=3, output_dir=tmp_path / "processed")
+    assert result.stats.source_documents_seen == 2
+    assert _written_ids(result.output_dir) == ["3", "4"]
+
+
+def test_max_documents_applies_after_skip(tmp_path):
+    config = _config(tmp_path)
+    result = run_pipeline(
+        config,
+        source=_range_source(10),
+        skip_documents=3,
+        max_documents=2,
+        output_dir=tmp_path / "processed",
+    )
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert result.stats.source_documents_seen == 2
+    assert _written_ids(result.output_dir) == ["3", "4"]
+    assert manifest["source_start_index"] == 3
+    assert manifest["requested_source_documents"] == 2
+    assert manifest["source_end_index_exclusive"] == 5
+
+
+def test_resume_continues_within_selected_source_range(tmp_path):
+    config = _config(tmp_path)
+    source = _range_source(8)
+    output = tmp_path / "processed"
+
+    def interrupted_source():
+        yield from source[:5]
+        raise RuntimeError("simulated interruption")
+
+    try:
+        run_pipeline(config, source=interrupted_source(), skip_documents=3, output_dir=output)
+    except RuntimeError as exc:
+        assert "simulated" in str(exc)
+    else:
+        raise AssertionError("interrupted source did not fail")
+
+    resumed = run_pipeline(config, source=source, skip_documents=3, output_dir=output, resume=True)
+    assert resumed.completed
+    assert resumed.stats.source_documents_seen == 5
+    assert _written_ids(output) == ["3", "4", "5", "6", "7"]
+
+
+def test_resume_rejects_changed_skip_documents(tmp_path):
+    config = _config(tmp_path)
+    source = _range_source(5)
+    output = tmp_path / "processed"
+    run_pipeline(config, source=source, skip_documents=3, output_dir=output)
+    try:
+        run_pipeline(config, source=source, skip_documents=0, output_dir=output, resume=True)
+    except ValueError as exc:
+        assert "skip_documents" in str(exc)
+    else:
+        raise AssertionError("incompatible skip_documents was accepted")

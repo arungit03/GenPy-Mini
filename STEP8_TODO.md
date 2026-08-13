@@ -34,11 +34,23 @@ States: `[ ]` Not started, `[~]` In progress, `[x]` Completed and verified, `[!]
 - [x] Leave Step 8B not started.
 - [x] Do not implement full-scale pretraining, evaluation/inference, generation, or unrelated Step 8 features.
 
+## Step 8B — Continuation infrastructure prepared
+
+- [x] Add explicit `--init-from-checkpoint` distinct from exact `--resume`.
+- [x] Load Step 8A model weights while resetting optimizer, scaler, scheduler, state, sampler, and RNG for a new phase.
+- [x] Record source checkpoint provenance in continuation checkpoints.
+- [x] Protect fresh Step 8B datasets from Step 8A sampler restoration.
+- [x] Start a new warmup/cosine scheduler for Step 8B.
+- [x] Add architecture, model-weight, state, sampler, scheduler, and exact-resume regression tests.
+- [x] Create `configs/train_step8b_t4.yaml` with conservative continuation values.
+- [x] Document the continuation mode and reset policy.
+- [x] Confirm Step 8B training was not started.
+
 ## Final audit
 
 ```text
-Total: 23
-Completed: 23
+Total: 32
+Completed: 32
 Remaining: 0
 Blocked: 0
 Step 8A: Complete

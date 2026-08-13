@@ -26,7 +26,9 @@ def main() -> int:
     parser.add_argument("--validation-data", type=Path)
     parser.add_argument("--max-steps", type=int, required=True)
     parser.add_argument("--device", default="cpu")
-    parser.add_argument("--resume", nargs="?", const="latest")
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument("--resume", nargs="?", const="latest", help="exact interrupted-run continuation")
+    mode_group.add_argument("--init-from-checkpoint", type=Path, help="initialize a fresh phase from model weights only")
     parser.add_argument("--precision", choices=("auto", "fp32", "fp16", "bf16"))
     parser.add_argument("--checkpoint-dir", type=Path)
     parser.add_argument("--log-dir", type=Path)
@@ -73,7 +75,10 @@ def main() -> int:
         return 0
     checkpoint_manager = CheckpointManager(args.checkpoint_dir or train_config.checkpoint_dir, train_config.keep_last_checkpoints)
     engine = TrainingEngine(model, train_config, train_loader, validation_loader, device=args.device, max_steps=args.max_steps, precision=precision, checkpoint_manager=checkpoint_manager, logger=TrainingLogger(args.log_dir or train_config.log_dir), train_sampler=train_sampler)
-    if args.resume:
+    if args.init_from_checkpoint:
+        provenance = engine.initialize_from_checkpoint(args.init_from_checkpoint)
+        print(json.dumps({"initialization": provenance}, indent=2))
+    elif args.resume:
         engine.load_checkpoint(None if args.resume == "latest" else Path(args.resume))
     result = engine.train()
     engine.save_checkpoint()

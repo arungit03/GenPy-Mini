@@ -12,6 +12,17 @@ import torch
 from genpy.training.state import TrainingState
 
 
+def sha256_file(path: Path) -> str:
+    """Return the SHA-256 digest of a trusted local checkpoint artifact."""
+    import hashlib
+
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 class CheckpointManager:
     def __init__(self, directory: Path | str, keep_last: int = 3) -> None:
         if keep_last <= 0:
@@ -21,7 +32,7 @@ class CheckpointManager:
         self.keep_last = keep_last
         self.latest_pointer = self.directory / "latest.json"
 
-    def save(self, *, model, optimizer, scheduler, precision, state: TrainingState, sampler=None, model_config=None, training_config=None, max_steps=None, data_metadata=None) -> Path:
+    def save(self, *, model, optimizer, scheduler, precision, state: TrainingState, sampler=None, model_config=None, training_config=None, max_steps=None, data_metadata=None, provenance=None) -> Path:
         filename = f"step_{state.global_step:08d}.pt"
         final_path = self.directory / filename
         temporary = self.directory / f".{filename}.{os.getpid()}.tmp"
@@ -36,6 +47,7 @@ class CheckpointManager:
             "training_config": None if training_config is None else asdict(training_config),
             "max_steps": max_steps,
             "data_metadata": data_metadata,
+            "provenance": provenance,
             "rng": {
                 "python": random.getstate(),
                 "numpy": np.random.get_state(),
@@ -57,6 +69,38 @@ class CheckpointManager:
                 temporary.unlink()
             raise
         return final_path
+
+    def initialize_from_checkpoint(self, path: Path | str, *, model, model_config=None) -> dict:
+        """Load only model weights for a new continuation phase.
+
+        This deliberately does not touch the optimizer, scheduler, scaler,
+        sampler, RNG state, or TrainingState of the new run.
+        """
+        checkpoint_path = Path(path)
+        if not checkpoint_path.is_file():
+            raise FileNotFoundError(f"Checkpoint does not exist: {checkpoint_path}")
+        if checkpoint_path.is_symlink():
+            raise ValueError("checkpoint symlinks are not accepted")
+        checkpoint_path = checkpoint_path.resolve()
+        payload = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        if model_config is not None and payload.get("model_config") != asdict(model_config):
+            raise ValueError("checkpoint model configuration is incompatible")
+        try:
+            model.load_state_dict(payload["model"])
+        except RuntimeError as error:
+            raise ValueError("checkpoint model weights are incompatible with the target architecture") from error
+        source_state = payload.get("training_state") or {}
+        return {
+            "initialization_mode": "weights_only",
+            "source_checkpoint_path": str(checkpoint_path),
+            "source_checkpoint_sha256": sha256_file(checkpoint_path),
+            "source_global_step": int(source_state.get("global_step", 0)),
+            "source_tokens_seen": int(source_state.get("tokens_seen", 0)),
+            "optimizer_restored": False,
+            "scheduler_restored": False,
+            "scaler_restored": False,
+            "sampler_restored": False,
+        }
 
     def _retain(self) -> None:
         files = sorted(self.directory.glob("step_*.pt"), key=lambda path: path.stat().st_mtime)
