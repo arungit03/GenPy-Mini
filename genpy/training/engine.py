@@ -57,20 +57,26 @@ class TrainingEngine:
         if self.validation_loader is None:
             raise ValueError("validation_loader is not configured")
         was_training = self.model.training
+        validation_sampler = getattr(self.validation_loader, "batch_sampler", None)
+        sampler_state = validation_sampler.state_dict() if hasattr(validation_sampler, "state_dict") else None
         self.model.eval()
         losses = []
-        with torch.no_grad():
-            for index, batch in enumerate(self.validation_loader):
-                if max_batches is not None and index >= max_batches:
-                    break
-                inputs, targets = self._move_batch(batch)
-                with self.precision.autocast():
-                    loss = packed_loss(self.model(inputs), targets)
-                if not torch.isfinite(loss):
-                    raise FloatingPointError("non-finite validation loss")
-                losses.append(float(loss.item()))
-        if was_training:
-            self.model.train()
+        try:
+            with torch.no_grad():
+                for index, batch in enumerate(self.validation_loader):
+                    if max_batches is not None and index >= max_batches:
+                        break
+                    inputs, targets = self._move_batch(batch)
+                    with self.precision.autocast():
+                        loss = packed_loss(self.model(inputs), targets)
+                    if not torch.isfinite(loss):
+                        raise FloatingPointError("non-finite validation loss")
+                    losses.append(float(loss.item()))
+        finally:
+            if sampler_state is not None:
+                validation_sampler.load_state_dict(sampler_state)
+            if was_training:
+                self.model.train()
         if not losses:
             raise ValueError("validation loader produced no batches")
         return sum(losses) / len(losses)
@@ -115,7 +121,7 @@ class TrainingEngine:
                 self.initial_loss = final_loss
             self.metrics.update(final_loss, self.config.micro_batch_size * self.config.sequence_length * self.config.gradient_accumulation_steps)
             if self.state.global_step % self.config.log_interval == 0 or self.state.global_step == 1:
-                self.logger.log(self.metrics.summary(global_step=self.state.global_step, micro_step=self.state.micro_step, learning_rate=self.scheduler.get_last_lr()[0], gradient_norm=last_gradient_norm))
+                self.logger.log(self.metrics.summary(global_step=self.state.global_step, micro_step=self.state.micro_step, learning_rate=self.scheduler.get_last_lr()[0], gradient_norm=last_gradient_norm, tokens_seen=self.state.tokens_seen))
                 self.metrics.reset()
             if self.validation_loader is not None and self.state.global_step % self.config.eval_interval == 0:
                 validation_loss = self.validate(self.config.eval_batches)

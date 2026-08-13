@@ -31,7 +31,7 @@ Local CPU execution is intended for development and testing. Kaggle GPU will be 
 [x] Step 4 - GenPy architecture
 [x] Step 5 - Model verification
 [x] Step 6 - Training engine
-[ ] Step 7 - Small-scale training test
+[x] Step 7 - Small-scale training test
 [ ] Step 8 - Full pretraining
 [ ] Step 9 - Evaluation and inference
 [ ] Step 10 - Release
@@ -63,6 +63,14 @@ deterministic batching, AdamW, warmup/cosine learning rates, precision
 management, accumulation, clipping, validation, logging, atomic checkpoints,
 and deterministic resume. It builds the engine only; meaningful small-scale
 training begins in Step 7. See [docs/TRAINING_ENGINE.md](docs/TRAINING_ENGINE.md).
+
+## Step 7 GPU training
+
+The verified Tesla T4 Step 7 run trained 50 FP16 optimizer steps with sequence
+length 256, gradient accumulation 16, and 204,800 tokens. Loss decreased from
+10.526969909667969 to 7.654247522354126, with final validation loss
+7.657994747161865. Resume from step 45 reproduced steps 46–50 exactly. See
+[docs/STEP7_GPU_TRAINING.md](docs/STEP7_GPU_TRAINING.md).
 
 ## Verification
 
