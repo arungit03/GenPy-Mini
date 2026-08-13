@@ -41,12 +41,32 @@ class PrecisionManager:
         if self.scaler.is_enabled():
             self.scaler.unscale_(optimizer)
 
-    def step(self, optimizer: torch.optim.Optimizer) -> None:
+    @property
+    def uses_grad_scaler(self) -> bool:
+        """Whether this precision mode uses GradScaler overflow handling."""
+        return bool(self.scaler.is_enabled())
+
+    def step(self, optimizer: torch.optim.Optimizer) -> bool:
+        """Perform one real optimizer update and return whether it ran."""
         if self.scaler.is_enabled():
             self.scaler.step(optimizer)
             self.scaler.update()
+            return True
         else:
             optimizer.step()
+            return True
+
+    def skip_optimizer_step(self, optimizer: torch.optim.Optimizer) -> float:
+        """Record an already-detected FP16 overflow and reduce the scaler.
+
+        ``unscale_`` must have been called for this optimizer in the current
+        iteration. GradScaler then has the recorded non-finite state needed by
+        ``update()`` even though ``step()`` is intentionally not called.
+        """
+        if not self.uses_grad_scaler:
+            raise RuntimeError("skip_optimizer_step is only valid with GradScaler")
+        self.scaler.update()
+        return float(self.scaler.get_scale())
 
     def state_dict(self) -> dict:
         return {"requested_mode": self.mode, "scaler": self.scaler.state_dict()}

@@ -108,6 +108,18 @@ class TrainingEngine:
                 self.state.tokens_seen += inputs.numel()
             self.precision.unscale_(self.optimizer)
             if not self._check_finite_gradients():
+                if self.precision.uses_grad_scaler:
+                    scaler_scale = self.precision.skip_optimizer_step(self.optimizer)
+                    self.optimizer.zero_grad(set_to_none=True)
+                    self.logger.log({
+                        "global_step": self.state.global_step,
+                        "micro_step": self.state.micro_step,
+                        "tokens_seen": self.state.tokens_seen,
+                        "fp16_overflow": True,
+                        "skipped_update": True,
+                        "scaler_scale": scaler_scale,
+                    })
+                    continue
                 raise FloatingPointError(f"non-finite gradient at global_step={self.state.global_step}")
             if self.config.grad_clip > 0:
                 last_gradient_norm = float(torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config.grad_clip).item())
