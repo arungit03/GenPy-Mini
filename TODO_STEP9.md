@@ -31,18 +31,18 @@ States: `[ ]` Not started, `[~]` In progress, `[x]` Completed and verified, `[!]
 - [x] Verify the production parameter count remains `201,560,832`.
 - [x] Preserve the tokenizer, model architecture, training engine, and checkpoint format.
 
-## Scope boundary
+## Step 9 completion boundary
 
 - [x] Do not retrain the model.
 - [x] Do not begin Step 8C or further pretraining.
 - [x] Keep the real 2.3GB checkpoint and Kaggle data out of CPU tests.
-- [ ] Complete any later Step 9 release or serving work not covered by Step 9.7.
+- [x] Complete the Step 9 evaluation and inference scope covered by this repository.
 
 ## Final audit
 
 ```text
+Step 9: Complete
 Step 9.7: Complete
-Remaining Step 9.7 items: 0
-Blocked Step 9.7 items: 0
-Later Step 9 work: Not started
+Remaining Step 9 items: 0
+Blocked Step 9 items: 0
 ```

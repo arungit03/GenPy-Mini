@@ -5,10 +5,36 @@ import torch
 from torch.nn import functional as F
 
 from genpy.evaluation import evaluate_packed_dataset
+from genpy.evaluation.evaluation import _devices_match
 from genpy.model import GenPyForCausalLM
 from genpy.training.data import PackedTokenDataset
 from tests.test_model_architecture import tiny_config
 from tests.test_training_data import write_tokens
+
+
+def test_cuda_aliases_resolve_to_the_same_device(monkeypatch):
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "current_device", lambda: 0)
+    assert _devices_match(torch.device("cuda:0"), "cuda")
+    assert _devices_match(torch.device("cuda:0"), "cuda:0")
+
+
+def test_genuinely_mismatched_cuda_devices_are_rejected():
+    assert not _devices_match(torch.device("cuda:0"), "cuda:1")
+
+
+def test_cpu_device_matching_and_mismatch_are_unchanged():
+    assert _devices_match(torch.device("cpu"), "cpu")
+    assert not _devices_match(torch.device("cpu"), "cuda:0")
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
+def test_cuda_alias_is_accepted_by_evaluation_when_available(tmp_path):
+    model = GenPyForCausalLM(tiny_config()).to("cuda:0").eval()
+    dataset = PackedTokenDataset(write_tokens(tmp_path, range(9)), sequence_length=4)
+    result = evaluate_packed_dataset(model, dataset, device="cuda")
+    assert result.evaluation_windows == 2
+    assert result.evaluated_tokens == 8
 
 
 def test_evaluation_is_token_weighted_and_reports_windows(tmp_path):

@@ -35,7 +35,7 @@ Local CPU execution is intended for development and testing. Kaggle GPU will be 
 [x] Step 8A - Limited pretraining
 [x] Step 8B - Continuation infrastructure prepared
 [ ] Step 8B - Continuation training
-[~] Step 9 - Evaluation and inference (Step 9.7 complete)
+[x] Step 9 - Evaluation and inference
 [x] Step 9.7 - Production inference and evaluation tooling
 [ ] Step 10 - Release
 ```

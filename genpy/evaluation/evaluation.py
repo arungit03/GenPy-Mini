@@ -47,6 +47,20 @@ def _autocast_context(device: torch.device, precision: str):
     return nullcontext()
 
 
+def _normalize_device(device: str | torch.device) -> torch.device:
+    """Resolve an unspecified CUDA index using PyTorch's current device."""
+    resolved = torch.device(device)
+    if resolved.type == "cuda" and resolved.index is None:
+        index = torch.cuda.current_device() if torch.cuda.is_available() else 0
+        return torch.device("cuda", index)
+    return resolved
+
+
+def _devices_match(model_device: torch.device, requested_device: str | torch.device) -> bool:
+    """Compare concrete devices while treating ``cuda`` as the current CUDA device."""
+    return _normalize_device(model_device) == _normalize_device(requested_device)
+
+
 def evaluate_packed_dataset(
     model: torch.nn.Module,
     dataset: PackedTokenDataset,
@@ -62,9 +76,9 @@ def evaluate_packed_dataset(
         raise ValueError(
             "validation dataset contains fewer than sequence_length + 1 tokens; no complete windows"
         )
-    target_device = torch.device(device)
+    target_device = _normalize_device(device)
     model_device = next(model.parameters()).device
-    if target_device != model_device:
+    if not _devices_match(model_device, target_device):
         raise ValueError(f"model is on {model_device}, but evaluation requested {target_device}")
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
     was_training = model.training
