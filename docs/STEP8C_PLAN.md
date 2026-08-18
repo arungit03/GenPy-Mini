@@ -81,6 +81,34 @@ The target hardware is a Kaggle Tesla T4. The 3e-5 learning rate and 5e-6
 minimum are conservative continuation values for learned Step 8B weights.
 This file deliberately does not contain a final `max_steps`.
 
+## Bounded Kaggle segments
+
+After tokenization, the exact Step 8C target is expected to be
+`max_steps = 60483`. Every invocation must still construct the engine and
+scheduler with that full horizon. Long Kaggle runs may be split safely:
+
+```text
+Fresh phase:
+  --max-steps 60483 --stop-after-steps 5000
+  global_step: 0 -> 5000
+
+Resume:
+  --max-steps 60483 --stop-after-steps 5000
+  global_step: 5000 -> 10000
+
+Final segment:
+  --max-steps 60483 --stop-after-steps 5000
+  global_step: 60000 -> 60483
+```
+
+`stop_after_steps` counts only successful optimizer updates. FP16 overflow
+updates remain skipped and do not advance `global_step`, optimizer steps, or
+the scheduler. Each bounded invocation saves a complete resumable checkpoint.
+Exact `--resume` additionally rejects a checkpoint whose saved `max_steps`
+does not equal the requested full horizon, preventing accidental scheduler
+schedule changes. `--init-from-checkpoint` remains the separate weights-only
+Step 8B-to-Step 8C initialization path.
+
 ## Execution gate
 
 When execution is authorized, the data preparation must use the fresh source

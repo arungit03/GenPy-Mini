@@ -58,8 +58,7 @@ def main() -> int:
         continuous_result = continuous.train()
         torch.manual_seed(123)
         resumed, manager = build(root / "resumed", model_config, train_config, 4)
-        resumed.max_steps = 2
-        resumed.train()
+        resumed.train(stop_after_steps=2)
         checkpoint = resumed.save_checkpoint()
         resumed2, manager2 = build(root / "resumed", model_config, train_config, 4)
         resumed2.load_checkpoint(checkpoint)

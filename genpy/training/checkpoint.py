@@ -116,7 +116,7 @@ class CheckpointManager:
         path = self.directory / data["checkpoint"]
         return path if path.is_file() else None
 
-    def load(self, path: Path | str | None = None, *, model, optimizer, scheduler, precision, state: TrainingState, sampler=None, model_config=None, training_config=None) -> dict:
+    def load(self, path: Path | str | None = None, *, model, optimizer, scheduler, precision, state: TrainingState, sampler=None, model_config=None, training_config=None, expected_max_steps=None) -> dict:
         checkpoint_path = self.latest_path() if path is None else Path(path)
         if checkpoint_path is None or not checkpoint_path.is_file():
             raise FileNotFoundError("No usable checkpoint was found")
@@ -125,6 +125,10 @@ class CheckpointManager:
             raise ValueError("checkpoint symlinks are not accepted")
         checkpoint_path = checkpoint_path.resolve()
         payload = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        if expected_max_steps is not None and payload.get("max_steps") != expected_max_steps:
+            raise ValueError(
+                "checkpoint max_steps is incompatible with the requested full training horizon"
+            )
         if model_config is not None and payload.get("model_config") != asdict(model_config):
             raise ValueError("checkpoint model configuration is incompatible")
         if training_config is not None:

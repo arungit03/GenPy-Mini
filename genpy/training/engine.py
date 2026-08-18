@@ -85,12 +85,18 @@ class TrainingEngine:
     def _check_finite_gradients(self) -> bool:
         return all(parameter.grad is None or bool(torch.isfinite(parameter.grad).all().item()) for parameter in self.model.parameters())
 
-    def train(self) -> dict:
+    def train(self, stop_after_steps: int | None = None) -> dict:
+        if stop_after_steps is not None and stop_after_steps <= 0:
+            raise ValueError("stop_after_steps must be positive")
+        segment_target = self.max_steps if stop_after_steps is None else min(
+            self.max_steps,
+            self.state.global_step + stop_after_steps,
+        )
         self.model.train()
         self.optimizer.zero_grad(set_to_none=True)
         started = time.perf_counter()
         final_loss = None
-        while self.state.global_step < self.max_steps:
+        while self.state.global_step < segment_target:
             accumulated_loss = 0.0
             last_gradient_norm = None
             for _ in range(self.config.gradient_accumulation_steps):
@@ -154,7 +160,7 @@ class TrainingEngine:
     def load_checkpoint(self, path=None):
         if self.checkpoint_manager is None:
             raise ValueError("checkpoint_manager is not configured")
-        payload = self.checkpoint_manager.load(path, model=self.model, optimizer=self.optimizer, scheduler=self.scheduler, precision=self.precision, state=self.state, sampler=self.train_sampler, model_config=getattr(self.model, "config", None), training_config=self.config)
+        payload = self.checkpoint_manager.load(path, model=self.model, optimizer=self.optimizer, scheduler=self.scheduler, precision=self.precision, state=self.state, sampler=self.train_sampler, model_config=getattr(self.model, "config", None), training_config=self.config, expected_max_steps=self.max_steps)
         self._train_iterator = None
         return payload
 

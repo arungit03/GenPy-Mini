@@ -10,8 +10,7 @@ from tests.test_checkpoint import setup_engine
 def test_resumed_logging_uses_cumulative_training_state_tokens(tmp_path):
     model_config, train_config = configs()
     engine, _ = build(tmp_path / "run", model_config, train_config, 3)
-    engine.max_steps = 1
-    engine.train()
+    engine.train(stop_after_steps=1)
     checkpoint = engine.save_checkpoint()
 
     resumed, _ = build(tmp_path / "run", model_config, train_config, 3)
@@ -49,8 +48,7 @@ def test_resume_trajectory_regression_remains_exact(tmp_path):
     continuous.train()
     torch.manual_seed(99)
     split, _ = build(tmp_path / "split", model_config, train_config, 3)
-    split.max_steps = 2
-    split.train()
+    split.train(stop_after_steps=2)
     checkpoint = split.save_checkpoint()
     resumed, _ = build(tmp_path / "split", model_config, train_config, 3)
     resumed.load_checkpoint(checkpoint)

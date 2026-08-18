@@ -25,6 +25,7 @@ def main() -> int:
     parser.add_argument("--train-data", type=Path, required=True)
     parser.add_argument("--validation-data", type=Path)
     parser.add_argument("--max-steps", type=int, required=True)
+    parser.add_argument("--stop-after-steps", type=int, help="stop after at most N additional successful optimizer steps")
     parser.add_argument("--device", default="cpu")
     mode_group = parser.add_mutually_exclusive_group()
     mode_group.add_argument("--resume", nargs="?", const="latest", help="exact interrupted-run continuation")
@@ -40,6 +41,8 @@ def main() -> int:
         raise ValueError("training sequence length exceeds model context")
     if args.max_steps <= 0:
         raise ValueError("--max-steps must be positive and explicit")
+    if args.stop_after_steps is not None and args.stop_after_steps <= 0:
+        raise ValueError("--stop-after-steps must be positive")
     if args.device.startswith("cuda") and not __import__("torch").cuda.is_available():
         raise ValueError("CUDA was requested but is unavailable")
     if args.precision:
@@ -63,6 +66,7 @@ def main() -> int:
         "effective_sequences_per_update": train_config.micro_batch_size * train_config.gradient_accumulation_steps,
         "effective_tokens_per_update": train_config.micro_batch_size * train_config.gradient_accumulation_steps * train_config.sequence_length,
         "max_steps": args.max_steps,
+        "stop_after_steps": args.stop_after_steps,
         "learning_rate": train_config.learning_rate,
         "weight_decay": train_config.weight_decay,
         "warmup_ratio": train_config.warmup_ratio,
@@ -80,7 +84,7 @@ def main() -> int:
         print(json.dumps({"initialization": provenance}, indent=2))
     elif args.resume:
         engine.load_checkpoint(None if args.resume == "latest" else Path(args.resume))
-    result = engine.train()
+    result = engine.train(stop_after_steps=args.stop_after_steps)
     engine.save_checkpoint()
     print(json.dumps(result, indent=2))
     return 0

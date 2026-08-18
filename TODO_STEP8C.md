@@ -13,6 +13,10 @@ States: `[ ]` Not started, `[~]` In progress, `[x]` Completed and verified, `[!]
 - [x] Document reset of optimizer, scheduler, scaler, sampler, and RNG state.
 - [x] Add configuration, parameter-count, and data-range regression tests.
 - [x] Verify existing continuation and checkpoint behavior remains covered.
+- [x] Add bounded segmented training with the original full scheduler horizon.
+- [x] Validate full `max_steps` compatibility on exact checkpoint resume.
+- [x] Verify segmented deterministic trajectory matches uninterrupted training.
+- [x] Document the segmented Kaggle execution strategy.
 - [x] Run the complete pytest suite.
 
 ## Step 8C execution and verification
@@ -42,6 +46,7 @@ States: `[ ]` Not started, `[~]` In progress, `[x]` Completed and verified, `[!]
 
 ```text
 Preparation: Complete
+Segmented training safety: Complete
 Training: Not started
 Remaining execution items: 13
 Blocked items: 0

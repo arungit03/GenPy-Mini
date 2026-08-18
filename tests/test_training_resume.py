@@ -10,8 +10,7 @@ def test_deterministic_resume_matches_continuous_training(tmp_path):
     continuous.train()
     torch.manual_seed(99)
     split, manager = build(tmp_path / "split", model_config, train_config, 3)
-    split.max_steps = 2
-    split.train()
+    split.train(stop_after_steps=2)
     checkpoint = split.save_checkpoint()
     resumed, _ = build(tmp_path / "split", model_config, train_config, 3)
     resumed.load_checkpoint(checkpoint)
