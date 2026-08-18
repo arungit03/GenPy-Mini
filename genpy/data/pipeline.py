@@ -21,6 +21,7 @@ from .writer import DocumentShardWriter
 
 
 PIPELINE_VERSION = "genpy-step2-v1"
+DEFAULT_STATE_CHECKPOINT_INTERVAL = 500
 
 
 @dataclass
@@ -107,6 +108,7 @@ def _manifest(
     created_at: str,
     skip_documents: int,
     max_documents: Optional[int],
+    state_checkpoint_interval: int,
 ) -> dict:
     source_end_index_exclusive = (
         skip_documents + max_documents if max_documents is not None else None
@@ -120,6 +122,7 @@ def _manifest(
         "source_start_index": skip_documents,
         "requested_source_documents": max_documents,
         "source_end_index_exclusive": source_end_index_exclusive,
+        "state_checkpoint_interval": state_checkpoint_interval,
         "source_range": {
             "start_index": skip_documents,
             "requested_documents": max_documents,
@@ -141,6 +144,7 @@ def _state(
     manifest_filename: str,
     skip_documents: int,
     max_documents: Optional[int],
+    state_checkpoint_interval: int,
 ) -> dict:
     source_end_index_exclusive = (
         skip_documents + max_documents if max_documents is not None else None
@@ -152,6 +156,7 @@ def _state(
         "source_start_index": skip_documents,
         "requested_source_documents": max_documents,
         "source_end_index_exclusive": source_end_index_exclusive,
+        "state_checkpoint_interval": state_checkpoint_interval,
         "source_documents_seen": stats.source_documents_seen,
         "statistics": stats.to_dict(),
         "seen_content_hashes": sorted(deduplicator.hashes),
@@ -169,12 +174,15 @@ def run_pipeline(
     output_dir: Optional[Path] = None,
     resume: bool = False,
     skip_documents: int = 0,
+    state_checkpoint_interval: int = DEFAULT_STATE_CHECKPOINT_INTERVAL,
 ) -> PipelineResult:
     """Process rows incrementally, optionally resuming a prior compatible run."""
     if max_documents is not None and max_documents < 0:
         raise ValueError("max_documents must be non-negative")
     if skip_documents < 0:
         raise ValueError("skip_documents must be non-negative")
+    if state_checkpoint_interval <= 0:
+        raise ValueError("state_checkpoint_interval must be positive")
     processed_dir = Path(output_dir or config.output.processed_dir)
     manifest_dir = (
         processed_dir.parent / "manifests" if output_dir is not None else Path(config.output.manifest_dir)
@@ -218,8 +226,10 @@ def run_pipeline(
     completed = False
     existing_shards = [path.name for path in processed_dir.glob("*.jsonl.gz")]
     created_at = prior_state.get("created_at", datetime.now(timezone.utc).isoformat()) if prior_state else datetime.now(timezone.utc).isoformat()
+    last_state_checkpoint_source_documents = stats.source_documents_seen
 
     def save_state() -> None:
+        nonlocal last_state_checkpoint_source_documents
         shard_files = sorted(set(existing_shards + writer.shard_files))
         _write_json(
             state_path,
@@ -233,8 +243,10 @@ def run_pipeline(
                 manifest_filename,
                 skip_documents,
                 max_documents,
+                state_checkpoint_interval,
             ),
         )
+        last_state_checkpoint_source_documents = stats.source_documents_seen
 
     try:
         for source_index, row in enumerate(rows):
@@ -243,28 +255,32 @@ def run_pipeline(
             if max_documents is not None and source_index >= max_documents:
                 break
             stats.source_documents_seen += 1
+            shard_count_before = len(writer.shard_files)
             raw_text = row.get(config.dataset.text_field) if isinstance(row, Mapping) else None
             if not isinstance(raw_text, str):
                 result = assess_quality(raw_text, config.processing.min_chars, config.processing.max_chars)
                 stats.reject(result.reason or "invalid_text_type")
+            else:
+                normalized = normalize_text(raw_text, config.processing)
+                result = assess_quality(normalized, config.processing.min_chars, config.processing.max_chars)
+                if not result.accepted:
+                    stats.reject(result.reason or "rejected")
+                else:
+                    digest = content_hash(normalized)
+                    if config.processing.exact_deduplication and not deduplicator.add(digest):
+                        stats.duplicate_documents += 1
+                    else:
+                        split = assign_split(digest, config.split.validation_fraction, config.split.seed)
+                        document = _document_from_row(row, config, normalized, digest, split)
+                        writer.write(document)
+                        stats.accept(split, document.char_count, document.byte_count)
+            shard_finalized = len(writer.shard_files) > shard_count_before
+            interval_reached = (
+                stats.source_documents_seen - last_state_checkpoint_source_documents
+                >= state_checkpoint_interval
+            )
+            if shard_finalized or interval_reached:
                 save_state()
-                continue
-            normalized = normalize_text(raw_text, config.processing)
-            result = assess_quality(normalized, config.processing.min_chars, config.processing.max_chars)
-            if not result.accepted:
-                stats.reject(result.reason or "rejected")
-                save_state()
-                continue
-            digest = content_hash(normalized)
-            if config.processing.exact_deduplication and not deduplicator.add(digest):
-                stats.duplicate_documents += 1
-                save_state()
-                continue
-            split = assign_split(digest, config.split.validation_fraction, config.split.seed)
-            document = _document_from_row(row, config, normalized, digest, split)
-            writer.write(document)
-            stats.accept(split, document.char_count, document.byte_count)
-            save_state()
         completed = True
     finally:
         writer.close()
@@ -282,6 +298,7 @@ def run_pipeline(
             created_at,
             skip_documents,
             max_documents,
+            state_checkpoint_interval,
         ),
     )
     save_state()

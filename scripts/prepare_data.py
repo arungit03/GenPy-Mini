@@ -11,7 +11,7 @@ except ImportError:
 ensure_project_root()
 
 from genpy.config import load_data_config
-from genpy.data.pipeline import run_pipeline
+from genpy.data.pipeline import DEFAULT_STATE_CHECKPOINT_INTERVAL, run_pipeline
 from genpy.data.source import load_jsonl_rows
 
 
@@ -20,6 +20,12 @@ def main() -> int:
     parser.add_argument("--config", default="configs/data.yaml")
     parser.add_argument("--max-documents", type=int)
     parser.add_argument("--skip-documents", type=int, default=0)
+    parser.add_argument(
+        "--state-checkpoint-interval",
+        type=int,
+        default=DEFAULT_STATE_CHECKPOINT_INTERVAL,
+        help="Persist resumable state every N selected source documents",
+    )
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--source-jsonl", type=Path, help="Use a local JSONL source for offline smoke tests")
@@ -32,6 +38,7 @@ def main() -> int:
     print(f"Text field: {config.dataset.text_field}")
     print(f"Max documents: {args.max_documents if args.max_documents is not None else 'source limit'}")
     print(f"Skip documents: {args.skip_documents}")
+    print(f"State checkpoint interval: {args.state_checkpoint_interval}")
     rows = load_jsonl_rows(args.source_jsonl) if args.source_jsonl else None
     result = run_pipeline(
         config,
@@ -40,6 +47,7 @@ def main() -> int:
         output_dir=args.output_dir,
         resume=args.resume,
         skip_documents=args.skip_documents,
+        state_checkpoint_interval=args.state_checkpoint_interval,
     )
     print(f"Documents seen: {result.stats.source_documents_seen}")
     print(f"Accepted: {result.stats.accepted_documents}")

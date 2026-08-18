@@ -28,11 +28,24 @@ Accepted documents are written as UTF-8 compressed JSON Lines with deterministic
 
 `doc_id`, `text`, `content_hash`, `source_dataset`, `source_config`, `source_url`, `source_dump`, `language`, `quality_score`, `char_count`, `byte_count`, and `split`.
 
-Manifests record the pipeline version, timestamp, complete configuration, tokenizer-independent statistics, shard names, and completion status. A machine-readable `prepare-state.json` stores counters, hashes, completed shards, and a configuration fingerprint.
+Manifests record the pipeline version, timestamp, complete configuration, tokenizer-independent statistics, shard names, completion status, source range, and state-checkpoint policy. A machine-readable `prepare-state.json` stores counters, hashes, completed shards, and a configuration fingerprint.
 
 ## Resume behavior
 
 Run preparation with `--resume` to continue a compatible incomplete run. The pipeline rejects changes to the dataset, cleaning thresholds, split settings, output configuration, or other fingerprinted configuration. It skips already-seen source rows while reconstructing a streaming source, so resume is not O(1) when the upstream source cannot seek. Valid existing shards are never silently overwritten; interrupted temporary files are discarded and completed partial shards remain valid.
+
+Before the large-run checkpointing change, `run_pipeline()` serialized
+`prepare-state.json` once after every source document, including rejected and
+duplicate rows, followed by finalization writes. A 250,000-document run could
+therefore perform roughly 250,000 large JSON serializations containing the
+growing deduplication hash set. The default policy now checkpoints every 500
+selected source documents, using `--state-checkpoint-interval N` to choose
+another positive interval. State is also persisted whenever a shard is
+finalized, in the `finally` path, and after the final manifest is written.
+This bounds normal checkpoint lag to at most `N - 1` selected source
+documents while preserving exact rejected, duplicate, accepted, and split
+statistics at each persisted checkpoint. Clean completion always writes both
+the final state and manifest.
 
 ## Tokenization boundary
 
