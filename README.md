@@ -35,7 +35,8 @@ Local CPU execution is intended for development and testing. Kaggle GPU will be 
 [x] Step 8A - Limited pretraining
 [x] Step 8B - Continuation infrastructure prepared
 [ ] Step 8B - Continuation training
-[ ] Step 9 - Evaluation and inference
+[~] Step 9 - Evaluation and inference (Step 9.7 complete)
+[x] Step 9.7 - Production inference and evaluation tooling
 [ ] Step 10 - Release
 ```
 
@@ -82,6 +83,13 @@ Step 8A limited pretraining completed on a Tesla T4 using FP16, sequence length
 [docs/STEP8_PRETRAINING.md](docs/STEP8_PRETRAINING.md). Step 8B full pretraining
 is not started. The continuation-only initialization design is documented in
 [docs/STEP8B_CONTINUATION.md](docs/STEP8B_CONTINUATION.md).
+
+## Step 9.7 evaluation and inference
+
+Production generation and packed-dataset evaluation tooling is implemented and
+tested. The verified unseen FineWeb-Edu baseline is recorded in
+[docs/STEP9_EVALUATION.md](docs/STEP9_EVALUATION.md). Later Step 9 release and
+serving work remains outside this milestone.
 
 ## Verification
 
