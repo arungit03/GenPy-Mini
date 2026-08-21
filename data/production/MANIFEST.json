@@ -1,0 +1,27 @@
+{
+  "configuration_sha256": "79600bc643bfbedff789434f7c0496837c7281f06e8fb6ed4c66aa957a414650",
+  "counts": {
+    "final": 100000,
+    "raw": 100000,
+    "test": 5000,
+    "train": 90000,
+    "validation": 5000
+  },
+  "creation_timestamp_utc": "2026-08-20T17:55:29.867018+00:00",
+  "dataset_name": "GenPy-Python-100K",
+  "output_sha256": {
+    "all_clean": "52cec86647cb71d6f15ad7c61e357d8084a19733d94ac337587058a9ccedf52d",
+    "production_config": "79600bc643bfbedff789434f7c0496837c7281f06e8fb6ed4c66aa957a414650",
+    "source_manifest": "e4dcbecc77b09cb3e87c2fdb4276b702836357f1550878b464ef66a457288084",
+    "test": "65716b058821aac3b469827cfd95766c5375c08269d83b65d89ff1cff0c7eb35",
+    "train": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44",
+    "validation": "7ec5fabfb339e0c9986160193da01d30fe6d46035775f81e9777a4ad92731e97"
+  },
+  "pipeline_version": "checkpoint_2_5_v1",
+  "python_version": "3.12.0",
+  "seed": 42,
+  "source_ids": [
+    "genpy_programmatic_v1"
+  ],
+  "version": 1
+}

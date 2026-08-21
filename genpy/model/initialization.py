@@ -1,29 +1,29 @@
-"""Initialization helpers for the GenPy architecture."""
+"""Random initialization for the GenPy Transformer."""
+
+from __future__ import annotations
 
 import math
 
 import torch
 from torch import nn
 
-from genpy.config import ModelConfig
-from genpy.model.rmsnorm import RMSNorm
+from .rmsnorm import RMSNorm
 
 
-def initialize_model(model: nn.Module, config: ModelConfig) -> None:
-    """Initialize model weights and depth-scale residual output projections."""
+def initialize_model(model: nn.Module, base_std: float = 0.02, n_layers: int | None = None) -> None:
+    """Initialize weights in-place; residual projections use scaled normal noise."""
+    scaled_std = base_std / math.sqrt(2 * n_layers) if n_layers else base_std
     initialized: set[int] = set()
     with torch.no_grad():
-        for module in model.modules():
+        for module_name, module in model.named_modules():
             if isinstance(module, RMSNorm):
                 module.weight.fill_(1.0)
-            elif isinstance(module, (nn.Embedding, nn.Linear)):
-                parameter_id = id(module.weight)
-                if parameter_id not in initialized:
-                    module.weight.normal_(mean=0.0, std=config.initializer_range)
-                    initialized.add(parameter_id)
+                continue
+            if isinstance(module, (nn.Embedding, nn.Linear)) and module.weight is not None:
+                if id(module.weight) in initialized:
+                    continue
+                std = scaled_std if module_name.endswith("o_proj") or module_name.endswith("down_proj") else base_std
+                nn.init.normal_(module.weight, mean=0.0, std=std)
+                initialized.add(id(module.weight))
                 if isinstance(module, nn.Linear) and module.bias is not None:
-                    module.bias.zero_()
-        residual_std = config.initializer_range / math.sqrt(2 * config.num_layers)
-        for block in getattr(model, "blocks", []):
-            block.attention.o_proj.weight.normal_(mean=0.0, std=residual_std)
-            block.mlp.down_proj.weight.normal_(mean=0.0, std=residual_std)
+                    nn.init.zeros_(module.bias)

@@ -1,0 +1,32 @@
+{
+  "sources": [
+    {
+      "language": "python",
+      "license": "generated",
+      "license_verified": true,
+      "notes": "Generated from versioned templates and deterministic parameter grids.",
+      "original_location": "genpy/data/generation/",
+      "records_accepted": 100000,
+      "records_rejected": 0,
+      "records_seen": 100000,
+      "retrieval_date": "2026-08-20",
+      "source_id": "genpy_programmatic_v1",
+      "source_name": "GenPy Deterministic Programmatic Python Tasks",
+      "source_type": "generated"
+    },
+    {
+      "language": "python",
+      "license": "source_metadata_required",
+      "license_verified": false,
+      "notes": "Not included in this build.",
+      "original_location": "data/production/raw/codesearchnet/",
+      "records_accepted": 0,
+      "records_rejected": 0,
+      "records_seen": 0,
+      "retrieval_date": null,
+      "source_id": "codesearchnet_python_optional",
+      "source_name": "CodeSearchNet Python subset (optional local import)",
+      "source_type": "public_dataset"
+    }
+  ]
+}

@@ -1,38 +1,35 @@
-"""Inspect IDs, tokens, and round-trip behavior for a tokenizer artifact."""
+"""Inspect one local GenPy tokenizer encoding."""
+
+from __future__ import annotations
 
 import argparse
 import sys
 from pathlib import Path
 
-try:
-    from ._bootstrap import ensure_project_root
-except ImportError:
-    from _bootstrap import ensure_project_root
-ensure_project_root()
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 from genpy.tokenizer.tokenizer import GenPyTokenizer
 
 
-def safe(value: str) -> str:
-    encoding = sys.stdout.encoding or "utf-8"
-    return value.encode(encoding, errors="replace").decode(encoding, errors="replace")
-
-
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--tokenizer", required=True, type=Path)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tokenizer", default="artifacts/tokenizer/genpy-32k")
     parser.add_argument("--text", required=True)
     args = parser.parse_args()
-    tokenizer = GenPyTokenizer.from_file(args.tokenizer)
+    tokenizer = GenPyTokenizer.load(ROOT / args.tokenizer)
     ids = tokenizer.encode(args.text)
+    tokens = tokenizer.token_strings(ids)
     decoded = tokenizer.decode(ids)
-    print(f"original text: {safe(args.text)}")
-    print(f"token IDs: {ids}")
-    print(f"token strings: {[safe(token) for token in tokenizer.token_strings(ids)]}")
-    print(f"token count: {len(ids)}")
-    print(f"decoded text: {safe(decoded)}")
-    print(f"round-trip success: {decoded == args.text}")
-    return 0
+    print(f"Original text: {args.text!r}")
+    print(f"Token IDs: {ids}")
+    print(f"Token strings: {tokens}")
+    print(f"Decoded text: {decoded!r}")
+    print(f"Token count: {len(ids)}")
+    print(f"Round-trip: {'PASS' if decoded == args.text else 'FAIL'}")
+    return 0 if decoded == args.text else 1
 
 
 if __name__ == "__main__":

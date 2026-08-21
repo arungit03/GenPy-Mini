@@ -1,0 +1,23 @@
+{
+  "total_raw": 13,
+  "total_valid": 9,
+  "total_rejected": 4,
+  "exact_duplicates": 1,
+  "near_duplicates": 1,
+  "instruction_duplicates": 0,
+  "code_duplicates": 2,
+  "duplicates_removed": 2,
+  "syntax_failures": 2,
+  "non_python_suspected": 1,
+  "final_examples": 7,
+  "train_examples": 5,
+  "validation_examples": 1,
+  "test_examples": 1,
+  "family_leakage": 0,
+  "dataset_classification": "prototype_only",
+  "production_dataset_population": "pending",
+  "clean_dataset_sha256": "c93b922ed78e5f81494d53b5b00f85721feff41c680b40772031987d0ebc2cdc",
+  "train_sha256": "7120eb6d1e5d3e3ea596f0cbf5f31fe4b110c9bf7e8223fd36308f106916d78f",
+  "validation_sha256": "befa488a88beae2b8687370d45d7a6bf5facbc3970a9e5e3306fbb28b8809a6c",
+  "test_sha256": "52ca81a517bba41b723c5fecb22285642e9976cbce02d12cd28d8ba8b63a9574"
+}

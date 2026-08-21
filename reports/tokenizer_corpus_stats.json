@@ -1,0 +1,14 @@
+{
+  "training_examples": 90000,
+  "characters": 26903078,
+  "bytes": 26903078,
+  "lines": 1023741,
+  "total_instruction_characters": 10063591,
+  "total_input_characters": 0,
+  "total_response_characters": 13509487,
+  "average_instruction_length": 111.81767777777777,
+  "average_input_length": 0.0,
+  "average_response_length": 150.10541111111112,
+  "core_bpe_vocab_size": 13271,
+  "corpus_derived_completion_tokens": 18729
+}

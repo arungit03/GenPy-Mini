@@ -1,0 +1,23 @@
+{
+  "status": "LOCAL_COMPLETE_GPU_PENDING",
+  "architecture": true,
+  "forward": true,
+  "backward": true,
+  "gradient_finiteness": true,
+  "loss_correctness": true,
+  "causal_isolation": true,
+  "rope": true,
+  "rmsnorm": true,
+  "weight_tying": true,
+  "serialization": true,
+  "tiny_overfit": true,
+  "gpu": {
+    "tested": false,
+    "fp32": false,
+    "mixed_precision": false,
+    "full_context_1024": false
+  },
+  "parameters": 201560832,
+  "production_training_started": false,
+  "production_model_weights_saved": false
+}

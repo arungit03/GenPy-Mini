@@ -1,0 +1,143 @@
+{
+  "accepted_before_dedup": 100000,
+  "benchmark_leakage": 0,
+  "benchmark_matches_removed": 0,
+  "counts": {
+    "category": {
+      "algorithms": 12000,
+      "arrays": 3000,
+      "beginner": 14000,
+      "code_completion": 5000,
+      "conditions": 8000,
+      "debugging": 8000,
+      "files": 4000,
+      "functions": 9000,
+      "graphs": 1750,
+      "intermediate_python": 3000,
+      "linked_lists": 2500,
+      "misc": 1000,
+      "numpy": 3000,
+      "oop": 7000,
+      "pandas": 3000,
+      "queues": 2000,
+      "stacks": 2000,
+      "strings": 10000,
+      "trees": 1750
+    },
+    "difficulty": {
+      "easy": 45009,
+      "hard": 14997,
+      "medium": 39994
+    },
+    "execution_status": {
+      "True": 100000
+    },
+    "family": {
+      "maximum_examples_per_family": 1,
+      "median_examples_per_family": 1.0,
+      "unique": 100000
+    },
+    "interface": {
+      "function": 100000
+    },
+    "library": {
+      "none": 94000,
+      "numpy": 3000,
+      "pandas": 3000
+    },
+    "source": {
+      "genpy_programmatic": 100000
+    },
+    "syntax_status": {
+      "True": 100000
+    },
+    "task_type": {
+      "algorithm_implementation": 12350,
+      "bug_fixing": 8000,
+      "code_completion": 5000,
+      "code_generation": 43567,
+      "code_optimization": 4500,
+      "data_structure": 14000,
+      "library_usage": 12583
+    },
+    "unique_instructions": 100000,
+    "unique_response_implementations": 6169
+  },
+  "dataset_name": "GenPy-Python-100K",
+  "duplicate_ids": 0,
+  "duplicates_removed": 0,
+  "exact_duplicate_rows": 0,
+  "execution_failures": 0,
+  "execution_pass_rate": 100.0,
+  "execution_tested_rows": 100000,
+  "family_leakage": 0,
+  "final_examples": 100000,
+  "license_rejections": 0,
+  "mode": "production",
+  "near_duplicates_removed": 0,
+  "raw_examples": 100000,
+  "rejected_examples": 0,
+  "repository_leakage": 0,
+  "similarity": {
+    "candidate_pairs_sampled": 10000,
+    "gte_0_80": 314,
+    "gte_0_90": 0,
+    "gte_0_95": 0,
+    "gte_0_99": 0,
+    "max_similarity": 0.8333333333333334,
+    "mean_similarity": 0.3833823461949467
+  },
+  "statistics": {
+    "average_instruction_characters": 111.81893,
+    "average_response_characters": 150.13778,
+    "category_counts": {
+      "algorithms": 12000,
+      "arrays": 3000,
+      "beginner": 14000,
+      "code_completion": 5000,
+      "conditions": 8000,
+      "debugging": 8000,
+      "files": 4000,
+      "functions": 9000,
+      "graphs": 1750,
+      "intermediate_python": 3000,
+      "linked_lists": 2500,
+      "misc": 1000,
+      "numpy": 3000,
+      "oop": 7000,
+      "pandas": 3000,
+      "queues": 2000,
+      "stacks": 2000,
+      "strings": 10000,
+      "trees": 1750
+    },
+    "examples_rejected": 0,
+    "maximum_response_length": 412,
+    "minimum_response_length": 43,
+    "quality_score_distribution": {
+      "1.0": 100000
+    },
+    "source_counts": {
+      "genpy_programmatic": 100000
+    },
+    "syntax_valid_percentage": 100.0,
+    "task_type_counts": {
+      "algorithm_implementation": 12350,
+      "bug_fixing": 8000,
+      "code_completion": 5000,
+      "code_generation": 43567,
+      "code_optimization": 4500,
+      "data_structure": 14000,
+      "library_usage": 12583
+    },
+    "total_examples": 100000
+  },
+  "syntax_failures": 0,
+  "syntax_valid_percentage": 100.0,
+  "target_examples": 100000,
+  "test_examples": 5000,
+  "train_examples": 90000,
+  "unique_families": 100000,
+  "unknown_licenses_included": 0,
+  "validation_examples": 5000
+}

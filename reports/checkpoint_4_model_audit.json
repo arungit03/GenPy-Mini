@@ -1,0 +1,58 @@
+{
+  "status": "COMPLETE",
+  "model_name": "GenPy-200M",
+  "architecture": "decoder_only_transformer",
+  "parameters": {
+    "expected": 201560832,
+    "actual": 201560832,
+    "total": 201560832,
+    "trainable": 201560832,
+    "non_trainable": 0
+  },
+  "dimensions": {
+    "vocab_size": 32000,
+    "max_seq_len": 1024,
+    "n_layers": 24,
+    "d_model": 768,
+    "n_heads": 12,
+    "head_dim": 64,
+    "ffn_hidden_size": 2176
+  },
+  "parameter_breakdown": {
+    "embeddings": 24576000,
+    "attention": 56623104,
+    "swiglu": 120324096,
+    "block_norms": 36864,
+    "final_norm": 768
+  },
+  "architecture_features": {
+    "rmsnorm": true,
+    "rope": true,
+    "swiglu": true,
+    "causal_attention": true,
+    "bias_free": true,
+    "weight_tying": true,
+    "no_absolute_position_parameters": true
+  },
+  "tokenizer_compatible": true,
+  "tokenizer_special_ids": {
+    "pad": 0,
+    "bos": 1,
+    "eos": 2,
+    "unk": 3
+  },
+  "model_tests": {
+    "tiny_forward": true,
+    "output_shape": true,
+    "causal_isolation": true,
+    "max_context_guard": true,
+    "gradient_smoke": true,
+    "numerical_finiteness": true
+  },
+  "initialization_reproducibility": true,
+  "pretrained_weights_used": false,
+  "training_started": false,
+  "dimension_check": true,
+  "tests_passed": 50,
+  "tests_failed": 0
+}

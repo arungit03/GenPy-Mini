@@ -1,39 +1,30 @@
 from pathlib import Path
 
 import pytest
-import yaml
 
-from genpy.config import DataPipelineConfig, load_tokenizer_config, validate_tokenizer_vocab_contract
-
-
-ROOT = Path(__file__).resolve().parents[1]
+from genpy.tokenizer.config import TokenizerConfig, load_tokenizer_config
 
 
-def test_load_tokenizer_config():
-    config = load_tokenizer_config(ROOT / "configs" / "tokenizer.yaml")
-    assert config.tokenizer.vocab_size == 32000
-    assert config.tokenizer.special_tokens.ordered == ("<|pad|>", "<|bos|>", "<|eos|>", "<|unk|>")
-    assert config.tokenizer.add_prefix_space is False
-    assert config.tokenizer.normalizer == "nfc"
+def test_valid_config_and_contract() -> None:
+    config = load_tokenizer_config(Path("configs/tokenizer.yaml"))
+    assert config.vocab_size == 32000
+    assert config.special_token_ids == {"pad": 0, "bos": 1, "eos": 2, "unk": 3}
 
 
-def test_model_tokenizer_contract():
-    config = load_tokenizer_config(ROOT / "configs" / "tokenizer.yaml")
-    validate_tokenizer_vocab_contract(ROOT / "configs" / "model_200m.yaml", config)
+def test_invalid_vocab_size_rejected() -> None:
+    with pytest.raises(ValueError):
+        TokenizerConfig(vocab_size=259).validate()
 
 
-def test_invalid_tokenizer_values():
-    mapping = yaml.safe_load((ROOT / "configs" / "tokenizer.yaml").read_text(encoding="utf-8"))
-    mapping["tokenizer"]["vocab_size"] = 512
-    with pytest.raises(ValueError, match="32000"):
-        from genpy.config import _build_tokenizer_config
-        _build_tokenizer_config(mapping["tokenizer"])
-    mapping["tokenizer"]["vocab_size"] = 32000
-    mapping["tokenizer"]["min_frequency"] = 0
-    path = ROOT / "tests" / "fixtures" / "invalid_tokenizer_config.yaml"
-    path.write_text(yaml.safe_dump(mapping), encoding="utf-8")
+def test_duplicate_special_ids_rejected() -> None:
+    config = TokenizerConfig()
+    config.validate()
+    from genpy.tokenizer import config as module
+    original = module.SPECIAL_IDS.copy()
     try:
+        module.SPECIAL_IDS["eos"] = 1
         with pytest.raises(ValueError):
-            load_tokenizer_config(path)
+            config.validate()
     finally:
-        path.unlink()
+        module.SPECIAL_IDS.clear()
+        module.SPECIAL_IDS.update(original)

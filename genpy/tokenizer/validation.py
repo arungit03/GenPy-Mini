@@ -1,73 +1,49 @@
-"""Explicit validation of GenPy tokenizer artifacts and contracts."""
+"""Validation helpers for tokenizer contracts and metrics."""
 
-import json
-from pathlib import Path
-from typing import Optional
+from __future__ import annotations
 
-from tokenizers import Tokenizer
-
-from genpy.config import PathLike, load_model_config
+from dataclasses import asdict, dataclass
 
 from .tokenizer import GenPyTokenizer
-from .trainer import sha256_file
 
 
-class TokenizerValidationError(ValueError):
-    pass
+@dataclass
+class TextMetrics:
+    examples: int
+    characters: int
+    bytes: int
+    tokens: int
+    unknown_tokens: int
+
+    def to_dict(self) -> dict:
+        result = asdict(self)
+        result["tokens_per_character"] = self.tokens / self.characters if self.characters else 0.0
+        result["characters_per_token"] = self.characters / self.tokens if self.tokens else 0.0
+        result["bytes_per_token"] = self.bytes / self.tokens if self.tokens else 0.0
+        result["unknown_rate"] = self.unknown_tokens / self.tokens if self.tokens else 0.0
+        result["average_tokens_per_example"] = self.tokens / self.examples if self.examples else 0.0
+        return result
 
 
-def validate_tokenizer_artifact(
-    tokenizer_path: PathLike,
-    manifest_path: Optional[PathLike] = None,
-    expected_vocab_size: int = 32000,
-    model_config_path: Optional[PathLike] = None,
-) -> dict:
-    path = Path(tokenizer_path)
-    if not path.is_file():
-        raise TokenizerValidationError(f"Tokenizer file does not exist: {path}")
-    try:
-        raw = Tokenizer.from_file(str(path))
-    except Exception as exc:
-        raise TokenizerValidationError(f"Tokenizer JSON could not be loaded: {exc}") from exc
-    wrapper = GenPyTokenizer(raw)
-    if wrapper.vocab_size != expected_vocab_size:
-        raise TokenizerValidationError(f"Vocabulary size mismatch: expected {expected_vocab_size}, got {wrapper.vocab_size}")
-    expected_ids = {"pad": 0, "bos": 1, "eos": 2, "unk": 3}
-    actual_ids = {"pad": wrapper.pad_token_id, "bos": wrapper.bos_token_id, "eos": wrapper.eos_token_id, "unk": wrapper.unk_token_id}
-    if actual_ids != expected_ids:
-        raise TokenizerValidationError(f"Special token IDs are incorrect: {actual_ids}")
-    serialized = json.loads(raw.to_str())
-    if serialized.get("normalizer", {}).get("type") != "NFC":
-        raise TokenizerValidationError("Tokenizer normalizer is not NFC")
-    pre = serialized.get("pre_tokenizer", {})
-    if pre.get("type") != "ByteLevel" or pre.get("add_prefix_space") is not False or pre.get("use_regex") is not True:
-        raise TokenizerValidationError("Tokenizer ByteLevel settings are incorrect")
-    if serialized.get("decoder", {}).get("type") != "ByteLevel":
-        raise TokenizerValidationError("Tokenizer decoder is not ByteLevel")
-    if model_config_path is not None:
-        model = load_model_config(model_config_path)
-        if model.vocab_size != wrapper.vocab_size:
-            raise TokenizerValidationError(f"Architecture vocabulary mismatch: model={model.vocab_size}, tokenizer={wrapper.vocab_size}")
-    sample = "GenPy café தமிழ் हिन्दी 中文 🚀\ncode"
-    ids = wrapper.encode(sample)
-    if not ids or wrapper.decode(ids) != sample:
-        raise TokenizerValidationError("Tokenizer encode/decode round-trip failed")
-    result = {"tokenizer": "GenPy-Tokenizer", "vocab_size": wrapper.vocab_size, "special_token_ids": actual_ids, "round_trip": True, "checksum": None}
-    if manifest_path is not None:
-        manifest = Path(manifest_path)
-        if not manifest.is_file():
-            raise TokenizerValidationError(f"Tokenizer manifest does not exist: {manifest}")
-        try:
-            data = json.loads(manifest.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            raise TokenizerValidationError(f"Tokenizer manifest is invalid: {exc}") from exc
-        actual_checksum = sha256_file(path)
-        if data.get("tokenizer_json_sha256") != actual_checksum:
-            raise TokenizerValidationError("Tokenizer checksum does not match manifest")
-        result["checksum"] = actual_checksum
-    return result
+def measure_texts(tokenizer: GenPyTokenizer, texts: list[str] | tuple[str, ...]) -> TextMetrics:
+    characters = sum(len(text) for text in texts)
+    byte_count = sum(len(text.encode("utf-8")) for text in texts)
+    token_count = 0
+    unknown = 0
+    for text in texts:
+        ids = tokenizer.encode(text)
+        token_count += len(ids)
+        unknown += sum(token_id == tokenizer.unk_token_id for token_id in ids)
+    return TextMetrics(len(texts), characters, byte_count, token_count, unknown)
 
 
-def verify_checksum(tokenizer_path: PathLike, manifest_path: PathLike) -> bool:
-    validate_tokenizer_artifact(tokenizer_path, manifest_path, expected_vocab_size=32000)
-    return True
+def contract_checks(tokenizer: GenPyTokenizer) -> dict[str, bool]:
+    return {
+        "vocabulary_size": tokenizer.vocab_size == 32000,
+        "special_token_ids": (
+            tokenizer.pad_token_id == 0
+            and tokenizer.bos_token_id == 1
+            and tokenizer.eos_token_id == 2
+            and tokenizer.unk_token_id == 3
+        ),
+    }

@@ -1,35 +1,19 @@
 dataset:
-  name: HuggingFaceFW/fineweb-edu
-  config: sample-10BT
-  split: train
-  streaming: true
-  text_field: text
-
-processing:
+  name: GenPy Python Dataset
+  language: python
+  target_examples: 100000
+  train_ratio: 0.90
+  validation_ratio: 0.05
+  test_ratio: 0.05
   seed: 42
-
-  min_chars: 200
-  max_chars: 100000
-
-  normalize_unicode: true
-  normalize_line_endings: true
-  remove_control_characters: true
-  normalize_whitespace: true
-
-  exact_deduplication: true
-
-split:
-  validation_fraction: 0.005
-  seed: 42
-
-output:
-  format: jsonl.gz
-  shard_max_documents: 25000
-  processed_dir: data/processed
-  manifest_dir: data/manifests
-
-resume:
-  enabled: true
-
-metadata:
-  preserve_source_metadata: true
+  minimum_instruction_chars: 5
+  minimum_response_chars: 5
+  strict_python_syntax: true
+  deduplication:
+    exact: true
+    instruction: true
+    code: true
+    near_duplicate: true
+    near_duplicate_threshold: 0.90
+  quality:
+    minimum_score: 0.5

@@ -1,0 +1,53 @@
+{
+  "tokenizer": "GenPy-Tokenizer-32K",
+  "type": "Byte-Level BPE",
+  "vocabulary_size": 32000,
+  "special_token_ids": {
+    "PAD": 0,
+    "BOS": 1,
+    "EOS": 2,
+    "UNK": 3
+  },
+  "roundtrip_pass": true,
+  "save_reload_stability": true,
+  "metrics": {
+    "train": {
+      "examples": 90000,
+      "characters": 26903078,
+      "bytes": 26903078,
+      "tokens": 5578579,
+      "unknown_tokens": 0,
+      "tokens_per_character": 0.20735839222560334,
+      "characters_per_token": 4.822568256181368,
+      "bytes_per_token": 4.822568256181368,
+      "unknown_rate": 0.0,
+      "average_tokens_per_example": 61.98421111111111
+    },
+    "validation": {
+      "examples": 5000,
+      "characters": 1493264,
+      "bytes": 1493264,
+      "tokens": 309166,
+      "unknown_tokens": 0,
+      "tokens_per_character": 0.20704041616217897,
+      "characters_per_token": 4.829974835525252,
+      "bytes_per_token": 4.829974835525252,
+      "unknown_rate": 0.0,
+      "average_tokens_per_example": 61.8332
+    },
+    "test": {
+      "examples": 5000,
+      "characters": 1499329,
+      "bytes": 1499329,
+      "tokens": 311225,
+      "unknown_tokens": 0,
+      "tokens_per_character": 0.20757618908191597,
+      "characters_per_token": 4.81750823359306,
+      "bytes_per_token": 4.81750823359306,
+      "unknown_rate": 0.0,
+      "average_tokens_per_example": 62.245
+    }
+  },
+  "vocabulary_size_pass": true,
+  "special_token_ids_pass": true
+}

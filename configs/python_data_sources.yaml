@@ -1,0 +1,25 @@
+sources:
+  - source_id: genpy_programmatic_v1
+    source_name: GenPy Deterministic Programmatic Python Tasks
+    source_type: generated
+    original_location: genpy/data/generation/
+    license: generated
+    license_verified: true
+    retrieval_date: null
+    language: python
+    records_seen: 0
+    records_accepted: 0
+    records_rejected: 0
+    notes: Generated from versioned templates and deterministic parameter grids.
+  - source_id: codesearchnet_python_optional
+    source_name: CodeSearchNet Python subset (optional local import)
+    source_type: public_dataset
+    original_location: data/production/raw/codesearchnet/
+    license: source_metadata_required
+    license_verified: false
+    retrieval_date: null
+    language: python
+    records_seen: 0
+    records_accepted: 0
+    records_rejected: 0
+    notes: Never included unless a local copy carries verifiable license metadata.

@@ -1,0 +1,61 @@
+{
+  "category": {
+    "algorithms": 12000,
+    "arrays": 3000,
+    "beginner": 14000,
+    "code_completion": 5000,
+    "conditions": 8000,
+    "debugging": 8000,
+    "files": 4000,
+    "functions": 9000,
+    "graphs": 1750,
+    "intermediate_python": 3000,
+    "linked_lists": 2500,
+    "misc": 1000,
+    "numpy": 3000,
+    "oop": 7000,
+    "pandas": 3000,
+    "queues": 2000,
+    "stacks": 2000,
+    "strings": 10000,
+    "trees": 1750
+  },
+  "difficulty": {
+    "easy": 45009,
+    "hard": 14997,
+    "medium": 39994
+  },
+  "execution_status": {
+    "True": 100000
+  },
+  "family": {
+    "maximum_examples_per_family": 1,
+    "median_examples_per_family": 1.0,
+    "unique": 100000
+  },
+  "interface": {
+    "function": 100000
+  },
+  "library": {
+    "none": 94000,
+    "numpy": 3000,
+    "pandas": 3000
+  },
+  "source": {
+    "genpy_programmatic": 100000
+  },
+  "syntax_status": {
+    "True": 100000
+  },
+  "task_type": {
+    "algorithm_implementation": 12350,
+    "bug_fixing": 8000,
+    "code_completion": 5000,
+    "code_generation": 43567,
+    "code_optimization": 4500,
+    "data_structure": 14000,
+    "library_usage": 12583
+  },
+  "unique_instructions": 100000,
+  "unique_response_implementations": 6169
+}

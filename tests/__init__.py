@@ -1,1 +1,0 @@
-"""GenPy test package."""

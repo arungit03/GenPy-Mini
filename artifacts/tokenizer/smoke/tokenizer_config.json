@@ -1,0 +1,37 @@
+{
+  "name": "GenPy-Tokenizer-32K",
+  "type": "byte_level_bpe",
+  "vocab_size": 260,
+  "min_frequency": 2,
+  "add_prefix_space": false,
+  "special_tokens": {
+    "pad": {
+      "token": "<PAD>",
+      "id": 0
+    },
+    "bos": {
+      "token": "<BOS>",
+      "id": 1
+    },
+    "eos": {
+      "token": "<EOS>",
+      "id": 2
+    },
+    "unk": {
+      "token": "<UNK>",
+      "id": 3
+    }
+  },
+  "training": {
+    "include_instruction": true,
+    "include_input": true,
+    "include_response": true,
+    "train_split_only": true,
+    "seed": 42
+  },
+  "validation": {
+    "require_roundtrip": true,
+    "maximum_unknown_rate": 0.0
+  },
+  "version": "GenPy-Tokenizer-smoke-v1"
+}

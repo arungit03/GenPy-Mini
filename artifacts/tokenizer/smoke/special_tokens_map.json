@@ -1,0 +1,12 @@
+{
+  "pad_token": "<PAD>",
+  "bos_token": "<BOS>",
+  "eos_token": "<EOS>",
+  "unk_token": "<UNK>",
+  "special_token_ids": {
+    "pad": 0,
+    "bos": 1,
+    "eos": 2,
+    "unk": 3
+  }
+}

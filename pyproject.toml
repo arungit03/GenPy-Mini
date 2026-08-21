@@ -5,10 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "genpy"
 version = "0.1.0"
-description = "Educational decoder-only language model project"
+description = "From-scratch Python-specialized decoder-only Transformer language model"
 readme = "README.md"
-requires-python = ">=3.9"
-dependencies = []
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "PyYAML",
+    "numpy",
+    "tokenizers",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -17,3 +25,9 @@ include = ["genpy*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+addopts = "-ra"
+markers = [
+    "gpu: requires CUDA hardware",
+    "slow: longer verification test",
+    "integration: checkpoint integration verification",
+]

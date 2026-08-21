@@ -1,60 +1,40 @@
-# GenPy tokenizer
+# GenPy Tokenizer
 
-Step 3 implements the GenPy tokenizer as a standalone Hugging Face `tokenizers` Byte-Level BPE. It does not use a pretrained tokenizer or `transformers`.
+GenPy-Tokenizer-32K is a custom Byte-Level BPE tokenizer trained from scratch for Python instructions and Python source. It does not reuse a pretrained model vocabulary, tokenizer JSON, or merge table.
 
-## Configuration
+## Training contract
 
-The production configuration is in `configs/tokenizer.yaml`:
+Vocabulary learning uses only `data/instruction/python/train.jsonl` (90,000 examples). Each document is formatted with registered `<BOS>`/`<EOS>` boundaries, `### User`, the instruction, optional input, `### Assistant`, and the response. IDs, hashes, family labels, quality fields, and source metadata are not corpus text. The production train file is verified against the Checkpoint 2.5 SHA-256 before training.
 
-- algorithm: Byte-Level BPE
-- vocabulary: 32,000 including special tokens
-- normalizer: NFC
-- ByteLevel `add_prefix_space: false`, regex enabled
-- minimum pair frequency: 2
-- maximum token length: 64
-- initial alphabet: all ByteLevel byte representations
+The tokenizer uses byte-level pre-tokenization with `add_prefix_space: false`, no lowercasing, no Unicode normalization, no indentation stripping, and no whitespace collapsing. UTF-8 bytes are preserved through encode/decode, including spaces, tabs, newlines, punctuation, operators, underscores, and Unicode.
 
-The model/tokenizer contract requires both vocabulary values to be 32,000.
+The production corpus contains fewer than 32,000 distinct eligible BPE merge entries. The artifact therefore records its composition explicitly: 13,271 entries come from the learned BPE model and 18,729 additional vocabulary entries are deterministic, observed substrings from the same train-only corpus. No external vocabulary or merge table is used.
 
-## Special tokens
+## Contract
 
-The first four IDs are fixed:
+| Item | Value |
+|---|---|
+| Type | Byte-Level BPE |
+| Vocabulary | 32,000 |
+| `<PAD>` | 0 |
+| `<BOS>` | 1 |
+| `<EOS>` | 2 |
+| `<UNK>` | 3 |
 
-| ID | Token |
-|---:|---|
-| 0 | `<|pad|>` |
-| 1 | `<|bos|>` |
-| 2 | `<|eos|>` |
-| 3 | `<|unk|>` |
+`GenPyTokenizer.load(path)` loads a local artifact. `encode(text, add_bos=False, add_eos=False)` returns IDs, and `decode(ids, skip_special_tokens=False)` returns text. With `skip_special_tokens=False`, registered specials are emitted literally; with it enabled, they are omitted. The wrapper also provides `encode_batch`.
 
-Raw encoding does not add BOS or EOS. `GenPyTokenizer.encode` exposes explicit `add_bos` and `add_eos` flags. `encode_document` appends EOS only. Padding, truncation, and sequence packing are not implemented in Step 3.
+## Artifacts and reproducibility
 
-## Training corpus and modes
+The production artifact is under `artifacts/tokenizer/genpy-32k/` and includes `tokenizer.json`, `vocab.json`, `merges.txt`, configuration, special-token metadata, and a manifest. Reports record corpus statistics, file hashes, split metrics, and the tokenizer library/Python versions.
 
-Training reads Step 2 `train-*.jsonl.gz` shards incrementally and never concatenates the corpus into a Python list. Validation shards are reserved for evaluation. Corpus statistics include documents, characters, and UTF-8 bytes.
+Rebuild with:
 
-The smoke command uses the local synthetic fixture and a clearly non-production 512-token vocabulary:
-
-```bash
-python scripts/train_tokenizer.py --smoke
+```powershell
+python scripts/train_tokenizer.py --config configs/tokenizer.yaml --input data/instruction/python/train.jsonl --output artifacts/tokenizer/genpy-32k
 ```
 
-Production training requires a completed Step 2 manifest and real cleaned train data. The project currently has no real Step 2 shards because the earlier FineWeb-Edu access was blocked by the environment's Hugging Face SSL certificate failure. Therefore no production tokenizer is claimed.
+Run the validation, inspection, and benchmark scripts after training. The 0% UNK objective follows from the complete byte alphabet; it is still measured explicitly on train, validation, test, and synthetic Unicode examples.
 
-The production gate is 256 MiB minimum cleaned real text, with an approximately 1 GiB target. Synthetic data must never be used to label the final tokenizer production-ready.
+## Limitations
 
-## Artifacts and validation
-
-The canonical artifact is `data/tokenizer/genpy-tokenizer.json`. Training also records configuration and a manifest containing corpus provenance, settings, versions, counts, mode, and a SHA-256 checksum. The validator checks JSON validity, vocabulary, special IDs, model vocabulary compatibility, NFC/ByteLevel settings, round-trip behavior, and checksum.
-
-Useful commands:
-
-```bash
-python scripts/inspect_tokenizer.py --tokenizer path/to/genpy-tokenizer.json --text "GenPy café தமிழ்"
-python scripts/evaluate_tokenizer.py --tokenizer path/to/genpy-tokenizer.json --input-dir data/processed
-python scripts/verify_tokenizer.py --tokenizer path/to/genpy-tokenizer.json --manifest path/to/tokenizer_manifest.json
-```
-
-## Evaluation and limitations
-
-The diagnostic suite covers English prose, Python/C-like code, numbers, mathematics, URLs, Tamil, Hindi, emoji, and mixed-language text. Byte-level coverage is representation capability, not evidence of multilingual language quality. Tokenizer quality depends on the real cleaned training corpus; the current implementation is verified offline with smoke data, while production verification remains pending.
+This checkpoint does not implement model packing, padding collation, embeddings, a Transformer, or training. Token count is an efficiency diagnostic, not a standalone measure of tokenizer quality. A future tokenizer version must be versioned rather than silently replacing this artifact.

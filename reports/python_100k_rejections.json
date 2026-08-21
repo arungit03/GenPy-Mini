@@ -1,0 +1,15 @@
+{
+  "benchmark_match": 0,
+  "duplicate": 0,
+  "execution_failed": 0,
+  "invalid_schema": 0,
+  "license_unknown": 0,
+  "low_quality": 0,
+  "near_duplicate": 0,
+  "other": 0,
+  "secret_detected": 0,
+  "syntax_invalid": 0,
+  "too_long": 0,
+  "too_short": 0,
+  "wrong_language": 0
+}

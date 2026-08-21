@@ -1,0 +1,38 @@
+{
+  "tokenizer_name": "GenPy-Tokenizer-32K",
+  "tokenizer_version": "GenPy-Tokenizer-smoke-v1",
+  "tokenizer_type": "byte_level_bpe",
+  "vocab_size": 260,
+  "special_tokens": {
+    "pad": "<PAD>",
+    "bos": "<BOS>",
+    "eos": "<EOS>",
+    "unk": "<UNK>"
+  },
+  "special_token_ids": {
+    "pad": 0,
+    "bos": 1,
+    "eos": 2,
+    "unk": 3
+  },
+  "training_corpus_files": [
+    "tests/fixtures/python_examples.jsonl"
+  ],
+  "training_examples": 11,
+  "corpus_characters": 1197,
+  "corpus_bytes": 1197,
+  "corpus_lines": 89,
+  "core_bpe_vocab_size": 260,
+  "corpus_derived_completion_tokens": 0,
+  "training_corpus_sha256": "a2a887afd5c9307b5e30d481503d3fbe4855596eb27ece4ae8222701b07d18ff",
+  "dataset_train_sha256": "a2a887afd5c9307b5e30d481503d3fbe4855596eb27ece4ae8222701b07d18ff",
+  "expected_dataset_train_sha256": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44",
+  "configuration_sha256": "df20ade9f9dd6d5804fabd21cf7b24804d11830c4d05c2b6c416776c233c292b",
+  "artifact_sha256": "fe52bd96e6193a5d9abd58ef69fab15556e7d591ce71671e14fbc860c748a1ff",
+  "python_version": "3.12.0",
+  "tokenizers_library_version": "0.23.1",
+  "created_at_utc": "2026-08-20T18:09:02.747173+00:00",
+  "pretrained_tokenizer_used": false,
+  "external_vocab_reused": false,
+  "external_merge_table_reused": false
+}

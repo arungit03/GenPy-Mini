@@ -1,27 +1,18 @@
-"""Dataclass-based configuration loading and validation for Step 1."""
+"""Validated dataclass configuration for the Checkpoint 1 foundation."""
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Union
+from typing import Any, Mapping
 
 import yaml
 
+PathLike = str | Path
 
-PathLike = Union[str, Path]
 
-
-def _read_section(path: PathLike, section_name: str) -> Mapping[str, Any]:
-    config_path = Path(path)
-    if not config_path.is_file():
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
-    with config_path.open("r", encoding="utf-8") as handle:
-        raw = yaml.safe_load(handle)
-    if not isinstance(raw, dict) or section_name not in raw:
-        raise ValueError(f"Configuration must contain a '{section_name}' section")
-    section = raw[section_name]
-    if not isinstance(section, dict):
-        raise ValueError(f"The '{section_name}' section must be a mapping")
-    return section
+def _mapping(raw: Any, name: str) -> Mapping[str, Any]:
+    if not isinstance(raw, Mapping):
+        raise ValueError(f"'{name}' must be a mapping")
+    return raw
 
 
 def _required(section: Mapping[str, Any], name: str, section_name: str) -> Any:
@@ -30,11 +21,28 @@ def _required(section: Mapping[str, Any], name: str, section_name: str) -> Any:
     return section[name]
 
 
-def _positive(section: Mapping[str, Any], name: str, section_name: str) -> Any:
-    value = _required(section, name, section_name)
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
-        raise ValueError(f"'{section_name}.{name}' must be a positive number")
+def _check_keys(section: Mapping[str, Any], allowed: set[str], section_name: str) -> None:
+    unknown = sorted(set(section) - allowed)
+    if unknown:
+        raise ValueError(f"Unknown field(s) in '{section_name}': {', '.join(unknown)}")
+
+
+def _positive_int(value: Any, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+        raise ValueError(f"'{field}' must be a positive integer")
     return value
+
+
+def _non_negative_int(value: Any, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(f"'{field}' must be a non-negative integer")
+    return value
+
+
+def _probability(value: Any, field: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0.0 <= value < 1.0:
+        raise ValueError(f"'{field}' must satisfy 0.0 <= value < 1.0")
+    return float(value)
 
 
 @dataclass(frozen=True)
@@ -42,462 +50,128 @@ class ModelConfig:
     name: str
     vocab_size: int
     max_seq_len: int
-    hidden_size: int
-    num_layers: int
-    num_heads: int
+    n_layers: int
+    d_model: int
+    n_heads: int
     head_dim: int
-    intermediate_size: int
+    ffn_hidden_size: int
+    norm_type: str
     norm_eps: float
+    positional_encoding: str
     rope_theta: float
-    tie_embeddings: bool
+    activation: str
+    attention_bias: bool
+    mlp_bias: bool
+    tie_word_embeddings: bool
+    embedding_dropout: float = 0.0
     attention_dropout: float = 0.0
     residual_dropout: float = 0.0
-    embedding_dropout: float = 0.0
-    bias: bool = False
-    initializer_range: float = 0.02
 
     @classmethod
     def from_mapping(cls, section: Mapping[str, Any]) -> "ModelConfig":
-        required_names = (
-            "name", "vocab_size", "max_seq_len", "hidden_size", "num_layers",
-            "num_heads", "head_dim", "intermediate_size", "norm_eps", "rope_theta",
-            "tie_embeddings",
-        )
-        for name in required_names:
-            _required(section, name, "model")
-        positive_names = (
-            "vocab_size", "max_seq_len", "hidden_size", "num_layers", "num_heads",
-            "head_dim", "intermediate_size", "norm_eps", "rope_theta",
-        )
-        for name in positive_names:
-            _positive(section, name, "model")
-        integer_names = (
-            "vocab_size", "max_seq_len", "hidden_size", "num_layers", "num_heads",
-            "head_dim", "intermediate_size",
-        )
-        for name in integer_names:
-            if not isinstance(section[name], int) or isinstance(section[name], bool):
-                raise ValueError(f"'model.{name}' must be an integer")
-        if section["hidden_size"] % section["num_heads"] != 0:
-            raise ValueError("'model.hidden_size' must be divisible by 'model.num_heads'")
-        expected_head_dim = section["hidden_size"] // section["num_heads"]
-        if section["head_dim"] != expected_head_dim:
-            raise ValueError(
-                "'model.head_dim' must equal 'model.hidden_size // model.num_heads'"
-            )
-        if not isinstance(section["name"], str) or not section["name"].strip():
-            raise ValueError("'model.name' must be a non-empty string")
-        if not isinstance(section["tie_embeddings"], bool):
-            raise ValueError("'model.tie_embeddings' must be a boolean")
-        optional_defaults = {
-            "attention_dropout": 0.0,
-            "residual_dropout": 0.0,
-            "embedding_dropout": 0.0,
-            "bias": False,
-            "initializer_range": 0.02,
+        allowed = {
+            "name", "vocab_size", "max_seq_len", "n_layers", "d_model", "n_heads",
+            "head_dim", "ffn_hidden_size", "norm_type", "norm_eps", "positional_encoding",
+            "rope_theta", "activation", "attention_bias", "mlp_bias", "tie_word_embeddings",
+            "embedding_dropout", "attention_dropout", "residual_dropout",
         }
-        values = {name: section[name] for name in required_names}
-        for name, default in optional_defaults.items():
-            values[name] = section.get(name, default)
-        for name in ("attention_dropout", "residual_dropout", "embedding_dropout"):
-            value = values[name]
-            if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value < 1:
-                raise ValueError(f"'model.{name}' must be between 0 (inclusive) and 1 (exclusive)")
-        if not isinstance(values["bias"], bool):
-            raise ValueError("'model.bias' must be a boolean")
-        initializer_range = values["initializer_range"]
-        if isinstance(initializer_range, bool) or not isinstance(initializer_range, (int, float)) or initializer_range <= 0:
-            raise ValueError("'model.initializer_range' must be a positive number")
-        return cls(**values)
+        _check_keys(section, allowed, "model")
+        required = {key: _required(section, key, "model") for key in (
+            "name", "vocab_size", "max_seq_len", "n_layers", "d_model", "n_heads",
+            "head_dim", "ffn_hidden_size", "norm_type", "norm_eps", "positional_encoding",
+            "rope_theta", "activation", "attention_bias", "mlp_bias", "tie_word_embeddings",
+        )}
+        for key in ("vocab_size", "max_seq_len", "n_layers", "d_model", "n_heads", "head_dim", "ffn_hidden_size"):
+            required[key] = _positive_int(required[key], f"model.{key}")
+        for key in ("norm_eps", "rope_theta"):
+            value = required[key]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
+                raise ValueError(f"'model.{key}' must be a positive number")
+            required[key] = float(value)
+        if not isinstance(required["name"], str) or not required["name"].strip():
+            raise ValueError("'model.name' must be a non-empty string")
+        for key in ("norm_type", "positional_encoding", "activation"):
+            if not isinstance(required[key], str) or not required[key].strip():
+                raise ValueError(f"'model.{key}' must be a non-empty string")
+        for key in ("attention_bias", "mlp_bias", "tie_word_embeddings"):
+            if not isinstance(required[key], bool):
+                raise ValueError(f"'model.{key}' must be a boolean")
+        if required["d_model"] % required["n_heads"] != 0:
+            raise ValueError("'model.d_model' must be divisible by 'model.n_heads'")
+        expected = required["d_model"] // required["n_heads"]
+        if required["head_dim"] != expected:
+            raise ValueError("'model.head_dim' must equal model.d_model // model.n_heads")
+        if required["head_dim"] % 2 != 0:
+            raise ValueError("'model.head_dim' must be even for RoPE")
+        if required["norm_type"].lower() != "rmsnorm":
+            raise ValueError("'model.norm_type' must be rmsnorm")
+        if required["positional_encoding"].lower() != "rope":
+            raise ValueError("'model.positional_encoding' must be rope")
+        if required["activation"].lower() != "swiglu":
+            raise ValueError("'model.activation' must be swiglu")
+        for key in ("embedding_dropout", "attention_dropout", "residual_dropout"):
+            required[key] = _probability(section.get(key, 0.0), f"model.{key}")
+        return cls(**required)
 
 
 @dataclass(frozen=True)
 class TrainingConfig:
     seed: int
-    micro_batch_size: int
-    gradient_accumulation_steps: int
-    learning_rate: float
-    min_learning_rate: float
-    weight_decay: float
-    warmup_ratio: float
-    grad_clip: float
-    precision: str
-    log_interval: int
-    eval_interval: int
-    save_interval: int
-    checkpoint_dir: str
-    log_dir: str
-    sequence_length: int = 1024
-    beta1: float = 0.9
-    beta2: float = 0.95
-    adam_eps: float = 1.0e-8
-    num_workers: int = 0
-    pin_memory: bool = True
-    eval_batches: int = 20
-    keep_last_checkpoints: int = 3
 
     @classmethod
     def from_mapping(cls, section: Mapping[str, Any]) -> "TrainingConfig":
-        required_names = (
-            "seed", "micro_batch_size", "gradient_accumulation_steps",
-            "learning_rate", "min_learning_rate", "weight_decay", "warmup_ratio",
-            "grad_clip", "precision", "log_interval", "eval_interval", "save_interval",
-            "checkpoint_dir", "log_dir",
-        )
-        for name in required_names:
-            _required(section, name, "training")
-        for name in (
-            "micro_batch_size", "gradient_accumulation_steps", "log_interval",
-            "eval_interval", "save_interval",
-        ):
-            value = section[name]
-            if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-                raise ValueError(f"'training.{name}' must be a positive integer")
-        if not isinstance(section["seed"], int) or isinstance(section["seed"], bool):
-            raise ValueError("'training.seed' must be an integer")
-        for name in ("learning_rate", "min_learning_rate", "weight_decay", "grad_clip"):
-            value = section[name]
-            if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
-                raise ValueError(f"'training.{name}' must be non-negative")
-        warmup_ratio = section["warmup_ratio"]
-        if isinstance(warmup_ratio, bool) or not isinstance(warmup_ratio, (int, float)) or not 0 <= warmup_ratio <= 1:
-            raise ValueError("'training.warmup_ratio' must be between 0 and 1")
-        if section["min_learning_rate"] > section["learning_rate"]:
-            raise ValueError("'training.min_learning_rate' cannot exceed learning_rate")
-        if not isinstance(section["precision"], str) or not section["precision"].strip():
-            raise ValueError("'training.precision' must be a non-empty string")
-        for name in ("checkpoint_dir", "log_dir"):
-            if not isinstance(section[name], str) or not section[name].strip():
-                raise ValueError(f"'training.{name}' must be a non-empty string")
-        values = {name: section[name] for name in required_names}
-        values.update({
-            "sequence_length": section.get("sequence_length", 1024),
-            "beta1": section.get("beta1", 0.9),
-            "beta2": section.get("beta2", 0.95),
-            "adam_eps": section.get("adam_eps", 1.0e-8),
-            "num_workers": section.get("num_workers", 0),
-            "pin_memory": section.get("pin_memory", True),
-            "eval_batches": section.get("eval_batches", 20),
-            "keep_last_checkpoints": section.get("keep_last_checkpoints", 3),
-        })
-        for name in ("sequence_length", "num_workers", "eval_batches", "keep_last_checkpoints"):
-            value = values[name]
-            minimum = 0 if name == "num_workers" else 1
-            if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
-                raise ValueError(f"'training.{name}' must be an integer >= {minimum}")
-        for name in ("beta1", "beta2"):
-            value = values[name]
-            if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 < value < 1:
-                raise ValueError(f"'training.{name}' must be between 0 and 1")
-        if isinstance(values["adam_eps"], bool) or not isinstance(values["adam_eps"], (int, float)) or values["adam_eps"] <= 0:
-            raise ValueError("'training.adam_eps' must be positive")
-        if not isinstance(values["pin_memory"], bool):
-            raise ValueError("'training.pin_memory' must be a boolean")
-        return cls(**values)
-
-
-def load_model_config(path: PathLike) -> ModelConfig:
-    """Load and validate a model YAML configuration."""
-    return ModelConfig.from_mapping(_read_section(path, "model"))
-
-
-def load_training_config(path: PathLike) -> TrainingConfig:
-    """Load and validate a training YAML configuration."""
-    config = TrainingConfig.from_mapping(_read_section(path, "training"))
-    model_path = Path(path).parent / "model_200m.yaml"
-    if model_path.is_file():
-        model = load_model_config(model_path)
-        if config.sequence_length > model.max_seq_len:
-            raise ValueError(
-                f"'training.sequence_length' cannot exceed model.max_seq_len ({model.max_seq_len})"
-            )
-    return config
-
-
-@dataclass(frozen=True)
-class DatasetConfig:
-    name: str
-    config: str
-    split: str
-    streaming: bool
-    text_field: str
-
-
-@dataclass(frozen=True)
-class ProcessingConfig:
-    seed: int
-    min_chars: int
-    max_chars: int
-    normalize_unicode: bool
-    normalize_line_endings: bool
-    remove_control_characters: bool
-    normalize_whitespace: bool
-    exact_deduplication: bool
-
-
-@dataclass(frozen=True)
-class DataSplitConfig:
-    validation_fraction: float
-    seed: int
-
-
-@dataclass(frozen=True)
-class OutputConfig:
-    format: str
-    shard_max_documents: int
-    processed_dir: str
-    manifest_dir: str
-
-
-@dataclass(frozen=True)
-class ResumeConfig:
-    enabled: bool
-
-
-@dataclass(frozen=True)
-class MetadataConfig:
-    preserve_source_metadata: bool
-
-
-@dataclass(frozen=True)
-class DataPipelineConfig:
-    dataset: DatasetConfig
-    processing: ProcessingConfig
-    split: DataSplitConfig
-    output: OutputConfig
-    resume: ResumeConfig
-    metadata: MetadataConfig
-
-    @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any]) -> "DataPipelineConfig":
-        required_sections = ("dataset", "processing", "split", "output", "resume", "metadata")
-        for section_name in required_sections:
-            if section_name not in raw or not isinstance(raw[section_name], dict):
-                raise ValueError(f"Configuration must contain mapping section '{section_name}'")
-
-        dataset = raw["dataset"]
-        for name in ("name", "config", "split", "text_field"):
-            _required(dataset, name, "dataset")
-            if not isinstance(dataset[name], str) or not dataset[name].strip():
-                raise ValueError(f"'dataset.{name}' must be a non-empty string")
-        if not isinstance(dataset.get("streaming"), bool):
-            raise ValueError("'dataset.streaming' must be a boolean")
-
-        processing = raw["processing"]
-        for name in ("seed", "min_chars", "max_chars"):
-            value = _required(processing, name, "processing")
-            if not isinstance(value, int) or isinstance(value, bool) or value < 0:
-                raise ValueError(f"'processing.{name}' must be a non-negative integer")
-        if processing["min_chars"] <= 0:
-            raise ValueError("'processing.min_chars' must be greater than zero")
-        if processing["max_chars"] <= processing["min_chars"]:
-            raise ValueError("'processing.max_chars' must be greater than min_chars")
-        for name in (
-            "normalize_unicode", "normalize_line_endings", "remove_control_characters",
-            "normalize_whitespace", "exact_deduplication",
-        ):
-            if not isinstance(_required(processing, name, "processing"), bool):
-                raise ValueError(f"'processing.{name}' must be a boolean")
-
-        split = raw["split"]
-        fraction = _required(split, "validation_fraction", "split")
-        seed = _required(split, "seed", "split")
-        if isinstance(fraction, bool) or not isinstance(fraction, (int, float)) or not 0 < fraction < 1:
-            raise ValueError("'split.validation_fraction' must be between 0 and 1")
-        if not isinstance(seed, int) or isinstance(seed, bool) or seed < 0:
-            raise ValueError("'split.seed' must be a non-negative integer")
-
-        output = raw["output"]
-        for name in ("format", "processed_dir", "manifest_dir"):
-            value = _required(output, name, "output")
-            if not isinstance(value, str) or not value.strip():
-                raise ValueError(f"'output.{name}' must be a non-empty string")
-        if output["format"] != "jsonl.gz":
-            raise ValueError("'output.format' must be 'jsonl.gz' for Step 2")
-        shard_size = _required(output, "shard_max_documents", "output")
-        if not isinstance(shard_size, int) or isinstance(shard_size, bool) or shard_size <= 0:
-            raise ValueError("'output.shard_max_documents' must be a positive integer")
-
-        resume = raw["resume"]
-        metadata = raw["metadata"]
-        if not isinstance(resume.get("enabled"), bool):
-            raise ValueError("'resume.enabled' must be a boolean")
-        if not isinstance(metadata.get("preserve_source_metadata"), bool):
-            raise ValueError("'metadata.preserve_source_metadata' must be a boolean")
-
-        return cls(
-            dataset=DatasetConfig(**{name: dataset[name] for name in DatasetConfig.__dataclass_fields__}),
-            processing=ProcessingConfig(**{name: processing[name] for name in ProcessingConfig.__dataclass_fields__}),
-            split=DataSplitConfig(validation_fraction=fraction, seed=seed),
-            output=OutputConfig(**{name: output[name] for name in OutputConfig.__dataclass_fields__}),
-            resume=ResumeConfig(enabled=resume["enabled"]),
-            metadata=MetadataConfig(preserve_source_metadata=metadata["preserve_source_metadata"]),
-        )
-
-
-def load_data_config(path: PathLike) -> DataPipelineConfig:
-    """Load and validate the Step 2 dataset pipeline configuration."""
-    config_path = Path(path)
-    if not config_path.is_file():
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
-    with config_path.open("r", encoding="utf-8") as handle:
-        raw = yaml.safe_load(handle)
-    if not isinstance(raw, dict):
-        raise ValueError("Dataset configuration must be a YAML mapping")
-    return DataPipelineConfig.from_mapping(raw)
-
-
-@dataclass(frozen=True)
-class TokenizerSpecialTokens:
-    pad_token: str
-    bos_token: str
-    eos_token: str
-    unk_token: str
-
-    @property
-    def ordered(self) -> tuple[str, str, str, str]:
-        return (self.pad_token, self.bos_token, self.eos_token, self.unk_token)
+        _check_keys(section, {"seed"}, "training")
+        return cls(seed=_non_negative_int(_required(section, "seed", "training"), "training.seed"))
 
 
 @dataclass(frozen=True)
 class TokenizerConfig:
-    name: str
-    algorithm: str
     vocab_size: int
-    min_frequency: int
-    max_token_length: int
-    normalizer: str
-    add_prefix_space: bool
-    use_regex: bool
-    special_tokens: TokenizerSpecialTokens
+    pad_token_id: int
+    bos_token_id: int
+    eos_token_id: int
+    unk_token_id: int
+
+    @classmethod
+    def from_mapping(cls, section: Mapping[str, Any]) -> "TokenizerConfig":
+        fields = ("vocab_size", "pad_token_id", "bos_token_id", "eos_token_id", "unk_token_id")
+        _check_keys(section, set(fields), "tokenizer")
+        values = {field: _positive_int(_required(section, field, "tokenizer"), f"tokenizer.{field}")
+                  for field in ("vocab_size",)}
+        for field in fields[1:]:
+            values[field] = _non_negative_int(_required(section, field, "tokenizer"), f"tokenizer.{field}")
+            if values[field] >= values["vocab_size"]:
+                raise ValueError(f"'tokenizer.{field}' must be smaller than tokenizer.vocab_size")
+        ids = [values[field] for field in fields[1:]]
+        if len(set(ids)) != len(ids):
+            raise ValueError("Tokenizer special token IDs must be unique")
+        return cls(**values)
 
 
 @dataclass(frozen=True)
-class TokenizerTrainingDataConfig:
-    input_dir: str
-    train_pattern: str
-    validation_pattern: str
-    text_field: str
-
-
-@dataclass(frozen=True)
-class TokenizerOutputConfig:
-    output_dir: str
-    tokenizer_file: str
-    config_file: str
-    manifest_file: str
-    evaluation_file: str
-
-
-@dataclass(frozen=True)
-class TokenizerTrainingConfig:
-    show_progress: bool
-    production_target_bytes: int
-    production_minimum_bytes: int
-
-
-@dataclass(frozen=True)
-class TokenizerPipelineConfig:
+class GenPyConfig:
+    model: ModelConfig
+    training: TrainingConfig
     tokenizer: TokenizerConfig
-    training_data: TokenizerTrainingDataConfig
-    output: TokenizerOutputConfig
-    training: TokenizerTrainingConfig
 
 
-def _non_empty_string(section: Mapping[str, Any], name: str, section_name: str) -> str:
-    value = _required(section, name, section_name)
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"'{section_name}.{name}' must be a non-empty string")
-    return value
-
-
-def _positive_integer(section: Mapping[str, Any], name: str, section_name: str, minimum: int = 1) -> int:
-    value = _required(section, name, section_name)
-    if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
-        raise ValueError(f"'{section_name}.{name}' must be an integer >= {minimum}")
-    return value
-
-
-def _tokenizer_from_mapping(section: Mapping[str, Any]) -> TokenizerConfig:
-    name = _non_empty_string(section, "name", "tokenizer")
-    algorithm = _non_empty_string(section, "algorithm", "tokenizer")
-    if algorithm != "byte_level_bpe":
-        raise ValueError("'tokenizer.algorithm' must be 'byte_level_bpe'")
-    vocab_size = _positive_integer(section, "vocab_size", "tokenizer", 257)
-    if vocab_size != 32000:
-        raise ValueError("'tokenizer.vocab_size' must be exactly 32000 for GenPy")
-    min_frequency = _positive_integer(section, "min_frequency", "tokenizer")
-    max_token_length = _positive_integer(section, "max_token_length", "tokenizer")
-    normalizer = _non_empty_string(section, "normalizer", "tokenizer")
-    if normalizer != "nfc":
-        raise ValueError("'tokenizer.normalizer' must be 'nfc'")
-    byte_level = section.get("byte_level")
-    if not isinstance(byte_level, dict):
-        raise ValueError("'tokenizer.byte_level' must be a mapping")
-    add_prefix_space = byte_level.get("add_prefix_space")
-    use_regex = byte_level.get("use_regex")
-    if not isinstance(add_prefix_space, bool) or not isinstance(use_regex, bool):
-        raise ValueError("ByteLevel settings must be booleans")
-    special = section.get("special_tokens")
-    if not isinstance(special, dict):
-        raise ValueError("'tokenizer.special_tokens' must be a mapping")
-    tokens = TokenizerSpecialTokens(
-        pad_token=_non_empty_string(special, "pad_token", "tokenizer.special_tokens"),
-        bos_token=_non_empty_string(special, "bos_token", "tokenizer.special_tokens"),
-        eos_token=_non_empty_string(special, "eos_token", "tokenizer.special_tokens"),
-        unk_token=_non_empty_string(special, "unk_token", "tokenizer.special_tokens"),
-    )
-    if len(set(tokens.ordered)) != 4:
-        raise ValueError("Tokenizer special-token strings must be unique")
-    return TokenizerConfig(name, algorithm, vocab_size, min_frequency, max_token_length, normalizer, add_prefix_space, use_regex, tokens)
-
-
-# Keep construction in a named helper so it is easy to test without a framework.
-def _build_tokenizer_config(section: Mapping[str, Any]) -> TokenizerConfig:
-    return _tokenizer_from_mapping(section)
-
-
-def load_tokenizer_config(path: PathLike) -> TokenizerPipelineConfig:
-    """Load and validate the Step 3 tokenizer configuration."""
+def load_config(path: PathLike) -> GenPyConfig:
+    """Load and validate a complete GenPy YAML configuration."""
     config_path = Path(path)
     if not config_path.is_file():
         raise FileNotFoundError(f"Configuration file not found: {config_path}")
     with config_path.open("r", encoding="utf-8") as handle:
         raw = yaml.safe_load(handle)
-    if not isinstance(raw, dict):
-        raise ValueError("Tokenizer configuration must be a YAML mapping")
-    for section_name in ("tokenizer", "training_data", "output", "training"):
-        if not isinstance(raw.get(section_name), dict):
-            raise ValueError(f"Configuration must contain mapping section '{section_name}'")
-    tokenizer = _build_tokenizer_config(raw["tokenizer"])
-    data = raw["training_data"]
-    data_config = TokenizerTrainingDataConfig(
-        _non_empty_string(data, "input_dir", "training_data"),
-        _non_empty_string(data, "train_pattern", "training_data"),
-        _non_empty_string(data, "validation_pattern", "training_data"),
-        _non_empty_string(data, "text_field", "training_data"),
+    raw = _mapping(raw, "configuration")
+    expected_sections = {"model", "training", "tokenizer"}
+    unknown = sorted(set(raw) - expected_sections)
+    missing = sorted(expected_sections - set(raw))
+    if unknown:
+        raise ValueError(f"Unknown top-level configuration section(s): {', '.join(unknown)}")
+    if missing:
+        raise ValueError(f"Missing required configuration section(s): {', '.join(missing)}")
+    return GenPyConfig(
+        model=ModelConfig.from_mapping(_mapping(raw["model"], "model")),
+        training=TrainingConfig.from_mapping(_mapping(raw["training"], "training")),
+        tokenizer=TokenizerConfig.from_mapping(_mapping(raw["tokenizer"], "tokenizer")),
     )
-    output = raw["output"]
-    output_config = TokenizerOutputConfig(*[
-        _non_empty_string(output, name, "output")
-        for name in TokenizerOutputConfig.__dataclass_fields__
-    ])
-    training = raw["training"]
-    show_progress = _required(training, "show_progress", "training")
-    if not isinstance(show_progress, bool):
-        raise ValueError("'training.show_progress' must be a boolean")
-    target = _positive_integer(training, "production_target_bytes", "training")
-    minimum = _positive_integer(training, "production_minimum_bytes", "training")
-    if minimum > target:
-        raise ValueError("production_minimum_bytes cannot exceed production_target_bytes")
-    return TokenizerPipelineConfig(tokenizer, data_config, output_config, TokenizerTrainingConfig(show_progress, target, minimum))
-
-
-def validate_tokenizer_vocab_contract(model_path: PathLike, tokenizer_config: TokenizerPipelineConfig) -> None:
-    """Fail loudly if the model and tokenizer vocabularies disagree."""
-    model = load_model_config(model_path)
-    if model.vocab_size != tokenizer_config.tokenizer.vocab_size:
-        raise ValueError(
-            f"Model/tokenizer vocabulary mismatch: model={model.vocab_size}, "
-            f"tokenizer={tokenizer_config.tokenizer.vocab_size}"
-        )

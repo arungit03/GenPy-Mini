@@ -1,0 +1,74 @@
+{
+  "python_code": {
+    "examples": 90000,
+    "characters": 13509487,
+    "bytes": 13509487,
+    "tokens": 2732814,
+    "unknown_tokens": 0,
+    "tokens_per_character": 0.20228851028910277,
+    "characters_per_token": 4.943434496456766,
+    "bytes_per_token": 4.943434496456766,
+    "unknown_rate": 0.0,
+    "average_tokens_per_example": 30.3646
+  },
+  "natural_language_instructions": {
+    "examples": 90000,
+    "characters": 10063591,
+    "bytes": 10063591,
+    "tokens": 1855765,
+    "unknown_tokens": 0,
+    "tokens_per_character": 0.1844038574302155,
+    "characters_per_token": 5.422880052161777,
+    "bytes_per_token": 5.422880052161777,
+    "unknown_rate": 0.0,
+    "average_tokens_per_example": 20.619611111111112
+  },
+  "mixed_instruction_code": {
+    "examples": 90000,
+    "characters": 23663078,
+    "bytes": 23663078,
+    "tokens": 4678579,
+    "unknown_tokens": 0,
+    "tokens_per_character": 0.19771641711192434,
+    "characters_per_token": 5.057748944711632,
+    "bytes_per_token": 5.057748944711632,
+    "unknown_rate": 0.0,
+    "average_tokens_per_example": 51.98421111111111
+  },
+  "train": {
+    "examples": 90000,
+    "characters": 23663078,
+    "bytes": 23663078,
+    "tokens": 4678579,
+    "unknown_tokens": 0,
+    "tokens_per_character": 0.19771641711192434,
+    "characters_per_token": 5.057748944711632,
+    "bytes_per_token": 5.057748944711632,
+    "unknown_rate": 0.0,
+    "average_tokens_per_example": 51.98421111111111
+  },
+  "validation": {
+    "examples": 5000,
+    "characters": 1313264,
+    "bytes": 1313264,
+    "tokens": 259166,
+    "unknown_tokens": 0,
+    "tokens_per_character": 0.1973449359763155,
+    "characters_per_token": 5.067269626417046,
+    "bytes_per_token": 5.067269626417046,
+    "unknown_rate": 0.0,
+    "average_tokens_per_example": 51.8332
+  },
+  "test": {
+    "examples": 5000,
+    "characters": 1319329,
+    "bytes": 1319329,
+    "tokens": 261225,
+    "unknown_tokens": 0,
+    "tokens_per_character": 0.19799837644742138,
+    "characters_per_token": 5.050546463776438,
+    "bytes_per_token": 5.050546463776438,
+    "unknown_rate": 0.0,
+    "average_tokens_per_example": 52.245
+  }
+}

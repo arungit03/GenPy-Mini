@@ -1,52 +1,46 @@
-"""Report the local environment relevant to future GenPy training."""
+"""Run a CPU-safe sanity check for the GenPy Checkpoint 1 foundation."""
 
+from pathlib import Path
 import platform
+import sys
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import numpy as np
 import torch
 
-try:
-    from genpy.utils.device import get_device
-except ModuleNotFoundError:  # Allows the required direct script invocation.
-    def get_device() -> torch.device:
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-def _bf16_supported() -> bool:
-    try:
-        return bool(torch.cuda.is_available() and torch.cuda.is_bf16_supported())
-    except (AttributeError, RuntimeError):
-        return False
-
-
-def _fp16_available() -> bool:
-    return bool(torch.cuda.is_available())
+from genpy.config import load_config
+from genpy.utils.device import get_device, get_device_info
+from genpy.utils.paths import CONFIG_DIR
 
 
 def main() -> int:
-    cuda_available = bool(torch.cuda.is_available())
-    print(f"Python version: {platform.python_version()}")
-    print(f"PyTorch version: {torch.__version__}")
-    print(f"CUDA available: {cuda_available}")
-    print(f"PyTorch CUDA version: {torch.version.cuda or 'None'}")
-    print(f"cuDNN version: {torch.backends.cudnn.version() or 'None'}")
-    device_count = torch.cuda.device_count() if cuda_available else 0
-    print(f"CUDA device count: {device_count}")
-    if cuda_available:
-        for index in range(device_count):
-            properties = torch.cuda.get_device_properties(index)
-            memory_gib = properties.total_memory / (1024 ** 3)
-            print(f"GPU {index} name: {properties.name}")
-            print(f"GPU {index} VRAM: {memory_gib:.2f} GiB")
-    else:
-        print("GPU name: None")
-        print("GPU VRAM: None")
-    print(f"BF16 support: {_bf16_supported()}")
-    print(f"FP16 CUDA training available: {_fp16_available()}")
-    print(f"Selected GenPy device: {get_device()}")
-    if not cuda_available:
-        print("CUDA GPU not detected.")
-        print("CPU development mode is available.")
-        print("Use Kaggle GPU for GenPy pretraining.")
+    config = load_config(CONFIG_DIR / "model_200m.yaml")
+    info = get_device_info()
+    print("GenPy Environment Check")
+    print("=======================")
+    print(f"Python: {platform.python_version()}")
+    print(f"PyTorch: {torch.__version__}")
+    print(f"NumPy: {np.__version__}")
+    print(f"CUDA available: {info['cuda_available']}")
+    print(f"CUDA devices: {info['cuda_device_count']}")
+    print(f"Selected device: {get_device()}")
+    print(f"GPU: {info['gpu_name'] or 'None'}")
+    print(f"BF16 supported: {info['bf16_supported']}")
+    print()
+    print("Configuration:")
+    print(f"Model: {config.model.name}")
+    print(f"Layers: {config.model.n_layers}")
+    print(f"Hidden size: {config.model.d_model}")
+    print(f"Attention heads: {config.model.n_heads}")
+    print(f"Head dimension: {config.model.head_dim}")
+    print(f"FFN hidden size: {config.model.ffn_hidden_size}")
+    print(f"Vocabulary: {config.model.vocab_size}")
+    print(f"Context length: {config.model.max_seq_len}")
+    print()
+    print("Configuration validation: PASS")
+    print("Environment check: PASS")
     return 0
 
 

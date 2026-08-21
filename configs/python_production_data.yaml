@@ -1,0 +1,61 @@
+dataset:
+  name: GenPy-Python-100K
+  version: 1
+  target_examples: 100000
+  minimum_examples: 90000
+  maximum_examples: 110000
+  seed: 42
+
+splits:
+  train: 0.90
+  validation: 0.05
+  test: 0.05
+
+quality:
+  minimum_score: 0.80
+  require_python_syntax: true
+
+generation:
+  enabled: true
+  # Each parameterized task instance is kept as its own semantic family;
+  # this conservative cap prevents paraphrase leakage and near-clone buildup.
+  max_examples_per_family: 1
+
+difficulty:
+  easy: 0.45
+  medium: 0.40
+  hard: 0.15
+
+deduplication:
+  exact: true
+  instruction: true
+  code: true
+  near_duplicate: true
+  near_duplicate_threshold: 0.90
+
+licensing:
+  require_known_license: true
+  allowed_license_families:
+    - MIT
+    - BSD-2-Clause
+    - BSD-3-Clause
+    - Apache-2.0
+    - ISC
+    - Unlicense
+    - CC0-1.0
+    - project_owned
+    - generated
+
+benchmark_exclusion:
+  enabled: true
+
+execution_validation:
+  enabled_for_generated_tasks: true
+  timeout_seconds: 3
+
+lengths:
+  instruction_min_chars: 10
+  instruction_max_chars: 2000
+  response_min_chars: 10
+  response_max_chars: 12000
+  response_max_lines: 300

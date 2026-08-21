@@ -1,18 +1,13 @@
-"""Public PyTorch components for the GenPy decoder-only Transformer."""
+"""Native PyTorch GenPy Transformer model components."""
 
-from genpy.model.attention import GenPyAttention
-from genpy.model.block import GenPyBlock
-from genpy.model.model import GenPyForCausalLM
-from genpy.model.rmsnorm import RMSNorm
-from genpy.model.rope import RotaryEmbedding, apply_rotary_pos_emb
-from genpy.model.swiglu import SwiGLU
+from .attention import CausalSelfAttention
+from .block import TransformerBlock
+from .mlp import SwiGLU
+from .model import GenPyForCausalLM, GenPyModel
+from .rmsnorm import RMSNorm
+from .rope import RotaryEmbedding
 
 __all__ = [
-    "GenPyAttention",
-    "GenPyBlock",
-    "GenPyForCausalLM",
-    "RMSNorm",
-    "RotaryEmbedding",
-    "SwiGLU",
-    "apply_rotary_pos_emb",
+    "CausalSelfAttention", "GenPyForCausalLM", "GenPyModel", "RMSNorm",
+    "RotaryEmbedding", "SwiGLU", "TransformerBlock",
 ]

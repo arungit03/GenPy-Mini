@@ -1,0 +1,13 @@
+{
+  "cuda_available": false,
+  "tested": false,
+  "fp32": {
+    "status": "SKIPPED_NO_CUDA"
+  },
+  "mixed_precision": {
+    "status": "SKIPPED_NO_CUDA"
+  },
+  "full_context": {
+    "status": "SKIPPED_NO_CUDA"
+  }
+}

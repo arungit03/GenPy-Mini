@@ -1,92 +1,103 @@
-"""Iterator-based tokenizer training and artifact metadata."""
+"""Fresh Byte-Level BPE training using the local GenPy corpus."""
 
-import hashlib
+from __future__ import annotations
+
 import json
-import platform
-from dataclasses import asdict
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable
 
-import tokenizers
+from tokenizers import AddedToken, Tokenizer
+from tokenizers.decoders import ByteLevel as ByteLevelDecoder
+from tokenizers.models import BPE
+from tokenizers.pre_tokenizers import ByteLevel
+from tokenizers.trainers import BpeTrainer
 
-from genpy.config import TokenizerPipelineConfig
-
-from .builder import build_tokenizer, build_trainer
-from .corpus import CorpusReader, CorpusStats, find_step2_manifest
-from .tokenizer import GenPyTokenizer
-
-
-def train_from_iterator(config, texts: Iterable[str], vocab_size: Optional[int] = None, show_progress: bool = False) -> GenPyTokenizer:
-    raw = build_tokenizer(config, vocab_size=vocab_size)
-    raw.train_from_iterator(texts, trainer=build_trainer(config, vocab_size=vocab_size, show_progress=show_progress))
-    return GenPyTokenizer(raw)
+from .config import SPECIAL_TOKENS, TokenizerConfig
 
 
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+def build_trainer(config: TokenizerConfig) -> BpeTrainer:
+    return BpeTrainer(
+        vocab_size=config.vocab_size,
+        min_frequency=config.min_frequency,
+        special_tokens=[
+            AddedToken(SPECIAL_TOKENS[name], special=True, normalized=False)
+            for name in ("pad", "bos", "eos", "unk")
+        ],
+        initial_alphabet=ByteLevel.alphabet(),
+        show_progress=False,
+    )
 
 
-def save_tokenizer_artifacts(
-    tokenizer: GenPyTokenizer,
-    config: TokenizerPipelineConfig,
-    output_dir: Path,
-    corpus_stats: CorpusStats,
-    mode: str,
-    source_manifest: Optional[Path] = None,
-    shard_names=None,
-) -> dict:
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    tokenizer_path = output_dir / config.output.tokenizer_file
-    tokenizer.save(tokenizer_path)
-    checksum = sha256_file(tokenizer_path)
-    config_path = output_dir / config.output.config_file
-    config_path.write_text(json.dumps(asdict(config), indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    manifest = {
-        "tokenizer_name": config.tokenizer.name,
-        "algorithm": config.tokenizer.algorithm,
-        "vocab_size": tokenizer.vocab_size,
-        "special_tokens": dict(zip(("pad", "bos", "eos", "unk"), config.tokenizer.special_tokens.ordered)),
-        "special_token_ids": {"pad": tokenizer.pad_token_id, "bos": tokenizer.bos_token_id, "eos": tokenizer.eos_token_id, "unk": tokenizer.unk_token_id},
-        "normalizer": config.tokenizer.normalizer,
-        "byte_level": {"add_prefix_space": config.tokenizer.add_prefix_space, "use_regex": config.tokenizer.use_regex},
-        "min_frequency": config.tokenizer.min_frequency,
-        "max_token_length": config.tokenizer.max_token_length,
-        "training_corpus": {
-            "source_manifest": str(source_manifest) if source_manifest else None,
-            "shards": sorted(shard_names or []),
-            **corpus_stats.to_dict(),
-        },
-        "training_mode": mode,
-        "tokenizers_version": tokenizers.__version__,
-        "python_version": platform.python_version(),
-        "creation_timestamp": datetime.now(timezone.utc).isoformat(),
-        "tokenizer_json_sha256": checksum,
-    }
-    manifest_path = output_dir / config.output.manifest_file
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return {"tokenizer_path": tokenizer_path, "config_path": config_path, "manifest_path": manifest_path, "manifest": manifest}
+def build_fresh_tokenizer(config: TokenizerConfig) -> Tokenizer:
+    config.validate()
+    tokenizer = Tokenizer(BPE(unk_token=SPECIAL_TOKENS["unk"]))
+    tokenizer.pre_tokenizer = ByteLevel(
+        add_prefix_space=config.add_prefix_space,
+        trim_offsets=False,
+        use_regex=True,
+    )
+    tokenizer.decoder = ByteLevelDecoder()
+    return tokenizer
 
 
-def train_from_corpus(
-    pipeline_config: TokenizerPipelineConfig,
-    input_dir: Path,
-    output_dir: Path,
-    mode: str = "development",
-    max_documents: Optional[int] = None,
-    max_bytes: Optional[int] = None,
-    source_manifest: Optional[Path] = None,
-    vocab_size: Optional[int] = None,
-) -> dict:
-    reader = CorpusReader(input_dir, pipeline_config.training_data.train_pattern, pipeline_config.training_data.text_field)
-    tokenizer = train_from_iterator(pipeline_config.tokenizer, reader.texts(max_documents, max_bytes), vocab_size, pipeline_config.training.show_progress)
-    manifest = find_step2_manifest(Path(pipeline_config.training_data.input_dir).parent / "manifests", source_manifest)
-    result = save_tokenizer_artifacts(tokenizer, pipeline_config, output_dir, reader.stats, mode, manifest, [path.name for path in reader.shard_paths()])
-    result["tokenizer"] = tokenizer
-    result["corpus_stats"] = reader.stats
-    return result
+def train_from_documents(config: TokenizerConfig, documents: Iterable[str]) -> Tokenizer:
+    tokenizer = build_fresh_tokenizer(config)
+    trainer = build_trainer(config)
+    tokenizer.train_from_iterator(documents, trainer=trainer)
+    expected = {"<PAD>": 0, "<BOS>": 1, "<EOS>": 2, "<UNK>": 3}
+    for token, token_id in expected.items():
+        if tokenizer.token_to_id(token) != token_id:
+            raise RuntimeError(f"special token ID mismatch for {token}: {tokenizer.token_to_id(token)}")
+    return tokenizer
+
+
+def pad_vocab_with_corpus_tokens(tokenizer: Tokenizer, documents: Iterable[str], target_size: int) -> int:
+    """Complete a small-corpus BPE with deterministic tokens observed in that corpus.
+
+    The generated corpus has fewer than 32K distinct BPE merge opportunities. This
+    keeps the core BPE learned from the corpus and fills the exact model vocabulary
+    with additional observed substrings, rather than fabricated or external tokens.
+    """
+    needed = target_size - tokenizer.get_vocab_size(with_added_tokens=True)
+    if needed <= 0:
+        return 0
+    candidates: list[str] = []
+    seen: set[str] = set(tokenizer.get_vocab())
+    for document in documents:
+        for length in (8, 7, 6, 5, 4, 3):
+            for start in range(0, max(0, len(document) - length + 1)):
+                candidate = document[start:start + length]
+                if (candidate in seen or len(candidate) < 3 or not candidate.isprintable()
+                        or candidate.strip() != candidate or "<" in candidate or ">" in candidate):
+                    continue
+                seen.add(candidate)
+                candidates.append(candidate)
+                if len(candidates) >= needed:
+                    break
+            if len(candidates) >= needed:
+                break
+        if len(candidates) >= needed:
+            break
+    added = tokenizer.add_tokens(candidates[:needed])
+    if tokenizer.get_vocab_size(with_added_tokens=True) != target_size:
+        raise RuntimeError(
+            f"corpus-derived vocabulary completion failed: "
+            f"{tokenizer.get_vocab_size(with_added_tokens=True)} / {target_size}"
+        )
+    return added
+
+
+def save_model_files(tokenizer: Tokenizer, output: str | Path) -> None:
+    """Save the canonical tokenizer JSON plus model vocab and merge files."""
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    tokenizer.save(str(output / "tokenizer.json"), pretty=True)
+    saved = tokenizer.model.save(str(output), "genpy")
+    for path in saved:
+        path = Path(path)
+        if path.name.endswith("-merges.txt"):
+            path.replace(output / "merges.txt")
+        else:
+            path.unlink()
+    vocab = {token: token_id for token, token_id in tokenizer.get_vocab().items()}
+    (output / "vocab.json").write_text(json.dumps(vocab, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")

@@ -1,0 +1,7 @@
+{
+  "benchmarks": ["HumanEval", "MBPP", "APPS", "CodeContests"],
+  "problem_ids": [],
+  "instruction_hashes": [],
+  "content_hashes": [],
+  "notes": ["Populate hashes/IDs from verified benchmark metadata before production ingestion."]
+}
