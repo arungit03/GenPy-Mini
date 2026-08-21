@@ -1,0 +1,33 @@
+{
+  "status": "BASE_CHECKPOINT_MISSING",
+  "model": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\runs\\genpy200m_pretrain_v1\\checkpoints\\step_000000001980\\model.pt",
+  "dataset": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\validation.jsonl",
+  "dataset_sha256": "7ec5fabfb339e0c9986160193da01d30fe6d46035775f81e9777a4ad92731e97",
+  "total_prompts": null,
+  "eos_termination_rate": null,
+  "python_extraction_rate": null,
+  "syntax_valid_rate": null,
+  "compile_valid_rate": null,
+  "executable_rate": null,
+  "functional_correctness_rate": null,
+  "repeated_output_rate": null,
+  "unique_output_rate": null,
+  "exact_duplicate_generations": null,
+  "average_generated_tokens": null,
+  "generation_failures": null,
+  "samples": [
+    {
+      "prompt": "Write Python code to check whether a number is even or odd.",
+      "status": "BASE_CHECKPOINT_MISSING"
+    },
+    {
+      "prompt": "Write a Python function to reverse a string.",
+      "status": "BASE_CHECKPOINT_MISSING"
+    },
+    {
+      "prompt": "Write Python code to find the largest number in a list.",
+      "status": "BASE_CHECKPOINT_MISSING"
+    }
+  ],
+  "error": "immutable Checkpoint 7 base model is not present in this workspace"
+}

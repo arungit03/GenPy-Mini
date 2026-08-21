@@ -1,0 +1,10 @@
+Baseline unavailable: immutable Checkpoint 7 model is missing.
+
+PROMPT: Write Python code to check whether a number is even or odd.
+STATUS: BASE_CHECKPOINT_MISSING
+
+PROMPT: Write a Python function to reverse a string.
+STATUS: BASE_CHECKPOINT_MISSING
+
+PROMPT: Write Python code to find the largest number in a list.
+STATUS: BASE_CHECKPOINT_MISSING

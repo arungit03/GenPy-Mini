@@ -1,0 +1,23 @@
+{
+  "legacy_test_classification": "LEGACY_IN_DISTRIBUTION_CONTAMINATION_RISK",
+  "challenge_benchmark_status": "CLEAN_GENERALIZATION",
+  "train_test_solution_overlap": 699,
+  "train_test_template_overlap": 51,
+  "sequence_length_recommended": 256,
+  "sequence_length_p95": 99.0,
+  "sequence_length_p99": 103.0,
+  "maximum_sequence_length": 158.0,
+  "assistant_target_tokens": 2822814,
+  "mean_assistant_tokens_per_example": 31.3646,
+  "estimated_supervised_tokens_per_update": 250.9168,
+  "estimated_nonpadding_tokens_per_update": 471.87368888888886,
+  "final_proposed_global_sft_steps": 11250,
+  "dataset_equivalent_passes": 1,
+  "reason": "shortest candidate with zero estimated truncation; 1024 is not justified by the observed maximum length",
+  "tests": {
+    "passed": 91,
+    "failed": 0
+  },
+  "ready_for_kaggle_baseline_evaluation": false,
+  "ready_for_first_100_sft_steps": false
+}

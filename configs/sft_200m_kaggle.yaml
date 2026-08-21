@@ -1,0 +1,35 @@
+training:
+  seed: 42
+  device: cuda
+  precision: bf16
+  sequence_length: 256
+  micro_batch_size: 1
+  gradient_accumulation_steps: 8
+  # Fixed after the audited cache: one approximate dataset-equivalent pass.
+  max_steps: 11250
+  max_tokens: null
+  pin_memory: true
+optimizer:
+  name: adamw
+  learning_rate: 5.0e-5
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.95
+  eps: 1.0e-8
+scheduler:
+  type: cosine
+  warmup_steps: 50
+  minimum_learning_rate: 5.0e-6
+gradients:
+  max_norm: 1.0
+validation:
+  interval_steps: 100
+  batches: 20
+logging:
+  interval_steps: 10
+checkpoint:
+  interval_steps: 100
+  keep_last: 2
+  save_optimizer: true
+  save_scheduler: true
+  save_rng: true

@@ -1,0 +1,63 @@
+{
+  "training_examples": 90000,
+  "total_formatted_tokens": 5398579,
+  "total_assistant_supervised_tokens": 2822814,
+  "total_ignored_prompt_tokens": 2575765,
+  "formatted_sequence_length": {
+    "min": 34.0,
+    "mean": 59.98421111111111,
+    "p50": 55.0,
+    "p90": 89.0,
+    "p95": 99.0,
+    "p99": 103.0,
+    "max": 158.0
+  },
+  "assistant_target_length": {
+    "min": 9.0,
+    "mean": 31.3646,
+    "p50": 25.0,
+    "p90": 61.0,
+    "p95": 68.0,
+    "p99": 71.0,
+    "max": 120.0
+  },
+  "sequence_analysis": {
+    "256": {
+      "truncation_count_estimate": 0,
+      "total_padding_tokens": 17731421,
+      "mean_nonpadding_tokens_per_example": 58.98421111111111,
+      "mean_supervised_tokens_per_example": 31.3646,
+      "estimated_nonpadding_tokens_per_update": 471.87368888888886,
+      "estimated_supervised_tokens_per_update": 250.9168,
+      "processed_padded_positions_per_pass": 23040000,
+      "processed_nonpadding_positions_per_pass": 5308579
+    },
+    "512": {
+      "truncation_count_estimate": 0,
+      "total_padding_tokens": 40771421,
+      "mean_nonpadding_tokens_per_example": 58.98421111111111,
+      "mean_supervised_tokens_per_example": 31.3646,
+      "estimated_nonpadding_tokens_per_update": 471.87368888888886,
+      "estimated_supervised_tokens_per_update": 250.9168,
+      "processed_padded_positions_per_pass": 46080000,
+      "processed_nonpadding_positions_per_pass": 5308579
+    },
+    "1024": {
+      "truncation_count_estimate": 0,
+      "total_padding_tokens": 86851421,
+      "mean_nonpadding_tokens_per_example": 58.98421111111111,
+      "mean_supervised_tokens_per_example": 31.3646,
+      "estimated_nonpadding_tokens_per_update": 471.87368888888886,
+      "estimated_supervised_tokens_per_update": 250.9168,
+      "processed_padded_positions_per_pass": 92160000,
+      "processed_nonpadding_positions_per_pass": 5308579
+    }
+  },
+  "recommended_sequence_length": 256,
+  "recommended_sequence_length_reason": "shortest candidate with zero estimated truncation; 1024 is not justified by the observed maximum length",
+  "effective_sequences_per_update": 8,
+  "updates_per_90000_example_pass": 11250,
+  "proposed_dataset_equivalent_passes": 1,
+  "proposed_global_sft_steps": 11250,
+  "padding_definition": "sequence_length minus non-padding autoregressive input positions per example"
+}

@@ -1,0 +1,69 @@
+{
+  "format_version": 1,
+  "dataset_name": "GenPy-Python-100K",
+  "source": "genpy_programmatic_v1",
+  "splits": {
+    "train": {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\train.jsonl",
+      "sha256": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44",
+      "records_seen": 90000,
+      "syntax_valid": 90000,
+      "compile_valid": 90000,
+      "exact_duplicate_records": 0,
+      "prompt_duplicate_records": 0,
+      "solution_duplicate_records": 84294,
+      "highly_similar_template_records": 89949,
+      "unique_families": 90000
+    },
+    "validation": {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\validation.jsonl",
+      "sha256": "7ec5fabfb339e0c9986160193da01d30fe6d46035775f81e9777a4ad92731e97",
+      "records_seen": 5000,
+      "syntax_valid": 5000,
+      "compile_valid": 5000,
+      "exact_duplicate_records": 0,
+      "prompt_duplicate_records": 0,
+      "solution_duplicate_records": 4025,
+      "highly_similar_template_records": 4949,
+      "unique_families": 5000
+    },
+    "test": {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\test.jsonl",
+      "sha256": "65716b058821aac3b469827cfd95766c5375c08269d83b65d89ff1cff0c7eb35",
+      "records_seen": 5000,
+      "syntax_valid": 5000,
+      "compile_valid": 5000,
+      "exact_duplicate_records": 0,
+      "prompt_duplicate_records": 0,
+      "solution_duplicate_records": 4088,
+      "highly_similar_template_records": 4949,
+      "unique_families": 5000
+    }
+  },
+  "cross_split": {
+    "train_validation_prompt_overlap": 0,
+    "train_validation_solution_overlap": 723,
+    "train_validation_template_overlap": 51,
+    "train_validation_family_overlap": 0,
+    "train_test_prompt_overlap": 0,
+    "train_test_solution_overlap": 699,
+    "train_test_template_overlap": 51,
+    "train_test_family_overlap": 0,
+    "validation_test_prompt_overlap": 0,
+    "validation_test_solution_overlap": 647,
+    "validation_test_template_overlap": 51,
+    "validation_test_family_overlap": 0
+  },
+  "warnings": [
+    "direct normalized train/test prompt or solution overlap detected",
+    "train/test programmatic template-family overlap detected; inspect family-level separation"
+  ],
+  "test_split_immutable": true,
+  "test_loaded_for_audit_only": true,
+  "execution_correctness_claimed": false,
+  "evaluation_classification": {
+    "validation": "DEVELOPMENT_IN_DISTRIBUTION",
+    "original_production_test": "LEGACY_IN_DISTRIBUTION_CONTAMINATION_RISK",
+    "clean_challenge": "DEFERRED_TO_FROZEN_CHALLENGE_AUDIT"
+  }
+}

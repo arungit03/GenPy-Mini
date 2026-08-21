@@ -1,0 +1,21 @@
+{
+  "base_checkpoint_7": {
+    "validation_loss": 0.3130049124360085,
+    "syntax_rate": null,
+    "compile_rate": null,
+    "execution_rate": null,
+    "functional_rate": null,
+    "eos_rate": null,
+    "duplicate_response_rate": null
+  },
+  "checkpoint_8_sft": {
+    "validation_loss": null,
+    "syntax_rate": null,
+    "compile_rate": null,
+    "execution_rate": null,
+    "functional_rate": null,
+    "eos_rate": null,
+    "duplicate_response_rate": null
+  },
+  "status": "NOT_AVAILABLE"
+}

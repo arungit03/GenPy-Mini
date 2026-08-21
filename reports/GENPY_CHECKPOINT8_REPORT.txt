@@ -1,0 +1,104 @@
+GENPY CHECKPOINT 8 REPORT
+
+{
+  "base_model": "Checkpoint 7 step 1980",
+  "base_parameters": 201560832,
+  "sft_dataset": {
+    "manifest": "data/instruction/tokenized/SFT_TOKEN_CACHE_MANIFEST.json",
+    "manifest_present": true,
+    "splits": {
+      "train": {
+        "document_count": 90000,
+        "stored_token_count": 5398579,
+        "assistant_token_count": 2822814,
+        "ignored_prompt_token_count": 2575765,
+        "truncation_count": 0,
+        "max_record_tokens": 158,
+        "source": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\sft\\train.jsonl",
+        "source_sha256": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44",
+        "input_ids_sha256": "374af89f8019c3be5bc374204a985216007f3952371a952ab6b57c59e7733a99",
+        "labels_sha256": "2ea0cc04ca2f6ed041ff5dc8d4dce93a036ccb289467255f9cdf80591d0aed52",
+        "offsets_sha256": "48a83ce1e64b5b2df70ba292edf68f1b0b65eba76efc32e7cb7630e7695cbea9"
+      },
+      "validation": {
+        "document_count": 5000,
+        "stored_token_count": 299166,
+        "assistant_token_count": 156324,
+        "ignored_prompt_token_count": 142842,
+        "truncation_count": 0,
+        "max_record_tokens": 158,
+        "source": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\sft\\validation.jsonl",
+        "source_sha256": "7ec5fabfb339e0c9986160193da01d30fe6d46035775f81e9777a4ad92731e97",
+        "input_ids_sha256": "96e60a8bad3460f9ca72e7d05f9bd915246d082be80a1c99360ea1074fecb04b",
+        "labels_sha256": "4d54a2aad97b525d8f863dc92f9348189c02b2b4055a1c72d126aeb714d5d720",
+        "offsets_sha256": "e8888576a8bf21e4921974bff5426c5dc26e36753d4153fc2dc3dfaed745fb3a"
+      },
+      "test": {
+        "document_count": 5000,
+        "stored_token_count": 301225,
+        "assistant_token_count": 158052,
+        "ignored_prompt_token_count": 143173,
+        "truncation_count": 0,
+        "max_record_tokens": 158,
+        "source": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\sft\\test.jsonl",
+        "source_sha256": "65716b058821aac3b469827cfd95766c5375c08269d83b65d89ff1cff0c7eb35",
+        "input_ids_sha256": "bf5f5098942c426bc4f931751ac9103901957783698b821c912ccb44f700f4ce",
+        "labels_sha256": "0b69d79c0112cd32552fcaf60b3c58b7134ba1f547428f05cf02860ed5b6488d",
+        "offsets_sha256": "c1d694e488e6793a6569c850bc4a10a9df367b47c63f48f30c9ddde78e3ec715"
+      }
+    }
+  },
+  "response_only_loss": "PASS",
+  "baseline_coding_metrics": {
+    "status": "BASE_CHECKPOINT_MISSING",
+    "model": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\runs\\genpy200m_pretrain_v1\\checkpoints\\step_000000001980\\model.pt",
+    "dataset": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\validation.jsonl",
+    "dataset_sha256": "7ec5fabfb339e0c9986160193da01d30fe6d46035775f81e9777a4ad92731e97",
+    "total_prompts": null,
+    "eos_termination_rate": null,
+    "python_extraction_rate": null,
+    "syntax_valid_rate": null,
+    "compile_valid_rate": null,
+    "executable_rate": null,
+    "functional_correctness_rate": null,
+    "repeated_output_rate": null,
+    "unique_output_rate": null,
+    "exact_duplicate_generations": null,
+    "average_generated_tokens": null,
+    "generation_failures": null,
+    "samples": [
+      {
+        "prompt": "Write Python code to check whether a number is even or odd.",
+        "status": "BASE_CHECKPOINT_MISSING"
+      },
+      {
+        "prompt": "Write a Python function to reverse a string.",
+        "status": "BASE_CHECKPOINT_MISSING"
+      },
+      {
+        "prompt": "Write Python code to find the largest number in a list.",
+        "status": "BASE_CHECKPOINT_MISSING"
+      }
+    ],
+    "error": "immutable Checkpoint 7 base model is not present in this workspace"
+  },
+  "final_sft_metrics": null,
+  "improvement": null,
+  "final_sft_step": null,
+  "final_model_hash": null,
+  "syntax": null,
+  "execution": null,
+  "functional_correctness": null,
+  "eos": null,
+  "template_collapse": null,
+  "tests": {
+    "passed": 91,
+    "failed": 0
+  },
+  "checkpoint_7_artifact_preserved": false,
+  "engineering_status": "INCOMPLETE",
+  "model_quality_status": "UNKNOWN",
+  "ready_for_checkpoint_9": false,
+  "production_sft_started": false,
+  "final_artifact_present": false
+}

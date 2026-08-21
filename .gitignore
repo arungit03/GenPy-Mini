@@ -13,6 +13,7 @@ venv/
 *.tar.gz
 runs/
 artifacts/models/
+artifacts/genpy-200m-instruct-v1/
 
 checkpoints/*
 !checkpoints/.gitkeep

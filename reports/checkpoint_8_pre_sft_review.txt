@@ -1,0 +1,23 @@
+GENPY CHECKPOINT 8 PRE-SFT REVIEW
+
+Legacy test classification: LEGACY_IN_DISTRIBUTION_CONTAMINATION_RISK
+Challenge benchmark status: CLEAN_GENERALIZATION
+Train/test solution overlap: 699
+Train/test template overlap: 51
+
+Sequence length recommended: 256
+Sequence length p95: 99.0
+Sequence length p99: 103.0
+Maximum sequence length: 158.0
+
+Assistant target tokens: 2822814
+Mean assistant tokens/example: 31.3646
+Estimated supervised tokens/update: 250.9168
+
+Final proposed global SFT steps: 11250
+Dataset-equivalent passes: 1
+Reason: shortest candidate with zero estimated truncation; 1024 is not justified by the observed maximum length
+
+Tests: 91 passed / 0 failed
+Ready for Kaggle baseline evaluation: NO
+Ready for first 100 SFT steps: NO

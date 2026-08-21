@@ -1,0 +1,25 @@
+{
+  "checks": {
+    "cuda_available": false,
+    "cuda_gpu_present": false,
+    "bf16_supported": false,
+    "model_parameters": true,
+    "base_checkpoint_exists": false,
+    "base_checkpoint_hash_valid": false,
+    "tokenizer_hash_valid": true,
+    "sft_manifest_valid": true,
+    "train_hash_valid": true,
+    "validation_hash_valid": true,
+    "no_test_data_in_training": true,
+    "sufficient_disk": true,
+    "effective_batch": true,
+    "response_only_masks_valid": true,
+    "training_budget_valid": true
+  },
+  "gpu": null,
+  "base_model_sha256": null,
+  "model_parameters": 201560832,
+  "effective_positions_per_update": 2048,
+  "effective_tokens_per_update": 2048,
+  "status": "FAIL"
+}

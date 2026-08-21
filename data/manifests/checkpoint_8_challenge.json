@@ -1,0 +1,80 @@
+{
+  "format_version": 1,
+  "name": "GenPy-Internal-Frozen-Challenge-v1",
+  "provenance": "Internally authored deterministic challenge prompts and tests; created for Checkpoint 8 evaluation only.",
+  "created_at": "2026-08-21",
+  "sft_training_use": false,
+  "hyperparameter_selection_use": false,
+  "examples": [
+    {
+      "id": "challenge_rotate_signed_01",
+      "instruction": "Given a sequence of signed ledger marks, write rotate_marks(values, amount) that returns a fresh list circularly shifted to the right by amount positions.",
+      "response": "def rotate_marks(values, amount):\n    if not values:\n        return []\n    shift = amount % len(values)\n    return list(values[-shift:] + values[:-shift]) if shift else list(values)",
+      "function_name": "rotate_marks",
+      "test_cases": [{"args": [[-3, 0, 8, 11], 1], "expected": [11, -3, 0, 8]}, {"args": [[1, 2], 5], "expected": [2, 1]}]
+    },
+    {
+      "id": "challenge_merge_unique_02",
+      "instruction": "Write merge_distinct_runs(left, right) to combine two already sorted integer lists into one sorted list while retaining one copy of each value.",
+      "response": "def merge_distinct_runs(left, right):\n    answer = []\n    for value in sorted(list(left) + list(right)):\n        if not answer or answer[-1] != value:\n            answer.append(value)\n    return answer",
+      "function_name": "merge_distinct_runs",
+      "test_cases": [{"args": [[-2, 1, 4], [-2, 3, 4, 9]], "expected": [-2, 1, 3, 4, 9]}]
+    },
+    {
+      "id": "challenge_parse_pairs_03",
+      "instruction": "Implement parse_pairs(text) for newline-delimited key=value entries; ignore blank lines and split only at the first equals sign.",
+      "response": "def parse_pairs(text):\n    result = {}\n    for line in text.splitlines():\n        line = line.strip()\n        if not line:\n            continue\n        key, value = line.split('=', 1)\n        result[key.strip()] = value.strip()\n    return result",
+      "function_name": "parse_pairs",
+      "test_cases": [{"args": ["a=1\n\nname=left=right\n"], "expected": {"a": "1", "name": "left=right"}}]
+    },
+    {
+      "id": "challenge_window_max_04",
+      "instruction": "Create window_peaks(values, width) that returns the maximum value in every contiguous window of the requested positive width.",
+      "response": "def window_peaks(values, width):\n    if width <= 0 or width > len(values):\n        return []\n    return [max(values[index:index + width]) for index in range(len(values) - width + 1)]",
+      "function_name": "window_peaks",
+      "test_cases": [{"args": [[4, 1, 7, 2, 9], 3], "expected": [7, 7, 9]}]
+    },
+    {
+      "id": "challenge_interleave_05",
+      "instruction": "Write interleave_chunks(first, second) that alternates one item from each list and appends the remaining tail when one list ends.",
+      "response": "def interleave_chunks(first, second):\n    result = []\n    for index in range(max(len(first), len(second))):\n        if index < len(first):\n            result.append(first[index])\n        if index < len(second):\n            result.append(second[index])\n    return result",
+      "function_name": "interleave_chunks",
+      "test_cases": [{"args": [[1, 3, 5], [2, 4]], "expected": [1, 2, 3, 4, 5]}]
+    },
+    {
+      "id": "challenge_histogram_06",
+      "instruction": "Implement first_histogram(text) that counts alphabetic characters case-insensitively and returns a dictionary ordered by first appearance.",
+      "response": "def first_histogram(text):\n    counts = {}\n    for character in text.lower():\n        if character.isalpha():\n            counts[character] = counts.get(character, 0) + 1\n    return counts",
+      "function_name": "first_histogram",
+      "test_cases": [{"args": ["Tea, tea!"], "expected": {"t": 2, "e": 2, "a": 2}}]
+    },
+    {
+      "id": "challenge_clamp_07",
+      "instruction": "Define clamp_interval(value, low, high) that rejects an inverted interval and otherwise returns value restricted to the inclusive bounds.",
+      "response": "def clamp_interval(value, low, high):\n    if low > high:\n        raise ValueError('inverted interval')\n    return max(low, min(high, value))",
+      "function_name": "clamp_interval",
+      "test_cases": [{"args": [12, 0, 10], "expected": 10}, {"args": [-2, 0, 10], "expected": 0}]
+    },
+    {
+      "id": "challenge_diagonal_08",
+      "instruction": "Write diagonal_total(matrix) that sums the main diagonal of a square numeric matrix and raises ValueError for a nonsquare matrix.",
+      "response": "def diagonal_total(matrix):\n    size = len(matrix)\n    if any(len(row) != size for row in matrix):\n        raise ValueError('matrix must be square')\n    return sum(matrix[index][index] for index in range(size))",
+      "function_name": "diagonal_total",
+      "test_cases": [{"args": [[[2, 0], [5, 7]]], "expected": 9}]
+    },
+    {
+      "id": "challenge_runs_09",
+      "instruction": "Implement longest_equal_run(values) to return the length of the longest consecutive run containing identical values.",
+      "response": "def longest_equal_run(values):\n    best = current = 0\n    previous = object()\n    for value in values:\n        current = current + 1 if value == previous else 1\n        best = max(best, current)\n        previous = value\n    return best",
+      "function_name": "longest_equal_run",
+      "test_cases": [{"args": [[3, 3, 1, 1, 1, 2]], "expected": 3}, {"args": [[]], "expected": 0}]
+    },
+    {
+      "id": "challenge_transpose_10",
+      "instruction": "Create transpose_rectangular(rows) that returns columns as lists for a rectangular matrix and returns an empty list for no rows.",
+      "response": "def transpose_rectangular(rows):\n    rows = [list(row) for row in rows]\n    if not rows:\n        return []\n    width = len(rows[0])\n    if any(len(row) != width for row in rows):\n        raise ValueError('matrix must be rectangular')\n    return [[row[index] for row in rows] for index in range(width)]",
+      "function_name": "transpose_rectangular",
+      "test_cases": [{"args": [[[1, 2, 3], [4, 5, 6]]], "expected": [[1, 4], [2, 5], [3, 6]]}]
+    }
+  ]
+}

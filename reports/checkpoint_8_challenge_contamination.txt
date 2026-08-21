@@ -1,0 +1,43 @@
+GenPy frozen challenge contamination audit
+
+{
+  "format_version": 1,
+  "challenge_manifest": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\manifests\\checkpoint_8_challenge.json",
+  "challenge_manifest_sha256": "1da029d85f0fffd6d61d6c4834910bd24b10513f6beb56978b3469892cf462cb",
+  "challenge_name": "GenPy-Internal-Frozen-Challenge-v1",
+  "provenance": "Internally authored deterministic challenge prompts and tests; created for Checkpoint 8 evaluation only.",
+  "sft_training_use": false,
+  "hyperparameter_selection_use": false,
+  "sources_checked": [
+    {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\train.jsonl",
+      "sha256": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44",
+      "records": 90000
+    },
+    {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\validation.jsonl",
+      "sha256": "7ec5fabfb339e0c9986160193da01d30fe6d46035775f81e9777a4ad92731e97",
+      "records": 5000
+    },
+    {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\test.jsonl",
+      "sha256": "65716b058821aac3b469827cfd95766c5375c08269d83b65d89ff1cff0c7eb35",
+      "records": 5000
+    }
+  ],
+  "overlaps": {
+    "prompt": {
+      "count": 0,
+      "examples": []
+    },
+    "solution": {
+      "count": 0,
+      "examples": []
+    },
+    "template": {
+      "count": 0,
+      "examples": []
+    }
+  },
+  "status": "CLEAN_GENERALIZATION"
+}
