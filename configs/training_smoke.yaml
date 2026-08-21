@@ -1,0 +1,28 @@
+training:
+  seed: 42
+  device: cpu
+  precision: fp32
+  sequence_length: 32
+  micro_batch_size: 1
+  gradient_accumulation_steps: 1
+  max_steps: 4
+  max_tokens: null
+optimizer:
+  learning_rate: 1.0e-4
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.95
+  eps: 1.0e-8
+scheduler:
+  warmup_steps: 1
+  minimum_learning_rate: 1.0e-5
+gradients:
+  max_norm: 1.0
+validation:
+  interval_steps: 2
+  batches: 2
+logging:
+  interval_steps: 1
+checkpoint:
+  interval_steps: 2
+  keep_last: 2

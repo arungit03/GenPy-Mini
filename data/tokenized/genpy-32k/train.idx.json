@@ -1,0 +1,10 @@
+{
+  "document_count": 90000,
+  "token_count": 5398579,
+  "minimum_tokens_per_document": 34,
+  "maximum_tokens_per_document": 158,
+  "average_tokens_per_document": 59.98421111111111,
+  "bos_count": 90000,
+  "eos_count": 90000,
+  "bin_sha256": "374af89f8019c3be5bc374204a985216007f3952371a952ab6b57c59e7733a99"
+}

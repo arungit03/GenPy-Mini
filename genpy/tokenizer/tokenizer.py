@@ -79,7 +79,7 @@ class GenPyTokenizer:
         return ids
 
     def encode_batch(self, texts: list[str]) -> list[list[int]]:
-        return [self.encode(text) for text in texts]
+        return [list(encoded.ids) for encoded in self._backend.encode_batch(texts)]
 
     def decode(self, token_ids: list[int], skip_special_tokens: bool = False) -> str:
         pieces: list[str] = []

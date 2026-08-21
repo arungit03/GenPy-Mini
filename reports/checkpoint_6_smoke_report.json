@@ -1,0 +1,39 @@
+{
+  "model": "tiny GenPy architecture",
+  "parameters": 90432,
+  "device": "cpu",
+  "precision": "fp32",
+  "steps": 6,
+  "sequence_length": 32,
+  "micro_batch_size": 1,
+  "accumulation": 1,
+  "initial_loss": 4.901859283447266,
+  "final_loss": 4.850521564483643,
+  "all_losses": [
+    4.901859283447266,
+    4.916509628295898,
+    4.848884105682373,
+    4.870017051696777,
+    4.859652519226074,
+    4.850521564483643
+  ],
+  "validation_loss": 4.908301115036011,
+  "gradient_norms": [
+    2.164774179458618,
+    2.196728229522705,
+    2.199171543121338,
+    2.2102739810943604,
+    2.390270948410034,
+    2.2401039600372314
+  ],
+  "tokens_seen": 192,
+  "checkpoint_saved": true,
+  "resume_tested": true,
+  "exact_resume": {
+    "model_state": true,
+    "optimizer_state": true,
+    "scheduler_state": true,
+    "loss_continuation": true,
+    "passed": true
+  }
+}
