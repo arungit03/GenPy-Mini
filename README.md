@@ -4,7 +4,7 @@ GenPy is a from-scratch decoder-only Transformer project intended to become a ro
 
 ## Project status
 
-Checkpoint 4 is complete. The repository contains a reproducible 100,000-example Python instruction dataset, a train-only 32,000-entry custom Byte-Level BPE tokenizer, and the native randomly initialized GenPy-200M Transformer. Checkpoint 5 local verification is complete; CUDA production verification remains pending. Checkpoint 6 local training-engine verification is complete, with the CUDA/Kaggle production smoke still pending. Production model training remains future work.
+Checkpoint 4 is complete. The repository contains a reproducible 100,000-example Python instruction dataset, a train-only 32,000-entry custom Byte-Level BPE tokenizer, and the native randomly initialized GenPy-200M Transformer. Checkpoints 5 and 6 are locally verified. Checkpoint 7 training support is prepared and the actual 1,980-step Kaggle run remains intentionally unstarted pending a CUDA/BF16 runtime.
 
 ## Architecture target
 
@@ -19,7 +19,7 @@ GenPy-200M is planned as a 24-layer decoder-only Transformer with 768 hidden dim
 5. Checkpoint 4 - GenPy-200M Transformer - COMPLETE
 6. Checkpoint 5 - Deep Model Verification - LOCAL_COMPLETE_GPU_PENDING
 7. Checkpoint 6 - Production Training Engine - LOCAL_COMPLETE_GPU_SMOKE_PENDING
-8. Checkpoint 7 - Python Pretraining - NOT STARTED
+8. Checkpoint 7 - Python Pretraining - PREPARED_NOT_STARTED
 9. Checkpoint 8 - Instruction Tuning and Evaluation - NOT STARTED
 
 ## Repository structure

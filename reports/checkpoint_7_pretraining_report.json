@@ -1,0 +1,37 @@
+{
+  "status": "PARTIAL",
+  "preparation_only": true,
+  "model_parameters": 201560832,
+  "dataset": {
+    "train_documents": 90000,
+    "train_tokens": 5398579,
+    "validation_documents": 5000,
+    "validation_tokens": 299166,
+    "storage": "uint16 memmap"
+  },
+  "training_budget_steps": 1980,
+  "completed_optimizer_steps": 0,
+  "tokens_processed": 0,
+  "precision": "bf16",
+  "gpu": null,
+  "initial_training_loss": null,
+  "final_training_loss": null,
+  "best_training_loss": null,
+  "initial_validation_loss": null,
+  "final_validation_loss": null,
+  "best_validation_loss": null,
+  "step_of_best_validation": null,
+  "final_learning_rate": null,
+  "average_throughput_tokens_per_second": null,
+  "peak_vram_bytes": null,
+  "number_of_resumes": 0,
+  "checkpoint_integrity": null,
+  "final_model_hash": null,
+  "tests_passed": 80,
+  "tests_failed": 0,
+  "warnings": [
+    "Actual training was not started by Codex.",
+    "Local preflight failed only because CUDA/BF16 hardware is unavailable.",
+    "No claims are made about general-purpose pretraining quality from this small corpus."
+  ]
+}

@@ -14,6 +14,11 @@
   "deterministic_resume": true,
   "production_smoke": false,
   "production_pretraining_started": false,
+  "gpu_evidence": {
+    "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\reports\\checkpoint_6_gpu_report.json",
+    "checks": {},
+    "evidence": null
+  },
   "cache_manifest": {
     "format_version": 1,
     "tokenizer_name": "GenPy-Tokenizer-32K",

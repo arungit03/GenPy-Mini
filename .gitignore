@@ -7,6 +7,12 @@ venv/
 .vscode/
 .idea/
 *.log
+*.pt
+*.pth
+*.tar
+*.tar.gz
+runs/
+artifacts/models/
 
 checkpoints/*
 !checkpoints/.gitkeep

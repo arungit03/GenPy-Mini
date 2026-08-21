@@ -16,3 +16,7 @@ class MetricsLogger:
         record = {"timestamp": time.time(), **metrics}
         with self.path.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    def flush(self) -> None:
+        """Records are opened and closed per write, so they are already flushed."""
+        return None
