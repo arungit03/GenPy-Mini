@@ -23,6 +23,7 @@ class EngineTrainingConfig:
     sequence_length: int = 1024
     micro_batch_size: int = 1
     gradient_accumulation_steps: int = 8
+    sampling: str = "random_window"
     max_steps: int | None = None
     max_tokens: int | None = None
     pin_memory: bool = True
@@ -97,6 +98,8 @@ class TrainingEngineConfig:
             raise ValueError("training.precision must be auto, fp32, bf16, or fp16")
         if t.device not in {"auto", "cpu", "cuda", "cuda:0"}:
             raise ValueError("training.device must be auto, cpu, cuda, or cuda:0")
+        if t.sampling not in {"random_window", "shuffled_epoch"}:
+            raise ValueError("training.sampling must be random_window or shuffled_epoch")
         o = self.optimizer
         if o.name.lower() != "adamw" or o.learning_rate <= 0 or o.weight_decay < 0 or o.eps <= 0:
             raise ValueError("optimizer must be AdamW with positive learning rate/epsilon")

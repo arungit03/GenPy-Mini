@@ -19,7 +19,7 @@ from .loss import causal_batch_loss
 from .optimizer import create_adamw
 from .precision import PrecisionManager
 from .scheduler import WarmupCosineScheduler
-from .sft_dataset import SFTMemmapDataset, SFTRandomBatcher, SFTSequentialBatcher
+from .sft_dataset import SFTMemmapDataset, SFTShuffledEpochBatcher, SFTRandomBatcher, SFTSequentialBatcher
 from .state import TrainingState
 
 
@@ -37,13 +37,13 @@ class SFTTrainingEngine:
         self.precision = PrecisionManager(config.training.precision, self.device)
         self.optimizer, self.optimizer_audit = create_adamw(model, config.optimizer)
         self.scheduler = WarmupCosineScheduler(self.optimizer, config.optimizer.learning_rate, config.scheduler.minimum_learning_rate, config.scheduler.warmup_steps, config.training.max_steps)
-        self.train_batcher = SFTRandomBatcher(train_dataset, config.training.micro_batch_size, config.training.seed)
+        self.train_batcher = SFTShuffledEpochBatcher(train_dataset, config.training.micro_batch_size, config.training.seed) if config.training.sampling == "shuffled_epoch" else SFTRandomBatcher(train_dataset, config.training.micro_batch_size, config.training.seed)
         self.validation_batcher = SFTSequentialBatcher(validation_dataset, config.training.micro_batch_size, config.validation.batches)
         self.state = TrainingState(run_id=run_id, current_learning_rate=self.scheduler.get_last_lr()[0])
         self.run_dir = Path(run_dir)
         self.checkpoints = CheckpointManager(self.run_dir / "checkpoints", config.checkpoint.keep_last)
         self.logger = MetricsLogger(self.run_dir / "logs/training_metrics.jsonl")
-        self.metadata = {"base_model_hash": base_model_hash, "sft_manifest_hash": sft_manifest_hash, "parameter_count": count_parameters(model), "sequence_length": config.training.sequence_length, "precision": self.precision.mode, "scheduler_total_steps": config.training.max_steps}
+        self.metadata = {"base_model_hash": base_model_hash, "sft_manifest_hash": sft_manifest_hash, "parameter_count": count_parameters(model), "sequence_length": config.training.sequence_length, "precision": self.precision.mode, "sampling": config.training.sampling, "scheduler_total_steps": config.training.max_steps}
         self.last_run_status = "NOT_STARTED"
         self.run_dir.mkdir(parents=True, exist_ok=True)
         manifest_path = self.run_dir / "run_manifest.json"

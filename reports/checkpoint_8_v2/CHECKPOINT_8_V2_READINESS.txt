@@ -1,0 +1,47 @@
+============================================================
+GENPY CHECKPOINT 8-v2 — FRESH PYTHON SFT PILOT
+============================================================
+Dataset:
+Train: 10,000
+Validation: 1,000
+Challenge: 500
+Sanity: 20
+Dataset version: genpy-sft-v2-pilot-v1
+Legacy test classification: LEGACY_IN_DISTRIBUTION_CONTAMINATION_RISK
+Challenge benchmark status: CLEAN_GENERALIZATION
+Train/test solution overlap: 699
+Train/test template overlap: 51
+CP7 prompt overlap: 0
+Train/challenge prompt overlap: 0
+Train/challenge template overlap: 0
+Reference syntax: 100%
+Reference compile: 100%
+Reference functional: 100%
+Semantic skills: 100
+Prompt templates: 400
+Tokenizer: GenPy-Tokenizer-32K
+Vocab: 32,000
+Selected SFT sequence length: 256
+Sequence p95: 159
+Sequence p99: 178
+Maximum sequence length: 192
+Train truncations: 0
+Assistant target tokens: 465144
+Mean assistant tokens/example: 46.5144
+Estimated supervised tokens/update: 372.1152
+Response-only masking: PASS
+Sampling: deterministic shuffled epoch
+Expected base: Checkpoint 7 step 1980 model.pt
+Expected base SHA256: a963a91d8f6bee350e15ff88d3375c039887cb0b09c787fecf0f2de02d5be942
+Expected parameters: 201560832
+Final proposed global SFT steps: 2500
+Dataset-equivalent passes: 2
+Reason: fixed 2 epochs over 10,000 examples; 10,000 / (1*8) = 1,250 updates per epoch and 2,500 global steps, independent of session limits
+Production SFT performed: NO
+Tests: 96 passed / 0 skipped / 0 failed
+Ready for Kaggle baseline evaluation: NO
+Ready for first 100 SFT steps: NO
+Kaggle package: C:\Users\arun0\OneDrive\Desktop\GenPy-Mini\artifacts\checkpoint_8_v2\GenPy-SFT-v2-Pilot.zip
+Package SHA256: 3676970c21b995327408124d7deeab0e44b10216f556c70c284eb1c44a0fbe48
+FINAL STATUS: NOT_READY_FOR_KAGGLE
+============================================================

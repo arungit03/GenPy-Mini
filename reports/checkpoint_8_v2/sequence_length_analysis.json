@@ -1,0 +1,63 @@
+{
+  "format_version": 2,
+  "dataset": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\sft_v2",
+  "source_splits": [
+    "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\sft_v2\\train.jsonl",
+    "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\sft_v2\\validation.jsonl",
+    "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\sft_v2\\challenge.jsonl"
+  ],
+  "count": 11500,
+  "formatted_sequence_length": {
+    "min": 68,
+    "mean": 110.73539130434783,
+    "p50": 106,
+    "p90": 146,
+    "p95": 160,
+    "p99": 180,
+    "max": 213
+  },
+  "assistant_target_length": {
+    "min": 19,
+    "mean": 47.022260869565216,
+    "p50": 42,
+    "p90": 76,
+    "p95": 96,
+    "p99": 117,
+    "max": 145
+  },
+  "candidates": {
+    "128": {
+      "truncation_count": 2220,
+      "truncation_rate": 0.19304347826086957,
+      "padded_positions_per_pass": 1472000,
+      "padding_positions_per_pass": 256364
+    },
+    "192": {
+      "truncation_count": 10,
+      "truncation_rate": 0.0008695652173913044,
+      "padded_positions_per_pass": 2208000,
+      "padding_positions_per_pass": 946195
+    },
+    "256": {
+      "truncation_count": 0,
+      "truncation_rate": 0.0,
+      "padded_positions_per_pass": 2944000,
+      "padding_positions_per_pass": 1682043
+    },
+    "384": {
+      "truncation_count": 0,
+      "truncation_rate": 0.0,
+      "padded_positions_per_pass": 4416000,
+      "padding_positions_per_pass": 3154043
+    },
+    "512": {
+      "truncation_count": 0,
+      "truncation_rate": 0.0,
+      "padded_positions_per_pass": 5888000,
+      "padding_positions_per_pass": 4626043
+    }
+  },
+  "selected_sequence_length": 256,
+  "selection_rule": "shortest candidate with zero truncation across train, validation, and frozen challenge",
+  "response_only_masking": true
+}

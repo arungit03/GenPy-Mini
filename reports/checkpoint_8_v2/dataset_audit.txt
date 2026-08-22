@@ -1,0 +1,408 @@
+GenPy Checkpoint 8-v2 dataset audit
+
+{
+  "format_version": 2,
+  "splits": {
+    "train": {
+      "count": 10000,
+      "categories": {
+        "loops_math": 1000,
+        "oop": 600,
+        "debugging": 700,
+        "conditionals": 1200,
+        "algorithms": 1400,
+        "comprehensions": 500,
+        "strings": 1200,
+        "sequences": 1200,
+        "exceptions": 500,
+        "dictionaries_sets": 800,
+        "functions_recursion": 900
+      },
+      "skills": 100,
+      "templates": 400,
+      "task_styles": {
+        "code_generation": 9300,
+        "debugging": 700
+      },
+      "difficulties": {
+        "intermediate": 3334,
+        "easy": 3333,
+        "hard": 3333
+      },
+      "function_names": 10000,
+      "test_case_counts": {
+        "3": 10000
+      },
+      "response_unique_rate": 1.0,
+      "top_responses": [
+        [
+          "def solve_digit_count_train_1957(n): return len(str(abs(n)))",
+          1
+        ],
+        [
+          "def solve_counter_sequence_train_6963(start, increments): value = start; result = [] for amount in increments: value += amount; result.append(value) return result",
+          1
+        ],
+        [
+          "def solve_repair_maximum_train_9344(values): return max(values)",
+          1
+        ],
+        [
+          "def solve_prime_check_train_1634(n): if n < 2: return false divisor = 2 while divisor * divisor <= n: if n % divisor == 0: return false divisor += 1 return true",
+          1
+        ],
+        [
+          "def solve_sum_multiples_train_1883(limit, divisor): return sum(range(divisor, limit + 1, divisor)) if divisor > 0 else 0",
+          1
+        ],
+        [
+          "def solve_parity_even_train_65(n): return n % 2 == 0",
+          1
+        ],
+        [
+          "def solve_kth_smallest_train_8866(values, k): return sorted(values)[k - 1]",
+          1
+        ],
+        [
+          "def solve_even_filter_train_6443(values): return [value for value in values if value % 2 == 0]",
+          1
+        ],
+        [
+          "def solve_longest_run_train_9084(values): best = current = 0; previous = object() for value in values: current = current + 1 if value == previous else 1; best = max(best, current); previous = value return best",
+          1
+        ],
+        [
+          "def solve_counter_sequence_train_6924(start, increments): value = start; result = [] for amount in increments: value += amount; result.append(value) return result",
+          1
+        ]
+      ]
+    },
+    "validation": {
+      "count": 1000,
+      "categories": {
+        "dictionaries_sets": 80,
+        "strings": 120,
+        "comprehensions": 50,
+        "debugging": 70,
+        "loops_math": 100,
+        "oop": 60,
+        "algorithms": 140,
+        "conditionals": 120,
+        "sequences": 120,
+        "functions_recursion": 90,
+        "exceptions": 50
+      },
+      "skills": 100,
+      "templates": 400,
+      "task_styles": {
+        "code_generation": 930,
+        "debugging": 70
+      },
+      "difficulties": {
+        "hard": 333,
+        "intermediate": 334,
+        "easy": 333
+      },
+      "function_names": 1000,
+      "test_case_counts": {
+        "3": 1000
+      },
+      "response_unique_rate": 1.0,
+      "top_responses": [
+        [
+          "def solve_invert_mapping_validation_476(mapping): return {str(value): key for key, value in mapping.items()}",
+          1
+        ],
+        [
+          "def solve_rotate_text_validation_277(text, amount): return text[-amount % len(text):] + text[:-amount % len(text)] if text else text",
+          1
+        ],
+        [
+          "def solve_character_histogram_validation_468(text): result = {} for character in text.lower(): if character.isalpha(): result[character] = result.get(character, 0) + 1 return result",
+          1
+        ],
+        [
+          "def solve_sorted_items_validation_530(mapping): return [[key, mapping[key]] for key in sorted(mapping)]",
+          1
+        ],
+        [
+          "def solve_pair_mapping_validation_676(pairs): return {key: value for key, value in pairs}",
+          1
+        ],
+        [
+          "def solve_repair_chunks_validation_996(values, size): return [values[index:index + size] for index in range(0, len(values), size)]",
+          1
+        ],
+        [
+          "def solve_factorial_validation_128(n): result = 1 for value in range(2, n + 1): result *= value return result",
+          1
+        ],
+        [
+          "def solve_word_count_validation_314(text): return len(text.split())",
+          1
+        ],
+        [
+          "def solve_repair_factorial_validation_987(n): result = 1 for value in range(2, n + 1): result *= value return result",
+          1
+        ],
+        [
+          "def solve_square_mapping_validation_534(mapping): return {key: value * value for key, value in mapping.items()}",
+          1
+        ]
+      ]
+    },
+    "challenge": {
+      "count": 500,
+      "categories": {
+        "debugging": 23,
+        "conditionals": 42,
+        "sequences": 42,
+        "comprehensions": 18,
+        "loops_math": 35,
+        "algorithms": 49,
+        "challenge": 150,
+        "functions_recursion": 32,
+        "exceptions": 18,
+        "dictionaries_sets": 28,
+        "strings": 42,
+        "oop": 21
+      },
+      "skills": 115,
+      "templates": 410,
+      "task_styles": {
+        "debugging": 23,
+        "code_generation": 477
+      },
+      "difficulties": {
+        "easy": 166,
+        "intermediate": 167,
+        "hard": 167
+      },
+      "function_names": 500,
+      "test_case_counts": {
+        "3": 500
+      },
+      "response_unique_rate": 1.0,
+      "top_responses": [
+        [
+          "def solve_repair_factorial_challenge_345(n): result = 1 for value in range(2, n + 1): result *= value return result",
+          1
+        ],
+        [
+          "def solve_leap_year_challenge_16(year): return year % 400 == 0 or (year % 4 == 0 and year % 100 != 0)",
+          1
+        ],
+        [
+          "def solve_running_totals_challenge_146(values): result, total = [], 0 for value in values: total += value result.append(total) return result",
+          1
+        ],
+        [
+          "def solve_even_filter_challenge_229(values): return [value for value in values if value % 2 == 0]",
+          1
+        ],
+        [
+          "def solve_prime_check_challenge_61(n): if n < 2: return false divisor = 2 while divisor * divisor <= n: if n % divisor == 0: return false divisor += 1 return true",
+          1
+        ],
+        [
+          "def solve_merge_intervals_challenge_294(intervals): result = [] for start, end in sorted(intervals): if result and start <= result[-1][1]: result[-1][1] = max(result[-1][1], end) else: result.append([start, end]) return result",
+          1
+        ],
+        [
+          "def solve_prefix_products_challenge_119(values): result = []; product = 1 for value in values: product *= value; result.append(product) return result",
+          1
+        ],
+        [
+          "def solve_token_buckets_challenge_139(text): result = {} for character in text.lower(): if character.isalpha(): result[character] = result.get(character, 0) + 1 return result",
+          1
+        ],
+        [
+          "def solve_edit_distance_challenge_305(left, right): row = list(range(len(right) + 1)) for i, a in enumerate(left, 1): next_row = [i] for j, b in enumerate(right, 1): next_row.append(min(next_row[-1] + 1, row[j] + 1, row[j - 1] + (a != b))) row = next_row return row[-1]",
+          1
+        ],
+        [
+          "def solve_edit_distance_challenge_306(left, right): row = list(range(len(right) + 1)) for i, a in enumerate(left, 1): next_row = [i] for j, b in enumerate(right, 1): next_row.append(min(next_row[-1] + 1, row[j] + 1, row[j - 1] + (a != b))) row = next_row return row[-1]",
+          1
+        ]
+      ]
+    },
+    "sanity": {
+      "count": 20,
+      "categories": {
+        "sanity": 20
+      },
+      "skills": 20,
+      "templates": 20,
+      "task_styles": {
+        "evaluation_only": 20
+      },
+      "difficulties": {
+        "easy": 20
+      },
+      "function_names": 1,
+      "test_case_counts": {
+        "5": 1,
+        "4": 2,
+        "3": 17
+      },
+      "response_unique_rate": 1.0,
+      "top_responses": [
+        [
+          "def solve(n): return 'even' if n % 2 == 0 else 'odd'",
+          1
+        ],
+        [
+          "def solve(text): return text[::-1]",
+          1
+        ],
+        [
+          "def solve(values): return max(values)",
+          1
+        ],
+        [
+          "def solve(text): return text == text[::-1]",
+          1
+        ],
+        [
+          "def solve(n): result = 1 for value in range(2, n + 1): result *= value return result",
+          1
+        ],
+        [
+          "def solve(values): result = [] for value in values: if value not in result: result.append(value) return result",
+          1
+        ],
+        [
+          "def solve(text): return sum(character.lower() in 'aeiou' for character in text)",
+          1
+        ],
+        [
+          "def solve(values): result = list(values) for index in range(1, len(result)): value = result[index]; cursor = index - 1 while cursor >= 0 and result[cursor] > value: result[cursor + 1] = result[cursor]; cursor -= 1 result[cursor + 1] = value return result",
+          1
+        ],
+        [
+          "def solve(n): first, second = 0, 1 for _ in range(n): first, second = second, first + second return first",
+          1
+        ],
+        [
+          "def solve(a, b): while b: a, b = b, a % b return abs(a)",
+          1
+        ]
+      ]
+    }
+  },
+  "source_hashes": {
+    "train": "a96ff3a6a639b0a32eeca272a0ef6850bbd2aaa9bc6f5ec58e0feb73fef0e67f",
+    "validation": "34d3c25f4c516d10e1c6da42939edbbdba1de3a4fd7a8dce9297719dafec2edf",
+    "challenge": "2ffd677fa2de18e7bf5e295caebe086d575686e87f9367c84ccabd79cbae50cb",
+    "sanity": "f1c1530709aacd38a218b0960261c7a1e2727fedf03fe6d8c360bc7bf32de7f2"
+  },
+  "source_hashes_differ_from_cp7": true,
+  "split_overlaps": {
+    "train_vs_validation": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template_id": 0,
+      "template": 0
+    },
+    "train_vs_challenge": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template_id": 0,
+      "template": 0
+    },
+    "validation_vs_challenge": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template_id": 0,
+      "template": 0
+    },
+    "train_vs_sanity": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template_id": 0,
+      "template": 0
+    },
+    "validation_vs_sanity": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template_id": 0,
+      "template": 0
+    },
+    "challenge_vs_sanity": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template_id": 0,
+      "template": 0
+    }
+  },
+  "cp7_sources": [
+    {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\train.jsonl",
+      "sha256": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44",
+      "count": 90000
+    },
+    {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\validation.jsonl",
+      "sha256": "7ec5fabfb339e0c9986160193da01d30fe6d46035775f81e9777a4ad92731e97",
+      "count": 5000
+    },
+    {
+      "path": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\data\\instruction\\python\\test.jsonl",
+      "sha256": "65716b058821aac3b469827cfd95766c5375c08269d83b65d89ff1cff0c7eb35",
+      "count": 5000
+    }
+  ],
+  "cp7_contamination": {
+    "available": true,
+    "source_count": 3,
+    "train": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template": 0
+    },
+    "validation": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template": 0
+    },
+    "challenge": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template": 0
+    },
+    "sanity": {
+      "record": 0,
+      "prompt": 0,
+      "instruction_input": 0,
+      "response": 0,
+      "template": 0
+    }
+  },
+  "train_challenge_template_ids_disjoint": true,
+  "status": "PASS",
+  "challenge_status": "CLEAN_GENERALIZATION",
+  "policy": {
+    "challenge_training": false,
+    "challenge_hyperparameter_selection": false,
+    "sanity_training": false,
+    "sanity_validation": false
+  }
+}

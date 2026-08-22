@@ -114,6 +114,42 @@ class SFTRandomBatcher:
         self.generator.set_state(state["generator_state"])
 
 
+class SFTShuffledEpochBatcher:
+    """Deterministic no-replacement epoch sampler with checkpointable cursor."""
+
+    def __init__(self, dataset: SFTMemmapDataset, batch_size: int, seed: int = 42) -> None:
+        self.dataset = dataset
+        self.batch_size = batch_size
+        self.generator = torch.Generator(device="cpu")
+        self.generator.manual_seed(seed)
+        self.epoch = 0
+        self.cursor = 0
+        self.permutation = torch.randperm(len(dataset), generator=self.generator)
+
+    def _start_epoch(self) -> None:
+        self.epoch += 1
+        self.cursor = 0
+        self.permutation = torch.randperm(len(self.dataset), generator=self.generator)
+
+    def next_batch(self) -> tuple[torch.Tensor, torch.Tensor]:
+        if self.cursor >= len(self.dataset):
+            self._start_epoch()
+        end = min(self.cursor + self.batch_size, len(self.dataset))
+        indices = self.permutation[self.cursor:end]
+        self.cursor = end
+        items = [self.dataset[int(index)] for index in indices]
+        return torch.stack([item[0] for item in items]), torch.stack([item[1] for item in items])
+
+    def state_dict(self) -> dict:
+        return {"generator_state": self.generator.get_state().clone(), "epoch": self.epoch, "cursor": self.cursor, "permutation": self.permutation.clone()}
+
+    def load_state_dict(self, state: dict) -> None:
+        self.generator.set_state(state["generator_state"])
+        self.epoch = int(state["epoch"])
+        self.cursor = int(state["cursor"])
+        self.permutation = state["permutation"].clone()
+
+
 class SFTSequentialBatcher:
     def __init__(self, dataset: SFTMemmapDataset, batch_size: int, batches: int) -> None:
         self.dataset = dataset
