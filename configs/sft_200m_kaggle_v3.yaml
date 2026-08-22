@@ -1,0 +1,35 @@
+training:
+  seed: 42
+  device: cuda
+  precision: bf16
+  sequence_length: 320
+  micro_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_steps: 1125
+  max_tokens: null
+  pin_memory: true
+  sampling: shuffled_epoch
+optimizer:
+  name: adamw
+  learning_rate: 5.0e-5
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.95
+  eps: 1.0e-8
+scheduler:
+  type: cosine
+  warmup_steps: 100
+  minimum_learning_rate: 5.0e-6
+gradients:
+  max_norm: 1.0
+validation:
+  interval_steps: 100
+  batches: 20
+logging:
+  interval_steps: 10
+checkpoint:
+  interval_steps: 100
+  keep_last: 3
+  save_optimizer: true
+  save_scheduler: true
+  save_rng: true

@@ -1,0 +1,45 @@
+============================================================
+CHECKPOINT 8-v3 CLEAN SEMANTIC DATASET
+============================================================
+Dataset version: genpy-sft-v3-semantic-v1
+Seed: 42
+
+Train: 3000
+Validation: 300
+Challenge: 200
+Sanity: 20
+
+Core skill count: 40
+Prompt-template counts: {'train': 240, 'validation': 181, 'challenge': 154, 'sanity': 20}
+Function names: {'train': {'solve': 3000}, 'validation': {'solve': 300}, 'challenge': {'solve': 200}, 'sanity': {'solve': 20}}
+Artificial split/index names found: 0
+Scenario-number patterns found: 0
+
+Train/validation prompt overlap: 0
+Train/challenge prompt overlap: 0
+Validation/challenge prompt overlap: 0
+Sanity overlap: 0
+CP7 prompt overlap: 0
+CP7 prompt+response overlap: 0
+
+Reference records tested: 3520
+Individual functional tests executed: 17600
+Reference functional pass rate: 100%
+
+All repository tests: 103
+Failed tests: 0
+
+Train SHA256: ccf3cc5ebcbb4d23e71b1f443c9a6838f7c5c97af39eb79da850a9c61b6f698d
+Validation SHA256: 65beb4a68ba224c0214dea971db0ffe424136a0b65839c1d53fb18c5e6d1b3d6
+Challenge SHA256: a4a2306b7db3339bc9943782024691486a96c6f8d8c6f9c4dee28bdb2eae5ec5
+Sanity SHA256: 08fc20a5fe3b40d0c5f81a919e04cb6f8af037957d516b96a92e7669ee32956e
+
+Package: C:\Users\arun0\OneDrive\Desktop\GenPy-Mini\artifacts\checkpoint_8_v3\GenPy-SFT-v3-Semantic-Pilot.zip
+Package SHA256: 53b9a69189454067fefd64f4c9e26150ad04024934615509cbee274fd2d96b0e
+
+Model weights modified: NO
+Tokenizer modified: NO
+Production SFT started: NO
+
+OVERALL STATUS: PASS
+============================================================

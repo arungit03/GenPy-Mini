@@ -1,0 +1,36 @@
+{
+  "format_version": 3,
+  "archive": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\artifacts\\checkpoint_8_v3\\GenPy-SFT-v3-Semantic-Pilot.zip",
+  "sha256": "53b9a69189454067fefd64f4c9e26150ad04024934615509cbee274fd2d96b0e",
+  "file_count": 21,
+  "files": [
+    "data/instruction/python_v3/challenge.jsonl",
+    "data/instruction/python_v3/DATASET_MANIFEST.json",
+    "data/instruction/python_v3/sanity.jsonl",
+    "data/instruction/python_v3/train.jsonl",
+    "data/instruction/python_v3/validation.jsonl",
+    "data/instruction/sft_v3/challenge.jsonl",
+    "data/instruction/sft_v3/SFT_V3_DATASET_MANIFEST.json",
+    "data/instruction/sft_v3/train.jsonl",
+    "data/instruction/sft_v3/validation.jsonl",
+    "reports/checkpoint_8_v3/dataset_audit.json",
+    "reports/checkpoint_8_v3/dataset_audit.txt",
+    "reports/checkpoint_8_v3/readiness.json",
+    "reports/checkpoint_8_v3/READINESS.txt",
+    "reports/checkpoint_8_v3/reference_functional_audit.json",
+    "reports/checkpoint_8_v3/reference_functional_audit.txt",
+    "scripts/audit_sft_v3_dataset.py",
+    "scripts/build_sft_v3_dataset.py",
+    "scripts/finalize_checkpoint_8_v3.py",
+    "scripts/generate_sft_v3_semantic.py",
+    "scripts/package_checkpoint_8_v3.py",
+    "scripts/verify_sft_v3_functional.py"
+  ],
+  "excludes": [
+    "CP7 model weights",
+    "v2 weights",
+    "optimizer states",
+    "token cache",
+    "production run directory"
+  ]
+}

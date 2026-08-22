@@ -1,0 +1,84 @@
+{
+  "format_version": 3,
+  "dataset_name": "GenPy-SFT-v3-Semantic",
+  "dataset_version": "genpy-sft-v3-semantic-v1",
+  "seed": 42,
+  "counts": {
+    "train": 3000,
+    "validation": 300,
+    "challenge": 200,
+    "sanity": 20
+  },
+  "core_skill_count": 40,
+  "prompt_template_counts": {
+    "train": 240,
+    "validation": 181,
+    "challenge": 154,
+    "sanity": 20
+  },
+  "function_names": {
+    "train": {
+      "solve": 3000
+    },
+    "validation": {
+      "solve": 300
+    },
+    "challenge": {
+      "solve": 200
+    },
+    "sanity": {
+      "solve": 20
+    }
+  },
+  "artificial_split_index_names_found": 0,
+  "scenario_number_patterns_found": 0,
+  "train_validation_prompt_overlap": 0,
+  "train_challenge_prompt_overlap": 0,
+  "validation_challenge_prompt_overlap": 0,
+  "sanity_overlap": 0,
+  "cp7_prompt_overlap": 0,
+  "cp7_prompt_response_overlap": 0,
+  "cp7_normalized_response_overlap": {
+    "train": {
+      "normalized_prompt": 0,
+      "prompt_response_pair": 0,
+      "normalized_response": 0
+    },
+    "validation": {
+      "normalized_prompt": 0,
+      "prompt_response_pair": 0,
+      "normalized_response": 0
+    },
+    "challenge": {
+      "normalized_prompt": 0,
+      "prompt_response_pair": 0,
+      "normalized_response": 0
+    },
+    "sanity": {
+      "normalized_prompt": 0,
+      "prompt_response_pair": 0,
+      "normalized_response": 0
+    }
+  },
+  "functional_records_tested": 3520,
+  "individual_functional_tests_executed": 17600,
+  "individual_functional_tests_passed": 17600,
+  "individual_functional_tests_failed": 0,
+  "source_sha256": {
+    "train": "ccf3cc5ebcbb4d23e71b1f443c9a6838f7c5c97af39eb79da850a9c61b6f698d",
+    "validation": "65beb4a68ba224c0214dea971db0ffe424136a0b65839c1d53fb18c5e6d1b3d6",
+    "challenge": "a4a2306b7db3339bc9943782024691486a96c6f8d8c6f9c4dee28bdb2eae5ec5",
+    "sanity": "08fc20a5fe3b40d0c5f81a919e04cb6f8af037957d516b96a92e7669ee32956e"
+  },
+  "package": "C:\\Users\\arun0\\OneDrive\\Desktop\\GenPy-Mini\\artifacts\\checkpoint_8_v3\\GenPy-SFT-v3-Semantic-Pilot.zip",
+  "package_sha256": "53b9a69189454067fefd64f4c9e26150ad04024934615509cbee274fd2d96b0e",
+  "all_repository_tests": 103,
+  "failed_tests": 0,
+  "model_weights_modified": false,
+  "tokenizer_modified": false,
+  "cp7_modified": false,
+  "v2_modified": false,
+  "tokenization_performed": false,
+  "production_sft_started": false,
+  "overall_status": "PASS"
+}

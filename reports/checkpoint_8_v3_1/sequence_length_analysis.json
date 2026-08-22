@@ -1,0 +1,225 @@
+{
+  "format_version": 1,
+  "selection_sources": [
+    "train",
+    "validation"
+  ],
+  "challenge_used_for_sequence_selection": false,
+  "sanity_used_for_sequence_selection": false,
+  "train": {
+    "formatted_token_length": {
+      "count": 3000,
+      "min": 128,
+      "mean": 183.765,
+      "p50": 179,
+      "p90": 220,
+      "p95": 239,
+      "p99": 263,
+      "max": 276
+    },
+    "prompt_token_length": {
+      "count": 3000,
+      "min": 117,
+      "mean": 150.915,
+      "p50": 150,
+      "p90": 167,
+      "p95": 172,
+      "p99": 182,
+      "max": 196
+    },
+    "assistant_supervised_token_length": {
+      "count": 3000,
+      "min": 9,
+      "mean": 32.85,
+      "p50": 26,
+      "p90": 64,
+      "p95": 86,
+      "p99": 104,
+      "max": 104
+    }
+  },
+  "validation": {
+    "formatted_token_length": {
+      "count": 300,
+      "min": 140,
+      "mean": 185.96333333333334,
+      "p50": 180,
+      "p90": 218,
+      "p95": 244,
+      "p99": 264,
+      "max": 269
+    },
+    "prompt_token_length": {
+      "count": 300,
+      "min": 128,
+      "mean": 153.59,
+      "p50": 152,
+      "p90": 169,
+      "p95": 174,
+      "p99": 179,
+      "max": 187
+    },
+    "assistant_supervised_token_length": {
+      "count": 300,
+      "min": 9,
+      "mean": 32.373333333333335,
+      "p50": 26,
+      "p90": 64,
+      "p95": 86,
+      "p99": 104,
+      "max": 104
+    }
+  },
+  "candidates": {
+    "128": {
+      "train": {
+        "truncation_count": 2997,
+        "padding_positions": 3,
+        "padding_fraction": 7.8125e-06
+      },
+      "validation": {
+        "truncation_count": 300,
+        "padding_positions": 0,
+        "padding_fraction": 0.0
+      },
+      "combined_truncation_count": 3297,
+      "padding_positions": 3,
+      "padding_fraction": 7.102272727272727e-06
+    },
+    "160": {
+      "train": {
+        "truncation_count": 2462,
+        "padding_positions": 4237,
+        "padding_fraction": 0.008827083333333333
+      },
+      "validation": {
+        "truncation_count": 263,
+        "padding_positions": 221,
+        "padding_fraction": 0.004604166666666667
+      },
+      "combined_truncation_count": 2725,
+      "padding_positions": 4458,
+      "padding_fraction": 0.008443181818181818
+    },
+    "192": {
+      "train": {
+        "truncation_count": 829,
+        "padding_positions": 48167,
+        "padding_fraction": 0.08362326388888888
+      },
+      "validation": {
+        "truncation_count": 90,
+        "padding_positions": 4292,
+        "padding_fraction": 0.0745138888888889
+      },
+      "combined_truncation_count": 919,
+      "padding_positions": 52459,
+      "padding_fraction": 0.08279513888888888
+    },
+    "224": {
+      "train": {
+        "truncation_count": 244,
+        "padding_positions": 128753,
+        "padding_fraction": 0.19159672619047619
+      },
+      "validation": {
+        "truncation_count": 23,
+        "padding_positions": 12289,
+        "padding_fraction": 0.1828720238095238
+      },
+      "combined_truncation_count": 267,
+      "padding_positions": 141042,
+      "padding_fraction": 0.19080357142857143
+    },
+    "256": {
+      "train": {
+        "truncation_count": 53,
+        "padding_positions": 220130,
+        "padding_fraction": 0.28662760416666666
+      },
+      "validation": {
+        "truncation_count": 9,
+        "padding_positions": 21365,
+        "padding_fraction": 0.2781901041666667
+      },
+      "combined_truncation_count": 62,
+      "padding_positions": 241495,
+      "padding_fraction": 0.28586055871212124
+    },
+    "320": {
+      "train": {
+        "truncation_count": 0,
+        "padding_positions": 411705,
+        "padding_fraction": 0.428859375
+      },
+      "validation": {
+        "truncation_count": 0,
+        "padding_positions": 40511,
+        "padding_fraction": 0.4219895833333333
+      },
+      "combined_truncation_count": 0,
+      "padding_positions": 452216,
+      "padding_fraction": 0.4282348484848485
+    },
+    "384": {
+      "train": {
+        "truncation_count": 0,
+        "padding_positions": 603705,
+        "padding_fraction": 0.5240494791666667
+      },
+      "validation": {
+        "truncation_count": 0,
+        "padding_positions": 59711,
+        "padding_fraction": 0.5183246527777777
+      },
+      "combined_truncation_count": 0,
+      "padding_positions": 663416,
+      "padding_fraction": 0.5235290404040404
+    },
+    "512": {
+      "train": {
+        "truncation_count": 0,
+        "padding_positions": 987705,
+        "padding_fraction": 0.643037109375
+      },
+      "validation": {
+        "truncation_count": 0,
+        "padding_positions": 98111,
+        "padding_fraction": 0.6387434895833334
+      },
+      "combined_truncation_count": 0,
+      "padding_positions": 1085816,
+      "padding_fraction": 0.6426467803030304
+    }
+  },
+  "selected_sequence_length": 320,
+  "challenge_diagnostic": {
+    "formatted_token_length": {
+      "count": 200,
+      "min": 142,
+      "mean": 181.435,
+      "p50": 177,
+      "p90": 213,
+      "p95": 232,
+      "p99": 258,
+      "max": 262
+    },
+    "would_truncate_at_selected_length": 0,
+    "used_for_sequence_selection": false
+  },
+  "sanity_diagnostic": {
+    "formatted_token_length": {
+      "count": 20,
+      "min": 31,
+      "mean": 56.4,
+      "p50": 48,
+      "p90": 91,
+      "p95": 118,
+      "p99": 118,
+      "max": 130
+    },
+    "would_truncate_at_selected_length": 0,
+    "used_for_sequence_selection": false
+  },
+  "selection_rule": "shortest candidate with zero train and validation truncation; frozen evaluation splits cannot alter selection"
+}

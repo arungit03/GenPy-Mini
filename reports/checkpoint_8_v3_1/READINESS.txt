@@ -1,0 +1,65 @@
+============================================================
+CHECKPOINT 8-v3.1 — KAGGLE PREFLIGHT PACKAGE
+============================================================
+V3 source package SHA256: 53b9a69189454067fefd64f4c9e26150ad04024934615509cbee274fd2d96b0e
+V3 source immutable: True
+
+Tokenizer: GenPy-Tokenizer-32K
+Tokenizer version: GenPy-Tokenizer-32K-v1
+Vocab: 32000
+Special IDs: {'pad': 0, 'bos': 1, 'eos': 2, 'unk': 3}
+Tokenizer artifact SHA256: dc9ca78c405433d184d615282b1e87b539e1e604b1e3e05f3c30ced13ca653ac
+Canonical manifest SHA256: 82659104b301881f91767efb3a10f0c635be7a77f89ba8a93a1358b454cdd03f
+Semantic identity SHA256: 1267874ce8f6fa922f8c53c211781fcea830c08ef7ded499d8b4918f3dc1b637
+Tokenization behavior SHA256: 73629dd757c1992f0d52da7c5dfc907e948461df750984b119cd952d9acb1cab
+
+Train examples: 3000
+Validation examples: 300
+Challenge examples: 200
+Sanity examples: 20
+
+Sequence analysis selection sources: ['train', 'validation']
+Challenge used for selection: False
+Sanity used for selection: False
+Selected sequence length: 320
+Train truncations: 0
+Validation truncations: 0
+Challenge diagnostic truncations: 0
+Sanity diagnostic truncations: 0
+
+Train stored tokens: 551295
+Train assistant supervised tokens: 98550
+Train ignored prompt tokens: 452745
+Validation stored tokens: 55789
+Validation assistant supervised tokens: 9712
+
+Cache reproducibility: True
+
+Micro batch: 1
+Gradient accumulation: 8
+Examples/update: 8
+Updates/dataset pass: 375
+Recommended dataset passes: 3
+Recommended global max steps: 1125
+Observation gates: [100, 250, 500]
+
+Challenge cached: False
+Sanity cached: False
+
+Static preflight: True
+Model weights modified: NO
+Tokenizer modified: NO
+CP7 modified: NO
+V2 modified: NO
+Optimizer steps performed: 0
+Production SFT started: NO
+
+Full pytest: 111
+Failed tests: 0
+
+Kaggle package: C:\Users\arun0\OneDrive\Desktop\GenPy-Mini\artifacts\checkpoint_8_v3_1\GenPy-SFT-v3.1-Kaggle-Preflight.zip
+Kaggle package SHA256: 5b7ef2906f89a7f4ec02b84cc85053ddc4aff46ed7fef2914bcefd84c7f18c46
+Package reproducibility: True
+
+OVERALL STATUS: READY_FOR_KAGGLE
+============================================================

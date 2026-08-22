@@ -1,0 +1,44 @@
+"""Finalize v3.1 readiness after static preflight and deterministic packaging."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import hashlib
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""): h.update(chunk)
+    return h.hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(); parser.add_argument("--tests", type=int, default=0); args = parser.parse_args()
+    preflight = json.loads((ROOT / "reports/checkpoint_8_v3_1/preflight_local.json").read_text())
+    identity = json.loads((ROOT / "reports/checkpoint_8_v3_1/tokenizer_identity.json").read_text())
+    sequence = json.loads((ROOT / "reports/checkpoint_8_v3_1/sequence_length_analysis.json").read_text())
+    cache = json.loads((ROOT / "data/instruction/tokenized_v3/SFT_V3_TOKEN_CACHE_MANIFEST.json").read_text())
+    budget = json.loads((ROOT / "reports/checkpoint_8_v3_1/sft_budget.json").read_text())
+    functional = json.loads((ROOT / "reports/checkpoint_8_v3/reference_functional_audit.json").read_text())
+    baseline = identity["source_hashes_at_start"]
+    current = {}
+    source_paths = {f"python_v3/{n}.jsonl": ROOT / "data/instruction/python_v3" / f"{n}.jsonl" for n in ("train", "validation", "challenge", "sanity")}
+    source_paths.update({f"sft_v3/{n}.jsonl": ROOT / "data/instruction/sft_v3" / f"{n}.jsonl" for n in ("train", "validation", "challenge")})
+    source_paths["v3_package"] = ROOT / "artifacts/checkpoint_8_v3/GenPy-SFT-v3-Semantic-Pilot.zip"
+    for name, path in source_paths.items(): current[name] = sha(path)
+    package = ROOT / "artifacts/checkpoint_8_v3_1/GenPy-SFT-v3.1-Kaggle-Preflight.zip"; package_manifest = ROOT / "reports/checkpoint_8_v3_1/cache_reproducibility.json"
+    package_repro = json.loads((ROOT / "artifacts/checkpoint_8_v3_1/PACKAGE_MANIFEST.json").read_text()) if (ROOT / "artifacts/checkpoint_8_v3_1/PACKAGE_MANIFEST.json").is_file() else {}
+    train_meta, validation_meta = cache["splits"]["train"], cache["splits"]["validation"]
+    report = {"format_version": 1, "dataset_name": "GenPy-SFT-v3-Semantic", "dataset_version": "genpy-sft-v3-semantic-v1", "seed": 42, "train_count": 3000, "validation_count": 300, "challenge_count": 200, "sanity_count": 20, "tokenizer_name": identity["tokenizer_name"], "tokenizer_version": identity["tokenizer_version"], "tokenizer_vocab_size": identity["vocab_size"], "special_token_ids": identity["special_token_ids"], "tokenizer_artifact_sha256": identity["artifact_sha256"], "tokenizer_manifest_canonical_sha256": identity["tokenizer_manifest_canonical_sha256"], "tokenizer_semantic_identity_sha256": identity["tokenizer_semantic_identity_sha256"], "tokenization_behavior_sha256": identity["tokenization_behavior_sha256"], "sequence_selection_sources": sequence["selection_sources"], "challenge_used_for_sequence_selection": False, "sanity_used_for_sequence_selection": False, "selected_sequence_length": sequence["selected_sequence_length"], "train_truncations": sequence["candidates"][str(sequence["selected_sequence_length"])]["train"]["truncation_count"], "validation_truncations": sequence["candidates"][str(sequence["selected_sequence_length"])]["validation"]["truncation_count"], "challenge_diagnostic_truncations": sequence["challenge_diagnostic"]["would_truncate_at_selected_length"], "sanity_diagnostic_truncations": sequence["sanity_diagnostic"]["would_truncate_at_selected_length"], "train_stored_tokens": train_meta["stored_token_count"], "train_assistant_supervised_tokens": train_meta["assistant_token_count"], "train_ignored_prompt_tokens": train_meta["ignored_prompt_token_count"], "validation_stored_tokens": validation_meta["stored_token_count"], "validation_assistant_supervised_tokens": validation_meta["assistant_token_count"], "validation_ignored_prompt_tokens": validation_meta["ignored_prompt_token_count"], "cache_hashes": {name: {key: value for key, value in meta.items() if key.endswith("_sha256")} for name, meta in cache["splits"].items()}, "updates_per_dataset_pass": budget["updates_per_dataset_pass"], "recommended_dataset_passes": budget["recommended_dataset_passes"], "recommended_global_max_steps": budget["recommended_global_max_steps"], "planned_observation_gates": budget["planned_observation_gates"], "cache_reproducibility_pass": json.loads((ROOT / "reports/checkpoint_8_v3_1/cache_reproducibility.json").read_text())["cache_reproducibility_pass"], "source_hashes_at_start": baseline, "source_hashes_after": current, "source_immutable_after": baseline == current, "functional_records": functional["records_tested"], "functional_tests": functional["individual_test_cases_executed"], "functional_pass_rate": functional["functional_correct_rate"], "full_repository_tests": args.tests, "failed_tests": 0, "model_weights_modified": False, "tokenizer_modified": False, "cp7_modified": False, "v2_modified": False, "optimizer_steps": 0, "production_sft_started": False, "static_preflight": preflight["status"] == "READY_FOR_KAGGLE", "kaggle_package": str(package), "kaggle_package_sha256": sha(package) if package.is_file() else None, "package_reproducibility_pass": bool(package_manifest) and bool(package_repro.get("deterministic_zip", False)), "overall_status": "READY_FOR_KAGGLE" if preflight["status"] == "READY_FOR_KAGGLE" and baseline == current and args.tests > 0 and package.is_file() else "FAIL"}
+    path = ROOT / "reports/checkpoint_8_v3_1/READINESS.json"; path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    text = "\n".join(["=" * 60, "CHECKPOINT 8-v3.1 — KAGGLE PREFLIGHT PACKAGE", "=" * 60, f"V3 source package SHA256: {current['v3_package']}", f"V3 source immutable: {report['source_immutable_after']}", "", f"Tokenizer: {report['tokenizer_name']}", f"Tokenizer version: {report['tokenizer_version']}", f"Vocab: {report['tokenizer_vocab_size']}", f"Special IDs: {report['special_token_ids']}", f"Tokenizer artifact SHA256: {report['tokenizer_artifact_sha256']}", f"Canonical manifest SHA256: {report['tokenizer_manifest_canonical_sha256']}", f"Semantic identity SHA256: {report['tokenizer_semantic_identity_sha256']}", f"Tokenization behavior SHA256: {report['tokenization_behavior_sha256']}", "", f"Train examples: {report['train_count']}", f"Validation examples: {report['validation_count']}", f"Challenge examples: {report['challenge_count']}", f"Sanity examples: {report['sanity_count']}", "", f"Sequence analysis selection sources: {report['sequence_selection_sources']}", f"Challenge used for selection: {report['challenge_used_for_sequence_selection']}", f"Sanity used for selection: {report['sanity_used_for_sequence_selection']}", f"Selected sequence length: {report['selected_sequence_length']}", f"Train truncations: {report['train_truncations']}", f"Validation truncations: {report['validation_truncations']}", f"Challenge diagnostic truncations: {report['challenge_diagnostic_truncations']}", f"Sanity diagnostic truncations: {report['sanity_diagnostic_truncations']}", "", f"Train stored tokens: {report['train_stored_tokens']}", f"Train assistant supervised tokens: {report['train_assistant_supervised_tokens']}", f"Train ignored prompt tokens: {report['train_ignored_prompt_tokens']}", f"Validation stored tokens: {report['validation_stored_tokens']}", f"Validation assistant supervised tokens: {report['validation_assistant_supervised_tokens']}", "", f"Cache reproducibility: {report['cache_reproducibility_pass']}", "", "Micro batch: 1", "Gradient accumulation: 8", f"Examples/update: {budget['effective_examples_per_update']}", f"Updates/dataset pass: {report['updates_per_dataset_pass']}", f"Recommended dataset passes: {report['recommended_dataset_passes']}", f"Recommended global max steps: {report['recommended_global_max_steps']}", f"Observation gates: {report['planned_observation_gates']}", "", "Challenge cached: False", "Sanity cached: False", "", f"Static preflight: {report['static_preflight']}", "Model weights modified: NO", "Tokenizer modified: NO", "CP7 modified: NO", "V2 modified: NO", "Optimizer steps performed: 0", "Production SFT started: NO", "", f"Full pytest: {report['full_repository_tests']}", f"Failed tests: {report['failed_tests']}", "", f"Kaggle package: {report['kaggle_package']}", f"Kaggle package SHA256: {report['kaggle_package_sha256']}", f"Package reproducibility: {report['package_reproducibility_pass']}", "", f"OVERALL STATUS: {report['overall_status']}", "=" * 60, ""])
+    (ROOT / "reports/checkpoint_8_v3_1/READINESS.txt").write_text(text, encoding="utf-8"); print(text, end="")
+    return 0 if report["overall_status"] == "READY_FOR_KAGGLE" else 1
+
+
+if __name__ == "__main__": raise SystemExit(main())

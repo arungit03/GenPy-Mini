@@ -1,0 +1,87 @@
+{
+  "format_version": 1,
+  "train_examples": 3000,
+  "sequence_length": 320,
+  "micro_batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "effective_examples_per_update": 8,
+  "total_formatted_train_tokens": 551295,
+  "total_assistant_supervised_tokens": 98550,
+  "total_ignored_prompt_tokens": 452745,
+  "assistant_tokens_per_example": {
+    "min": 9,
+    "mean": 32.85,
+    "p50": 26,
+    "p90": 64,
+    "p95": 86,
+    "p99": 104,
+    "max": 104
+  },
+  "formatted_tokens_per_example": {
+    "min": 128,
+    "mean": 183.765,
+    "p50": 179,
+    "p90": 220,
+    "p95": 239,
+    "p99": 263,
+    "max": 276
+  },
+  "estimated_non_padding_token_positions_per_update": 1462.12,
+  "estimated_assistant_supervised_tokens_per_update": 262.8,
+  "static_padded_positions_per_update": 2560,
+  "updates_per_dataset_pass": 375,
+  "candidate_global_budgets": {
+    "1": {
+      "dataset_equivalent_passes": 1,
+      "optimizer_steps": 375,
+      "approx_supervised_tokens_processed": 98550,
+      "approx_total_static_positions_processed": 960000,
+      "approx_actual_non_padding_positions_processed": 548295
+    },
+    "2": {
+      "dataset_equivalent_passes": 2,
+      "optimizer_steps": 750,
+      "approx_supervised_tokens_processed": 197100,
+      "approx_total_static_positions_processed": 1920000,
+      "approx_actual_non_padding_positions_processed": 1096590
+    },
+    "3": {
+      "dataset_equivalent_passes": 3,
+      "optimizer_steps": 1125,
+      "approx_supervised_tokens_processed": 295650,
+      "approx_total_static_positions_processed": 2880000,
+      "approx_actual_non_padding_positions_processed": 1644885
+    },
+    "4": {
+      "dataset_equivalent_passes": 4,
+      "optimizer_steps": 1500,
+      "approx_supervised_tokens_processed": 394200,
+      "approx_total_static_positions_processed": 3840000,
+      "approx_actual_non_padding_positions_processed": 2193180
+    },
+    "5": {
+      "dataset_equivalent_passes": 5,
+      "optimizer_steps": 1875,
+      "approx_supervised_tokens_processed": 492750,
+      "approx_total_static_positions_processed": 4800000,
+      "approx_actual_non_padding_positions_processed": 2741475
+    },
+    "6": {
+      "dataset_equivalent_passes": 6,
+      "optimizer_steps": 2250,
+      "approx_supervised_tokens_processed": 591300,
+      "approx_total_static_positions_processed": 5760000,
+      "approx_actual_non_padding_positions_processed": 3289770
+    }
+  },
+  "recommended_dataset_passes": 3,
+  "recommended_global_max_steps": 1125,
+  "planned_observation_gates": [
+    100,
+    250,
+    500
+  ],
+  "scheduler_horizon_is_global": true,
+  "reason": "v3 is smaller and semantically cleaner than v2; use functional evaluation gates while retaining a fixed three-pass scheduler horizon",
+  "production_sft_started": false
+}

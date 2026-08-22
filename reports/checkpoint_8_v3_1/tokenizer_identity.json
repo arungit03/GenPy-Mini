@@ -1,0 +1,118 @@
+{
+  "format_version": 1,
+  "tokenizer_name": "GenPy-Tokenizer-32K",
+  "tokenizer_version": "GenPy-Tokenizer-32K-v1",
+  "tokenizer_type": "byte_level_bpe",
+  "vocab_size": 32000,
+  "special_token_ids": {
+    "pad": 0,
+    "bos": 1,
+    "eos": 2,
+    "unk": 3
+  },
+  "artifact_sha256": "dc9ca78c405433d184d615282b1e87b539e1e604b1e3e05f3c30ced13ca653ac",
+  "dataset_train_sha256": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44",
+  "tokenizer_manifest_canonical_sha256": "82659104b301881f91767efb3a10f0c635be7a77f89ba8a93a1358b454cdd03f",
+  "tokenizer_semantic_identity": {
+    "tokenizer_name": "GenPy-Tokenizer-32K",
+    "tokenizer_version": "GenPy-Tokenizer-32K-v1",
+    "tokenizer_type": "byte_level_bpe",
+    "vocab_size": 32000,
+    "special_token_ids": {
+      "pad": 0,
+      "bos": 1,
+      "eos": 2,
+      "unk": 3
+    },
+    "artifact_sha256": "dc9ca78c405433d184d615282b1e87b539e1e604b1e3e05f3c30ced13ca653ac",
+    "dataset_train_sha256": "17ba25f0154d1ffa04fdd4b91a22123a0770fe6aa76416ba57e4630264cb0b44"
+  },
+  "tokenizer_semantic_identity_sha256": "1267874ce8f6fa922f8c53c211781fcea830c08ef7ded499d8b4918f3dc1b637",
+  "tokenization_behavior": {
+    "tokenizer_name": "GenPy-Tokenizer-32K",
+    "vocab_size": 32000,
+    "vectors": [
+      {
+        "text": "def solve(n):\n    return n % 2 == 0\n",
+        "token_ids": [
+          13345,
+          72,
+          11,
+          81,
+          298,
+          264,
+          260,
+          13613,
+          384,
+          224,
+          25494,
+          224,
+          14684,
+          202
+        ]
+      },
+      {
+        "text": "Write a Python function named solve that reverses text.",
+        "token_ids": [
+          13395,
+          224,
+          13277,
+          13406,
+          384,
+          13928,
+          71,
+          224,
+          13720,
+          224,
+          15531,
+          15906,
+          18420,
+          20722
+        ]
+      },
+      {
+        "text": "### User\nCalculate factorial.\n\n### Assistant\n",
+        "token_ids": [
+          13271,
+          202,
+          38,
+          261,
+          70,
+          18230,
+          224,
+          24891,
+          79,
+          17,
+          202,
+          202,
+          13340,
+          13716,
+          202
+        ]
+      },
+      {
+        "text": "values = [1, 2, 3, 4]",
+        "token_ids": [
+          19208,
+          420,
+          30435,
+          19496,
+          14424,
+          64
+        ]
+      }
+    ]
+  },
+  "tokenization_behavior_sha256": "73629dd757c1992f0d52da7c5dfc907e948461df750984b119cd952d9acb1cab",
+  "raw_manifest_sha256_observational": "235799a8996c1e990e6ab985afb3319237c18da4c7c5d0d1bfff670d181d317e",
+  "source_hashes_at_start": {
+    "python_v3/train.jsonl": "ccf3cc5ebcbb4d23e71b1f443c9a6838f7c5c97af39eb79da850a9c61b6f698d",
+    "python_v3/validation.jsonl": "65beb4a68ba224c0214dea971db0ffe424136a0b65839c1d53fb18c5e6d1b3d6",
+    "python_v3/challenge.jsonl": "a4a2306b7db3339bc9943782024691486a96c6f8d8c6f9c4dee28bdb2eae5ec5",
+    "python_v3/sanity.jsonl": "08fc20a5fe3b40d0c5f81a919e04cb6f8af037957d516b96a92e7669ee32956e",
+    "sft_v3/train.jsonl": "ccf3cc5ebcbb4d23e71b1f443c9a6838f7c5c97af39eb79da850a9c61b6f698d",
+    "sft_v3/validation.jsonl": "65beb4a68ba224c0214dea971db0ffe424136a0b65839c1d53fb18c5e6d1b3d6",
+    "sft_v3/challenge.jsonl": "a4a2306b7db3339bc9943782024691486a96c6f8d8c6f9c4dee28bdb2eae5ec5",
+    "v3_package": "53b9a69189454067fefd64f4c9e26150ad04024934615509cbee274fd2d96b0e"
+  }
+}
